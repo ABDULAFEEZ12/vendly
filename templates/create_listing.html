@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Listing — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --orange: #FF6B35;
+            --white: #ffffff;
+            --gray-50: #f8f9fb;
+            --gray-100: #f0f2f5;
+            --text-muted: #6b7b8d;
+            --border: #e8ecf0;
+            --radius: 14px;
+            --radius-sm: 10px;
+            --error: #e74c3c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--navy);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--navy);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--orange);
+            text-decoration: none;
+        }
+        .logo span { color: white; font-weight: 700; }
+        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+        .btn-logout {
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
+
+        .container {
+            max-width: 650px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        .back-link {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+        .back-link:hover { color: var(--orange); }
+        .page-header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .page-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.4rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.4rem;
+        }
+        .form-group label .optional {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--navy);
+            background: var(--gray-50);
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--orange);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7b8d' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 500px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        .image-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--gray-50);
+        }
+        .image-upload-area:hover {
+            border-color: var(--orange);
+            background: rgba(255,107,53,0.02);
+        }
+        .image-upload-area .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .image-upload-area p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .image-upload-area p strong {
+            color: var(--orange);
+        }
+        .image-upload-area input {
+            display: none;
+        }
+        .image-previews {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .image-preview {
+            width: 90px;
+            height: 90px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+        .image-preview-wrapper {
+            position: relative;
+        }
+        .image-preview-remove {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 22px;
+            height: 22px;
+            background: var(--error);
+            color: white;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .price-input-wrapper {
+            position: relative;
+        }
+        .price-input-wrapper .currency {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            color: var(--orange);
+            font-size: 0.9rem;
+        }
+        .price-input-wrapper input {
+            padding-left: 2.2rem !important;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--orange);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+            margin-top: 0.5rem;
+        }
+        .btn-submit:hover {
+            background: #e8551f;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(255,107,53,0.35);
+        }
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .alert {
+            padding: 0.8rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        .alert.show { display: block; }
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 500px) {
+            .card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">VEND<span>LY</span></a>
+        <div class="nav-links">
+            <a href="/marketplace">Marketplace</a>
+            <a href="/dashboard">Dashboard</a>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+            <h1>📦 Create New Listing</h1>
+            <p>Sell something to a fellow LASU student</p>
+        </div>
+
+        <div class="card">
+            <div id="alert" class="alert"></div>
+
+            <form id="create-form">
+                <!-- Title -->
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" placeholder="e.g. Tecno Spark 10 Pro - 128GB" required maxlength="200">
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="description">Description <span class="optional">(optional)</span></label>
+                    <textarea id="description" name="description" placeholder="Describe your item — condition, reason for selling, any extras included..." maxlength="2000"></textarea>
+                </div>
+
+                <!-- Price + Category -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price (₦) *</label>
+                        <div class="price-input-wrapper">
+                            <span class="currency">₦</span>
+                            <input type="number" id="price" name="price" placeholder="0" required min="100" step="100">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select category</option>
+                            <option value="Electronics">📱 Electronics</option>
+                            <option value="Fashion">👟 Fashion</option>
+                            <option value="Books">📚 Books</option>
+                            <option value="Food">🍕 Food</option>
+                            <option value="Services">🔧 Services</option>
+                            <option value="Other">📦 Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Condition + Campus -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="condition">Condition *</label>
+                        <select id="condition" name="condition" required>
+                            <option value="">Select condition</option>
+                            <option value="New">🆕 New</option>
+                            <option value="Used">♻️ Used</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="campus">Campus *</label>
+                        <select id="campus" name="campus" required>
+                            <option value="">Select campus</option>
+                            <option value="LASU">📍 LASU</option>
+                            <option value="UNILAG">📍 UNILAG</option>
+                            <option value="UI">📍 UI</option>
+                            <option value="OAU">📍 OAU</option>
+                            <option value="Other">📍 Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label>Images <span class="optional">(up to 5)</span></label>
+                    <div class="image-upload-area" id="upload-area">
+                        <div class="upload-icon">📸</div>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p style="font-size:0.75rem;">JPG, PNG or WebP · Max 5 images</p>
+                        <input type="file" id="image-input" accept="image/*" multiple>
+                    </div>
+                    <div class="image-previews" id="image-previews"></div>
+                    <p class="image-count" id="image-count">0 / 5 images</p>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-submit" id="submit-btn">📦 Post Listing</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+
+    <script>
+        const API_BASE = '';
+        const cloudName = document.body.dataset.cloudName || '';
+        const uploadPreset = document.body.dataset.uploadPreset || 'vendly-unsigned';
+
+        function getToken() {
+            return localStorage.getItem('vendly_token');
+        }
+        function clearToken() {
+            localStorage.removeItem('vendly_token');
+        }
+        function logout() {
+            clearToken();
+            window.location.href = '/login';
+        }
+
+        // Redirect if not logged in
+        if (!getToken()) {
+            window.location.href = '/login';
+        }
+
+        // Image handling
+        let imageUrls = [];
+        let uploadingCount = 0;
+
+        const uploadArea = document.getElementById('upload-area');
+        const imageInput = document.getElementById('image-input');
+        const previewsContainer = document.getElementById('image-previews');
+        const imageCountEl = document.getElementById('image-count');
+
+        uploadArea.addEventListener('click', () => imageInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--orange)';
+            uploadArea.style.background = 'rgba(255,107,53,0.03)';
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = 'var(--border)';
+            uploadArea.style.background = 'var(--gray-50)';
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--border)';
+            uploadArea.style.background = 'var(--gray-50)';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        imageInput.addEventListener('change', () => {
+            handleFiles(imageInput.files);
+        });
+
+        function handleFiles(files) {
+            const remaining = 5 - imageUrls.length;
+            const filesToAdd = Array.from(files).slice(0, remaining);
+
+            if (filesToAdd.length === 0) return;
+
+            showAlert('info', `Uploading ${filesToAdd.length} image(s)...`);
+
+            filesToAdd.forEach(file => {
+                uploadingCount++;
+                uploadToCloudinary(file);
+            });
+
+            imageInput.value = '';
+        }
+
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', uploadPreset);
+
+            try {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.secure_url) {
+                    imageUrls.push(data.secure_url);
+                    renderPreviews();
+                    hideAlert();
+                } else {
+                    showAlert('error', 'Image upload failed. Please try again.');
+                }
+            } catch (err) {
+                showAlert('error', 'Image upload failed. Check your connection.');
+            } finally {
+                uploadingCount--;
+                updateSubmitButton();
+            }
+        }
+
+        function renderPreviews() {
+            previewsContainer.innerHTML = imageUrls.map((url, i) => `
+                <div class="image-preview-wrapper">
+                    <img src="${url}" class="image-preview" alt="Preview ${i + 1}">
+                    <button class="image-preview-remove" onclick="removeImage(${i})" type="button">✕</button>
+                </div>
+            `).join('');
+            imageCountEl.textContent = `${imageUrls.length} / 5 images`;
+        }
+
+        function removeImage(index) {
+            imageUrls.splice(index, 1);
+            renderPreviews();
+        }
+
+        // Alert handling
+        const alertBox = document.getElementById('alert');
+        function showAlert(type, msg) {
+            alertBox.textContent = msg;
+            alertBox.className = `alert alert-${type} show`;
+        }
+        function hideAlert() {
+            alertBox.className = 'alert';
+        }
+
+        // Submit
+        function updateSubmitButton() {
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = uploadingCount > 0;
+            btn.textContent = uploadingCount > 0
+                ? `⏳ Uploading ${uploadingCount} image(s)...`
+                : '📦 Post Listing';
+        }
+
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (uploadingCount > 0) {
+                showAlert('error', 'Please wait for images to finish uploading');
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            btn.textContent = 'Posting...';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value.trim());
+            formData.append('description', document.getElementById('description').value.trim());
+            formData.append('price', document.getElementById('price').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('condition', document.getElementById('condition').value);
+            formData.append('campus', document.getElementById('campus').value);
+            formData.append('image_urls', JSON.stringify(imageUrls));
+
+            try {
+                const token = getToken();
+                const res = await fetch(API_BASE + '/api/listings', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.msg || 'Failed to create listing');
+                }
+
+                showAlert('success', 'Listing created successfully! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = `/listing/${data.listing.id}`;
+                }, 1000);
+
+            } catch (err) {
+                showAlert('error', err.message || 'Something went wrong');
+                btn.textContent = '📦 Post Listing';
+                btn.disabled = false;
+            }
+        });
+
+        // Set default campus to LASU
+        document.getElementById('campus').value = 'LASU';
+    </script>
+</body>
+</html>

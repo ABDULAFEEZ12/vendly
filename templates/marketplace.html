@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --orange: #FF6B35;
+            --white: #ffffff;
+            --gray-50: #f8f9fb;
+            --gray-100: #f0f2f5;
+            --text-muted: #6b7b8d;
+            --border: #e8ecf0;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--navy);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--navy);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--orange);
+            text-decoration: none;
+        }
+        .logo span { color: white; font-weight: 700; }
+        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+        .nav-links a.active { color: var(--orange); }
+        .btn-nav {
+            background: var(--orange);
+            color: white !important;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.6rem 1.3rem !important;
+        }
+        .btn-nav:hover { background: #e8551f !important; }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Search & Filters */
+        .search-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .search-input-wrapper {
+            flex: 2;
+            min-width: 200px;
+            position: relative;
+        }
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            background: white;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .search-input-wrapper input:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        .filter-select {
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            background: white;
+            color: var(--navy);
+            cursor: pointer;
+            outline: none;
+            min-width: 120px;
+            flex: 1;
+        }
+        .filter-select:focus {
+            border-color: var(--orange);
+        }
+
+        /* Category Pills */
+        .category-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .pill {
+            padding: 0.45rem 1rem;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--navy);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .pill:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+        .pill.active {
+            background: var(--orange);
+            color: white;
+            border-color: var(--orange);
+        }
+
+        /* Results Info */
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .results-count { font-weight: 500; }
+        .results-count strong { color: var(--navy); }
+
+        /* Listing Grid */
+        .listing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .listing-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            display: block;
+        }
+        .listing-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(13,27,42,0.06);
+            border-color: var(--orange);
+        }
+        .listing-img {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+        .listing-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .condition-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--navy);
+            color: white;
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .condition-badge.used { background: #5c6b7a; }
+        .save-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        .save-btn:hover { border-color: #e74c3c; }
+        .save-btn.saved { color: #e74c3c; }
+        .listing-body { padding: 1rem; }
+        .listing-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .listing-price {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--orange);
+            margin-bottom: 0.4rem;
+        }
+        .listing-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+        .verified-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            grid-column: 1 / -1;
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-state h2 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .empty-state p { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Loader */
+        .loader {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 500px) {
+            .listing-grid { grid-template-columns: repeat(2, 1fr); }
+            .listing-img { height: 120px; font-size: 2rem; }
+            .listing-title { font-size: 0.8rem; }
+            .listing-price { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">VEND<span>LY</span></a>
+        <div class="nav-links">
+            <a href="/marketplace" class="active">Marketplace</a>
+            <a href="/chat">Messages</a>
+            <a href="/saved">Saved</a>
+            <a href="/dashboard">Dashboard</a>
+            <span id="auth-action"></span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Search & Filters -->
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Search items, textbooks, electronics...">
+            </div>
+            <select id="campus-filter" class="filter-select">
+                <option value="">📍 All Campuses</option>
+                <option value="LASU">LASU</option>
+                <option value="UNILAG">UNILAG</option>
+                <option value="UI">UI</option>
+                <option value="OAU">OAU</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="condition-filter" class="filter-select">
+                <option value="">📦 All Conditions</option>
+                <option value="New">New</option>
+                <option value="Used">Used</option>
+            </select>
+            <select id="sort-filter" class="filter-select">
+                <option value="newest">🕐 Newest</option>
+                <option value="price_low">💰 Price: Low → High</option>
+                <option value="price_high">💰 Price: High → Low</option>
+            </select>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="category-pills">
+            <span class="pill active" data-category="">All</span>
+            <span class="pill" data-category="Electronics">📱 Electronics</span>
+            <span class="pill" data-category="Fashion">👟 Fashion</span>
+            <span class="pill" data-category="Books">📚 Books</span>
+            <span class="pill" data-category="Food">🍕 Food</span>
+            <span class="pill" data-category="Services">🔧 Services</span>
+            <span class="pill" data-category="Other">📦 Other</span>
+        </div>
+
+        <!-- Results Info -->
+        <div class="results-info">
+            <span class="results-count" id="results-count">Loading...</span>
+        </div>
+
+        <!-- Listings Grid -->
+        <div class="listing-grid" id="listing-grid">
+            <div class="loader">⏳ Loading listings...</div>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+
+    <script>
+        const API_BASE = '';
+
+        function getToken() {
+            return localStorage.getItem('vendly_token');
+        }
+
+        // Auth-aware nav
+        (function updateAuthNav() {
+            const token = getToken();
+            const authEl = document.getElementById('auth-action');
+            if (token) {
+                authEl.innerHTML = '<button class="btn-nav" style="background:transparent;border:1px solid rgba(255,255,255,0.2);cursor:pointer;font-family:Inter,sans-serif;font-size:0.8rem;" onclick="localStorage.removeItem(\'vendly_token\');window.location.reload();">Logout</button>';
+            } else {
+                authEl.innerHTML = '<a href="/login" class="btn-nav">Login</a>';
+            }
+        })();
+
+        // State
+        let currentCategory = '';
+        const listingGrid = document.getElementById('listing-grid');
+        const resultsCount = document.getElementById('results-count');
+
+        // Category pills
+        document.querySelectorAll('.pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                currentCategory = pill.dataset.category;
+                fetchListings();
+            });
+        });
+
+        // Filters
+        document.getElementById('campus-filter').addEventListener('change', fetchListings);
+        document.getElementById('condition-filter').addEventListener('change', fetchListings);
+        document.getElementById('sort-filter').addEventListener('change', fetchListings);
+
+        // Search with debounce
+        let searchTimeout;
+        document.getElementById('search-input').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(fetchListings, 350);
+        });
+
+        const categoryEmojis = {
+            'Electronics': '📱',
+            'Fashion': '👟',
+            'Books': '📚',
+            'Food': '🍕',
+            'Services': '🔧',
+            'Other': '📦'
+        };
+
+        const categoryColors = {
+            'Electronics': '#e8f0fe',
+            'Fashion': '#f0f7f0',
+            'Books': '#fef2e7',
+            'Food': '#fff3e0',
+            'Services': '#f3e5f5',
+            'Other': '#eceff1'
+        };
+
+        async function fetchListings() {
+            listingGrid.innerHTML = '<div class="loader">⏳ Loading...</div>';
+
+            const params = new URLSearchParams();
+            const search = document.getElementById('search-input').value.trim();
+            const campus = document.getElementById('campus-filter').value;
+            const condition = document.getElementById('condition-filter').value;
+            const sort = document.getElementById('sort-filter').value;
+
+            if (search) params.append('search', search);
+            if (currentCategory) params.append('category', currentCategory);
+            if (campus) params.append('campus', campus);
+            if (condition) params.append('condition', condition);
+            if (sort) params.append('sort', sort);
+
+            try {
+                const res = await fetch(`${API_BASE}/api/listings?${params.toString()}`);
+                const listings = await res.json();
+
+                if (!listings || listings.length === 0) {
+                    listingGrid.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">🔍</div>
+                            <h2>No listings found</h2>
+                            <p>Try a different search or filter</p>
+                        </div>`;
+                    resultsCount.innerHTML = '<strong>0</strong> items found';
+                    return;
+                }
+
+                resultsCount.innerHTML = `<strong>${listings.length}</strong> item${listings.length > 1 ? 's' : ''} found`;
+
+                listingGrid.innerHTML = listings.map(l => `
+                    <a href="/listing/${l.id}" class="listing-card">
+                        <div class="listing-img" style="background:${categoryColors[l.category] || '#eef1f5'};">
+                            ${l.images && l.images[0]
+                                ? `<img src="${l.images[0]}" alt="${l.title}" loading="lazy">`
+                                : categoryEmojis[l.category] || '📦'}
+                            <span class="condition-badge${l.condition === 'Used' ? ' used' : ''}">${l.condition}</span>
+                            <span class="save-btn" onclick="event.preventDefault();event.stopPropagation();toggleSave(${l.id},this)" title="Save">♡</span>
+                        </div>
+                        <div class="listing-body">
+                            <div class="listing-title">${escapeHTML(l.title)}</div>
+                            <div class="listing-price">₦${l.price.toLocaleString()}</div>
+                            <div class="listing-meta">
+                                ${l.seller && l.seller.verified_badge ? '<span class="verified-dot"></span> Verified ·' : ''}
+                                ${l.campus}
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+
+            } catch (err) {
+                listingGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <h2>Couldn't load listings</h2>
+                        <p>Check your connection and try again</p>
+                    </div>`;
+            }
+        }
+
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        async function toggleSave(listingId, el) {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            try {
+                if (el.classList.contains('saved')) {
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    el.classList.remove('saved');
+                    el.textContent = '♡';
+                } else {
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    el.classList.add('saved');
+                    el.textContent = '♥';
+                }
+            } catch (err) {
+                console.error('Save failed:', err);
+            }
+        }
+
+        // Initial load
+        fetchListings();
+    </script>
+</body>
+</html>

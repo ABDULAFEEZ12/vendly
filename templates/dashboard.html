@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --orange: #FF6B35;
+            --white: #ffffff;
+            --gray-50: #f8f9fb;
+            --gray-100: #f0f2f5;
+            --text-muted: #6b7b8d;
+            --border: #e8ecf0;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--navy);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--navy);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--orange);
+            text-decoration: none;
+        }
+        .logo span { color: white; font-weight: 700; }
+        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+        .nav-links a.active { color: var(--orange); }
+        .btn-logout {
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); background: rgba(255,0,0,0.1); }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .welcome-banner {
+            background: var(--navy);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .welcome-banner h1 { font-size: 1.5rem; font-weight: 800; }
+        .welcome-banner p { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.3rem; }
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: #e8551f; transform: translateY(-1px); }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .listing-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .listing-item:last-child { border-bottom: none; }
+        .listing-item-img {
+            width: 70px;
+            height: 70px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        .listing-item-info { flex: 1; }
+        .listing-item-info strong { font-size: 0.9rem; display: block; }
+        .listing-item-info span { font-size: 0.8rem; color: var(--text-muted); }
+        .listing-item-price {
+            font-weight: 800;
+            color: var(--orange);
+            font-size: 0.95rem;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .badge-active { background: #e8f5e9; color: #2e7d32; }
+        .badge-sold { background: #fce4ec; color: #c62828; }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+        .chat-item:hover { opacity: 0.8; }
+        .chat-item:last-child { border-bottom: none; }
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .chat-preview strong { font-size: 0.85rem; display: block; }
+        .chat-preview span { font-size: 0.75rem; color: var(--text-muted); }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-state p { font-size: 0.9rem; }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">VEND<span>LY</span></a>
+        <div class="nav-links">
+            <a href="/marketplace">Marketplace</a>
+            <a href="/chat">Messages</a>
+            <a href="/saved">Saved</a>
+            <a href="/dashboard" class="active">Dashboard</a>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-banner">
+            <div>
+                <h1 id="greeting">Welcome back 👋</h1>
+                <p id="user-info">Loading...</p>
+            </div>
+            <a href="/listings/new" class="btn-primary">+ New Listing</a>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- My Listings -->
+            <div class="card">
+                <h2>📦 My Listings</h2>
+                <div id="my-listings">
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>Loading your listings...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Chats -->
+            <div class="card">
+                <h2>💬 Recent Chats</h2>
+                <div id="recent-chats">
+                    <div class="empty-state">
+                        <div class="icon">💬</div>
+                        <p>Loading chats...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+
+    <script>
+        const API_BASE = '';
+
+        function getToken() {
+            return localStorage.getItem('vendly_token');
+        }
+        function clearToken() {
+            localStorage.removeItem('vendly_token');
+        }
+        function logout() {
+            clearToken();
+            window.location.href = '/login';
+        }
+
+        async function apiGet(url) {
+            const token = getToken();
+            const res = await fetch(API_BASE + url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.status === 401) { logout(); return null; }
+            return res.json();
+        }
+
+        async function loadDashboard() {
+            if (!getToken()) { window.location.href = '/login'; return; }
+
+            // Get user profile
+            const userRes = await apiGet('/api/auth/me');
+            if (!userRes) return;
+            const user = userRes.user;
+
+            document.getElementById('greeting').textContent = `Welcome back, ${user.full_name.split(' ')[0]} 👋`;
+            document.getElementById('user-info').textContent = `${user.school || 'LASU'} · ${user.department || ''}`;
+
+            // Get my listings
+            const listingsRes = await apiGet(`/api/listings/user/${user.id}`);
+            const listings = listingsRes || [];
+            const listingsEl = document.getElementById('my-listings');
+
+            if (listings.length === 0) {
+                listingsEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>You haven't listed anything yet.</p>
+                        <a href="/listings/new" class="btn-primary" style="display:inline-block; margin-top:1rem;">+ Create Your First Listing</a>
+                    </div>`;
+            } else {
+                listingsEl.innerHTML = listings.map(l => `
+                    <div class="listing-item">
+                        <div class="listing-item-img" style="background:#${l.category === 'Electronics' ? 'e8f0fe' : l.category === 'Books' ? 'fef2e7' : l.category === 'Fashion' ? 'f0f7f0' : 'f7edf8'};">${l.category === 'Electronics' ? '📱' : l.category === 'Books' ? '📚' : l.category === 'Fashion' ? '👟' : '📦'}</div>
+                        <div class="listing-item-info">
+                            <strong>${l.title}</strong>
+                            <span>${l.campus} · ${l.condition} · <span class="badge ${l.is_sold ? 'badge-sold' : 'badge-active'}">${l.is_sold ? 'Sold' : 'Active'}</span></span>
+                            <div style="margin-top:0.3rem;">
+                                <a href="/listing/${l.id}" style="font-size:0.75rem;color:var(--orange);margin-right:0.5rem;">View</a>
+                                <a href="/listings/${l.id}/edit" style="font-size:0.75rem;color:var(--navy);">Edit</a>
+                            </div>
+                        </div>
+                        <div class="listing-item-price">₦${l.price.toLocaleString()}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Get recent chats
+            const chatsRes = await apiGet('/api/chat/rooms');
+            const chats = chatsRes || [];
+            const chatsEl = document.getElementById('recent-chats');
+
+            if (chats.length === 0) {
+                chatsEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">💬</div>
+                        <p>No conversations yet.</p>
+                        <a href="/marketplace" style="font-size:0.85rem;color:var(--orange);">Browse items to start chatting</a>
+                    </div>`;
+            } else {
+                chatsEl.innerHTML = chats.slice(0, 6).map(c => `
+                    <a href="/chat/${c.room_id}" class="chat-item">
+                        <div class="chat-avatar" style="background:#${c.other_user.full_name.charCodeAt(0) % 2 === 0 ? 'e8f0fe' : 'fef2e7'};color:var(--navy);">${c.other_user.full_name[0]}</div>
+                        <div class="chat-preview">
+                            <strong>${c.other_user.full_name}</strong>
+                            <span>${c.listing.title} · ${c.last_message ? c.last_message.content : 'No messages yet'}</span>
+                        </div>
+                    </a>
+                `).join('');
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --navy-light: #152639;
+            --orange: #FF6B35;
+            --white: #ffffff;
+            --gray-50: #f8f9fb;
+            --gray-100: #f0f2f5;
+            --text-muted: #6b7b8d;
+            --text-dark: #0a121c;
+            --border: #e8ecf0;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--orange);
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+        .logo span {
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(13,27,42,0.04);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.3px;
+        }
+        .card .subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.4rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            background: var(--gray-50);
+            transition: all 0.2s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: var(--orange);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+        }
+        .form-group input::placeholder {
+            color: #b0bcc8;
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            font-size: 0.78rem;
+            color: var(--orange);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 0.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--orange);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+        }
+        .btn-submit:hover {
+            background: #e8551f;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(255,107,53,0.35);
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.8rem 0;
+            color: #c0c8d2;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .register-link {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .register-link a {
+            color: var(--orange);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 0.8rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        .alert.show {
+            display: block;
+        }
+
+        .campus-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(13,27,42,0.05);
+            color: var(--navy);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.35rem 0.9rem;
+            border-radius: 100px;
+            margin-bottom: 1.5rem;
+        }
+
+        footer-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-area">
+            <a href="/" class="logo">VEND<span>LY</span></a>
+        </div>
+
+        <div class="card">
+            <span class="campus-badge">📍 LASU</span>
+            <h2>Welcome back</h2>
+            <p class="subtitle">Log in to your Vendly account</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" placeholder="you@lasu.edu.ng" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+
+                <a href="#" class="forgot-link">Forgot password?</a>
+
+                <button type="submit" class="btn-submit">Log In</button>
+            </form>
+
+            <div class="divider">or</div>
+
+            <p class="register-link">
+                Don't have an account? <a href="/register">Create one</a>
+            </p>
+        </div>
+
+        <footer-text>&copy; 2026 Vendly · LASU's Student Marketplace</footer-text>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        const alertBox = document.getElementById('alert');
+
+        function getToken() {
+            return localStorage.getItem('vendly_token');
+        }
+        function setToken(token) {
+            localStorage.setItem('vendly_token', token);
+        }
+
+        function showAlert(msg) {
+            alertBox.textContent = msg;
+            alertBox.classList.add('show');
+            setTimeout(() => alertBox.classList.remove('show'), 4000);
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showAlert('Please fill in all fields');
+                return;
+            }
+
+            const btn = e.target.querySelector('button');
+            btn.textContent = 'Logging in...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(API_BASE + '/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.msg || 'Login failed');
+                }
+
+                setToken(data.access_token);
+                window.location.href = '/marketplace';
+
+            } catch (err) {
+                showAlert(err.message || 'Something went wrong. Try again.');
+                btn.textContent = 'Log In';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

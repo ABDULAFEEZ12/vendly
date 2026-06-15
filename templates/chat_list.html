@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --orange: #FF6B35;
+            --white: #ffffff;
+            --gray-50: #f8f9fb;
+            --gray-100: #f0f2f5;
+            --text-muted: #6b7b8d;
+            --border: #e8ecf0;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--navy);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--navy);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--orange);
+            text-decoration: none;
+        }
+        .logo span { color: white; font-weight: 700; }
+        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+        .nav-links a.active { color: var(--orange); }
+        .btn-logout {
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
+
+        .container {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        .page-header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -0.3px;
+        }
+        .page-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .chat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+        .chat-card:hover {
+            border-color: var(--orange);
+            box-shadow: 0 4px 12px rgba(13,27,42,0.04);
+            transform: translateY(-1px);
+        }
+
+        .chat-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-info .name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+        .chat-info .item {
+            font-size: 0.78rem;
+            color: var(--orange);
+            font-weight: 500;
+            margin-top: 1px;
+        }
+        .chat-info .preview {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 350px;
+        }
+
+        .chat-meta {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .chat-meta .price {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .chat-meta .time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .chat-meta .unread {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--orange);
+            border-radius: 50%;
+            margin-top: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+        .empty-state .icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        .empty-state h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: #e8551f; }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 500px) {
+            .chat-info .preview { max-width: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">VEND<span>LY</span></a>
+        <div class="nav-links">
+            <a href="/marketplace">Marketplace</a>
+            <a href="/chat" class="active">Messages</a>
+            <a href="/saved">Saved</a>
+            <a href="/dashboard">Dashboard</a>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>💬 Messages</h1>
+            <p>Your conversations with buyers and sellers</p>
+        </div>
+
+        <div id="chat-list" class="chat-list">
+            <!-- Populated by JS -->
+        </div>
+
+        <div id="empty-state" class="empty-state" style="display:none;">
+            <div class="icon">💬</div>
+            <h2>No conversations yet</h2>
+            <p>Start browsing listings and message a seller to begin.</p>
+            <a href="/marketplace" class="btn-primary">Browse Marketplace</a>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+
+    <script>
+        const API_BASE = '';
+
+        function getToken() {
+            return localStorage.getItem('vendly_token');
+        }
+        function clearToken() {
+            localStorage.removeItem('vendly_token');
+        }
+        function logout() {
+            clearToken();
+            window.location.href = '/login';
+        }
+
+        async function loadChats() {
+            const token = getToken();
+            if (!token) { window.location.href = '/login'; return; }
+
+            try {
+                const res = await fetch(API_BASE + '/api/chat/rooms', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.status === 401) { logout(); return; }
+
+                const rooms = await res.json();
+                const listEl = document.getElementById('chat-list');
+                const emptyEl = document.getElementById('empty-state');
+
+                if (!rooms || rooms.length === 0) {
+                    listEl.style.display = 'none';
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+
+                listEl.style.display = 'flex';
+                emptyEl.style.display = 'none';
+
+                const avatarColors = ['#e8f0fe', '#fef2e7', '#f0f7f0', '#fdf0f8', '#e8f5e9', '#fff3e0'];
+
+                listEl.innerHTML = rooms.map((room, i) => {
+                    const otherUser = room.other_user;
+                    const listing = room.listing;
+                    const lastMsg = room.last_message;
+                    const initials = otherUser.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    const avatarBg = avatarColors[i % avatarColors.length];
+                    const time = lastMsg ? timeAgo(new Date(lastMsg.created_at)) : '';
+
+                    return `
+                        <a href="/chat/${room.room_id}" class="chat-card">
+                            <div class="chat-avatar" style="background:${avatarBg};color:var(--navy);">
+                                ${initials}
+                            </div>
+                            <div class="chat-info">
+                                <div class="name">${otherUser.full_name} ${otherUser.verified_badge ? '✓' : ''}</div>
+                                <div class="item">${listing.title}</div>
+                                <div class="preview">${lastMsg ? lastMsg.content : 'Start a conversation...'}</div>
+                            </div>
+                            <div class="chat-meta">
+                                <div class="price">₦${listing.price.toLocaleString()}</div>
+                                <div class="time">${time}</div>
+                                ${false ? '<div class="unread"></div>' : ''}
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Failed to load chats:', err);
+            }
+        }
+
+        function timeAgo(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return 'now';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+            if (diff < 604800) return Math.floor(diff / 86400) + 'd';
+            return date.toLocaleDateString();
+        }
+
+        loadChats();
+    </script>
+</body>
+</html>

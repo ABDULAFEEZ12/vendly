@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Profile - Vendly{% endblock %}
+{% block content %}
+<div id="profile-container">
+  <!-- JS filled -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const userId = window.location.pathname.split('/')[2];
+  
+  async function loadProfile() {
+    try {
+      // Use public user endpoint
+      const res = await api.get(`/api/auth/user/${userId}`);
+      renderProfile(res.data);
+    } catch(e) {
+      document.getElementById('profile-container').innerHTML = '<p>User not found.</p>';
+    }
+  }
+
+  function renderProfile(user) {
+    const html = `
+      <div class="card" style="padding:2rem; text-align:center;">
+        <img src="${user.profile_picture || 'https://via.placeholder.com/150'}" 
+             style="width:120px; height:120px; border-radius:50%; object-fit:cover;">
+        <h1>${user.full_name} ${user.verified_badge ? '<span class="verified-badge">✓</span>' : ''}</h1>
+        <p>${user.school || ''} · ${user.department || ''} · ${user.level || ''}</p>
+        <p>Member since ${new Date(user.created_at).toLocaleDateString()}</p>
+      </div>
+      <h3 style="margin-top:2rem;">Listings</h3>
+      <div id="user-listings" class="listing-grid"></div>
+      <h3 style="margin-top:2rem;">Reviews</h3>
+      <div id="user-reviews"></div>
+    `;
+    document.getElementById('profile-container').innerHTML = html;
+    loadUserListings(user.id);
+    loadUserReviews(user.id);
+  }
+
+  async function loadUserListings(uid) {
+    try {
+      const res = await api.get(`/api/listings/user/${uid}`);
+      document.getElementById('user-listings').innerHTML = res.data.map(l => `
+        <div class="card listing-card" onclick="window.location.href='/listing/${l.id}'">
+          <img src="${l.images[0] || 'https://via.placeholder.com/300'}" alt="${l.title}">
+          <div class="card-body">
+            <h3>${l.title}</h3>
+            <p class="price">₦${l.price.toLocaleString()}</p>
+            <small>${l.campus} · ${l.condition}</small>
+          </div>
+        </div>
+      `).join('') || '<p>No listings yet.</p>';
+    } catch(e) {}
+  }
+
+  async function loadUserReviews(uid) {
+    try {
+      const res = await api.get(`/api/reviews/user/${uid}`);
+      document.getElementById('user-reviews').innerHTML = res.data.map(r => `
+        <div class="card" style="padding:1rem; margin-bottom:0.5rem;">
+          <strong>${r.reviewer_name}</strong> - ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}
+          <p>${r.comment}</p>
+          <small>${new Date(r.created_at).toLocaleDateString()}</small>
+        </div>
+      `).join('') || '<p>No reviews yet.</p>';
+    } catch(e) {}
+  }
+
+  loadProfile();
+</script>
+{% endblock %}
