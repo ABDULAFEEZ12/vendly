@@ -1,6 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
-
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -11,6 +8,7 @@ from flask_socketio import SocketIO
 from flask_mail import Mail
 from config import Config
 from models import db
+import os
 
 def create_app():
     app = Flask(__name__)
@@ -19,7 +17,7 @@ def create_app():
     db.init_app(app)
     jwt = JWTManager(app)
     mail = Mail(app)
-    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
     with app.app_context():
         import models
@@ -56,6 +54,10 @@ def create_app():
     @app.route('/')
     def index():
         return render_template('index.html')
+
+    @app.route('/health')
+    def health():
+        return {'status': 'ok'}, 200
 
     @app.route('/register')
     def register_page():
@@ -106,9 +108,10 @@ def create_app():
 app, socketio = create_app()
 
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
     print("=" * 55)
     print("  🚀  VENDLY - Student Marketplace")
-    print("  🌐  http://localhost:5000")
+    print(f"  🌐  http://0.0.0.0:{port}")
     print("  📍  Press Ctrl+C to stop")
     print("=" * 55)
-    socketio.run(app, debug=True, port=5000, use_reloader=False)
+    socketio.run(app, debug=False, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
