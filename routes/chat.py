@@ -66,6 +66,35 @@ def get_messages(room_id):
         'created_at': m.created_at.isoformat()
     } for m in messages])
 
+# ───────── NEW: Send regular text message ─────────
+@chat_bp.route('/rooms/<int:room_id>/send', methods=['POST'])
+@jwt_required()
+def send_message(room_id):
+    user_id = int(get_jwt_identity())
+    data = request.get_json()
+    content = data.get('content', '').strip()
+    
+    if not content:
+        return jsonify({'msg': 'Message cannot be empty'}), 400
+    
+    room = ChatRoom.query.get(room_id)
+    if not room:
+        return jsonify({'msg': 'Room not found'}), 404
+    
+    if user_id not in [room.buyer_id, room.seller_id]:
+        return jsonify({'msg': 'Unauthorized'}), 403
+    
+    msg = Message(
+        room_id=room_id,
+        sender_id=user_id,
+        type=MessageTypeEnum.TEXT,
+        content=content
+    )
+    db.session.add(msg)
+    db.session.commit()
+    
+    return jsonify(message_to_dict(msg)), 201
+
 @chat_bp.route('/rooms/<int:room_id>/offer', methods=['POST'])
 @jwt_required()
 def make_offer(room_id):
@@ -77,25 +106,22 @@ def make_offer(room_id):
     room = ChatRoom.query.get(room_id)
     if not room:
         return jsonify({'msg': 'Room not found'}), 404
-    # Determine if buyer or seller (both can offer/counter)
-    # Store offer
     offer = Offer(
         room_id=room_id,
         listing_id=room.listing_id,
-        buyer_id=user_id,  # who made the offer (could be buyer or seller)
+        buyer_id=user_id,
         amount=float(amount)
     )
     db.session.add(offer)
-    # Create message
     msg = Message(
         room_id=room_id,
         sender_id=user_id,
         type=MessageTypeEnum.OFFER,
-        content=f"Offer: ₦{amount:,.2f}"
+        content=f"💰 Offer: ₦{float(amount):,.2f}"
     )
     db.session.add(msg)
     db.session.commit()
-    return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)})
+    return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 201
 
 @chat_bp.route('/rooms/<int:room_id>/offer/<int:offer_id>', methods=['PUT'])
 @jwt_required()
@@ -113,18 +139,16 @@ def respond_offer(room_id, offer_id):
     if action == 'accept':
         offer.status = OfferStatusEnum.ACCEPTED
         msg_type = MessageTypeEnum.ACCEPT
-        content = f"Offer accepted at ₦{offer.amount:,.2f}"
+        content = f"✅ Offer accepted at ₦{offer.amount:,.2f}"
     elif action == 'reject':
         offer.status = OfferStatusEnum.REJECTED
         msg_type = MessageTypeEnum.REJECT
-        content = "Offer rejected"
+        content = "❌ Offer rejected"
     elif action == 'counter':
         new_amount = data.get('amount')
         if not new_amount:
             return jsonify({'msg': 'Counter amount required'}), 400
-        # Mark old offer as countered
         offer.status = OfferStatusEnum.COUNTERED
-        # Create new counter offer
         new_offer = Offer(
             room_id=room_id,
             listing_id=room.listing_id,
@@ -136,15 +160,14 @@ def respond_offer(room_id, offer_id):
             room_id=room_id,
             sender_id=user_id,
             type=MessageTypeEnum.COUNTER_OFFER,
-            content=f"Counter offer: ₦{new_amount:,.2f}"
+            content=f"🔄 Counter offer: ₦{float(new_amount):,.2f}"
         )
         db.session.add(msg)
         db.session.commit()
-        return jsonify({'offer': offer_to_dict(new_offer), 'message': message_to_dict(msg)})
+        return jsonify({'offer': offer_to_dict(new_offer), 'message': message_to_dict(msg)}), 200
     else:
-        return jsonify({'msg': 'Invalid action'}), 400
+        return jsonify({'msg': 'Invalid action. Use: accept, reject, or counter'}), 400
 
-    # Accept or reject
     msg = Message(
         room_id=room_id,
         sender_id=user_id,
@@ -153,7 +176,7 @@ def respond_offer(room_id, offer_id):
     )
     db.session.add(msg)
     db.session.commit()
-    return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)})
+    return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 200
 
 def offer_to_dict(o):
     return {
