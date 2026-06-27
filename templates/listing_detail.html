@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listing — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --orange: #FF6B35;
+            --white: #ffffff;
+            --gray-50: #f8f9fb;
+            --text-muted: #6b7b8d;
+            --border: #e8ecf0;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--navy);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: var(--navy);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--orange);
+            text-decoration: none;
+        }
+        .logo span { color: white; font-weight: 700; }
+        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .listing-detail {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+        .listing-layout {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .listing-images { flex: 1; min-width: 280px; }
+        .main-image {
+            width: 100%;
+            height: 350px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+        }
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+        .thumbnails {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .thumb:hover, .thumb.active { border-color: var(--orange); }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .listing-info { flex: 1; min-width: 250px; }
+        .listing-info h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .listing-price {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--orange);
+            margin-bottom: 0.75rem;
+        }
+        .listing-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .listing-description {
+            line-height: 1.7;
+            color: var(--navy);
+            margin-bottom: 1.5rem;
+        }
+        .seller-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+        }
+        .seller-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .seller-name { font-weight: 600; }
+        .verified-badge { color: #22c55e; font-size: 0.8rem; }
+        .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .btn-primary:hover { background: #e8551f; }
+        .btn-outline {
+            background: white;
+            color: var(--navy);
+            border: 1px solid var(--border);
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-outline:hover { border-color: var(--orange); }
+        .loading { text-align: center; padding: 4rem; color: var(--text-muted); }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        @media (max-width: 600px) {
+            .main-image { height: 250px; font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">VEND<span>LY</span></a>
+        <div class="nav-links">
+            <a href="/marketplace">Marketplace</a>
+            <a href="/dashboard">Dashboard</a>
+            <span id="auth-action"></span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="listing-detail" id="listing-content">
+            <div class="loading">⏳ Loading listing...</div>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+
+    <script>
+        const API_BASE = '';
+        const listingId = window.location.pathname.split('/')[2];
+
+        function getToken() {
+            return localStorage.getItem('vendly_token');
+        }
+
+        // Auth nav
+        (function() {
+            const token = getToken();
+            const authEl = document.getElementById('auth-action');
+            if (token) {
+                authEl.innerHTML = '<button class="btn-outline" style="color:white;border-color:rgba(255,255,255,0.2);background:transparent;cursor:pointer;" onclick="localStorage.removeItem(\'vendly_token\');window.location.reload();">Logout</button>';
+            } else {
+                authEl.innerHTML = '<a href="/login" class="btn-primary">Login</a>';
+            }
+        })();
+
+        const categoryEmojis = {
+            'Electronics': '📱', 'Fashion': '👟', 'Books': '📚', 'Food': '🍕', 'Services': '🔧', 'Other': '📦'
+        };
+        const categoryColors = {
+            'Electronics': '#e8f0fe', 'Fashion': '#f0f7f0', 'Books': '#fef2e7', 'Food': '#fff3e0', 'Services': '#f3e5f5', 'Other': '#eceff1'
+        };
+
+        async function loadListing() {
+            try {
+                const res = await fetch(`${API_BASE}/api/listings/${listingId}`);
+                if (!res.ok) throw new Error('Listing not found');
+                const l = await res.json();
+                const seller = l.seller || {};
+
+                const mainImg = l.images && l.images[0] 
+                    ? `<img src="${l.images[0]}" alt="${l.title}">` 
+                    : categoryEmojis[l.category] || '📦';
+
+                const thumbs = (l.images || []).map((img, i) => `
+                    <div class="thumb ${i === 0 ? 'active' : ''}" onclick="document.getElementById('main-img').innerHTML='<img src=\\'${img}\\' alt=\\'${l.title}\\'>'; document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+                        <img src="${img}" alt="Thumb ${i+1}">
+                    </div>
+                `).join('');
+
+                document.getElementById('listing-content').innerHTML = `
+                    <div class="listing-layout">
+                        <div class="listing-images">
+                            <div class="main-image" id="main-img" style="background:${categoryColors[l.category] || '#eef1f5'};">${mainImg}</div>
+                            <div class="thumbnails">${thumbs}</div>
+                        </div>
+                        <div class="listing-info">
+                            <h1>${l.title}</h1>
+                            <div class="listing-price">₦${l.price.toLocaleString()}</div>
+                            <div class="listing-meta">
+                                <span>📦 ${l.condition}</span>
+                                <span>📍 ${l.campus}</span>
+                                <span>📂 ${l.category}</span>
+                                ${l.is_sold ? '<span style="color:#e74c3c;font-weight:600;">🔴 Sold</span>' : '<span style="color:#22c55e;font-weight:600;">🟢 Available</span>'}
+                            </div>
+                            <p class="listing-description">${l.description || 'No description provided.'}</p>
+                            <div class="seller-card">
+                                <div class="seller-avatar" style="background:${categoryColors[l.category] || '#eef1f5'};">${(seller.full_name || '?')[0]}</div>
+                                <div>
+                                    <div class="seller-name">${seller.full_name || 'Unknown'} ${seller.verified_badge ? '<span class="verified-badge">✓ Verified</span>' : ''}</div>
+                                    <div style="font-size:0.8rem;color:var(--text-muted);">${seller.school || ''} · ${seller.department || ''}</div>
+                                </div>
+                            </div>
+                            <div class="btn-row">
+                                ${!l.is_sold ? `<button class="btn-primary" onclick="startChat()">💬 Message Seller</button>
+                                <button class="btn-outline" onclick="makeOffer()">💰 Make Offer</button>` : ''}
+                                <button class="btn-outline" onclick="toggleSave()" id="save-btn">❤️ Save</button>
+                            </div>
+                        </div>
+                    </div>`;
+            } catch (err) {
+                document.getElementById('listing-content').innerHTML = `<div class="loading">❌ Listing not found</div>`;
+            }
+        }
+
+        async function startChat() {
+            const token = getToken();
+            if (!token) { window.location.href = '/login'; return; }
+            try {
+                const res = await fetch(`${API_BASE}/api/chat/start`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ listing_id: listingId })
+                });
+                const data = await res.json();
+                window.location.href = `/chat/${data.room_id}`;
+            } catch (err) {
+                alert('Could not start chat');
+            }
+        }
+
+        function makeOffer() {
+            const token = getToken();
+            if (!token) { window.location.href = '/login'; return; }
+            const amount = prompt('Enter your offer amount (₦):');
+            if (!amount) return;
+            startChat().then(() => {
+                // Offer will be sent from chat page via URL param
+                window.location.href = window.location.href.replace('/listing/', '/chat/') + `?offer=${amount}`;
+            });
+        }
+
+        async function toggleSave() {
+            const token = getToken();
+            if (!token) { window.location.href = '/login'; return; }
+            const btn = document.getElementById('save-btn');
+            try {
+                await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                btn.textContent = '❤️ Saved!';
+                btn.style.color = '#e74c3c';
+            } catch (err) {
+                // Already saved, try unsave
+                try {
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    btn.textContent = '🤍 Save';
+                    btn.style.color = '';
+                } catch (e) {}
+            }
+        }
+
+        loadListing();
+    </script>
+</body>
+</html>
