@@ -5,8 +5,17 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///vendly.db')
+    
+    # Database - uses DATABASE_URL on Render, falls back to SQLite locally
+    database_url = os.getenv('DATABASE_URL', 'sqlite:///vendly.db')
+    
+    # Render provides PostgreSQL URL starting with postgres:// but SQLAlchemy needs postgresql://
+    if database_url and database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    
+    SQLALCHEMY_DATABASE_URI = database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-secret')
     JWT_ACCESS_TOKEN_EXPIRES = 86400 * 7  # 7 days
 
