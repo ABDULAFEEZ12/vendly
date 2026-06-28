@@ -14,7 +14,6 @@ def start_chat():
     listing = Listing.query.get(listing_id)
     if not listing:
         return jsonify({'msg': 'Listing not found'}), 404
-    # Check if room exists
     room = ChatRoom.query.filter_by(listing_id=listing_id, buyer_id=user_id).first()
     if room:
         return jsonify({'room_id': room.id})
@@ -58,15 +57,25 @@ def get_messages(room_id):
     if not room:
         return jsonify({'msg': 'Room not found'}), 404
     messages = Message.query.filter_by(room_id=room_id).order_by(Message.created_at.asc()).all()
-    return jsonify([{
-        'id': m.id,
-        'sender_id': m.sender_id,
-        'type': m.type.value,
-        'content': m.content,
-        'created_at': m.created_at.isoformat()
-    } for m in messages])
+    
+    result = []
+    for m in messages:
+        msg_dict = {
+            'id': m.id,
+            'sender_id': m.sender_id,
+            'type': m.type.value,
+            'content': m.content,
+            'created_at': m.created_at.isoformat()
+        }
+        # If this message is offer-related, attach the latest matching offer
+        if m.type in [MessageTypeEnum.OFFER, MessageTypeEnum.COUNTER_OFFER]:
+            offer = Offer.query.filter_by(room_id=room_id).order_by(Offer.created_at.desc()).first()
+            if offer:
+                msg_dict['offer'] = offer_to_dict(offer)
+        result.append(msg_dict)
+    
+    return jsonify(result)
 
-# ───────── NEW: Send regular text message ─────────
 @chat_bp.route('/rooms/<int:room_id>/send', methods=['POST'])
 @jwt_required()
 def send_message(room_id):
@@ -106,6 +115,9 @@ def make_offer(room_id):
     room = ChatRoom.query.get(room_id)
     if not room:
         return jsonify({'msg': 'Room not found'}), 404
+    if user_id not in [room.buyer_id, room.seller_id]:
+        return jsonify({'msg': 'Unauthorized'}), 403
+    
     offer = Offer(
         room_id=room_id,
         listing_id=room.listing_id,
@@ -113,6 +125,8 @@ def make_offer(room_id):
         amount=float(amount)
     )
     db.session.add(offer)
+    db.session.flush()  # Get the offer ID before creating message
+    
     msg = Message(
         room_id=room_id,
         sender_id=user_id,
@@ -121,6 +135,7 @@ def make_offer(room_id):
     )
     db.session.add(msg)
     db.session.commit()
+    
     return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 201
 
 @chat_bp.route('/rooms/<int:room_id>/offer/<int:offer_id>', methods=['PUT'])
@@ -128,12 +143,25 @@ def make_offer(room_id):
 def respond_offer(room_id, offer_id):
     user_id = int(get_jwt_identity())
     data = request.get_json()
-    action = data.get('action')  # accept, reject, counter
+    action = data.get('action')
+    
+    print(f"DEBUG respond_offer: room={room_id}, offer={offer_id}, user={user_id}, action={action}")
+    
     offer = Offer.query.get(offer_id)
-    if not offer or offer.room_id != room_id:
-        return jsonify({'msg': 'Invalid offer'}), 404
+    if not offer:
+        print(f"DEBUG: Offer {offer_id} not found in DB")
+        return jsonify({'msg': 'Offer not found'}), 404
+    
+    if offer.room_id != room_id:
+        print(f"DEBUG: Room mismatch - offer.room={offer.room_id}, requested={room_id}")
+        return jsonify({'msg': 'Offer does not belong to this room'}), 404
+    
     room = ChatRoom.query.get(room_id)
+    if not room:
+        return jsonify({'msg': 'Room not found'}), 404
+    
     if user_id not in [room.buyer_id, room.seller_id]:
+        print(f"DEBUG: Auth fail - user={user_id}, buyer={room.buyer_id}, seller={room.seller_id}")
         return jsonify({'msg': 'Unauthorized'}), 403
 
     if action == 'accept':
@@ -156,6 +184,7 @@ def respond_offer(room_id, offer_id):
             amount=float(new_amount)
         )
         db.session.add(new_offer)
+        db.session.flush()
         msg = Message(
             room_id=room_id,
             sender_id=user_id,
@@ -164,6 +193,7 @@ def respond_offer(room_id, offer_id):
         )
         db.session.add(msg)
         db.session.commit()
+        print(f"DEBUG: Counter offer {new_offer.id} created")
         return jsonify({'offer': offer_to_dict(new_offer), 'message': message_to_dict(msg)}), 200
     else:
         return jsonify({'msg': 'Invalid action. Use: accept, reject, or counter'}), 400
@@ -176,6 +206,8 @@ def respond_offer(room_id, offer_id):
     )
     db.session.add(msg)
     db.session.commit()
+    
+    print(f"DEBUG: Offer {offer.id} now {offer.status.value}")
     return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 200
 
 def offer_to_dict(o):
