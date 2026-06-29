@@ -44,7 +44,6 @@ def register():
         department=data.get('department'),
         level=data.get('level')
     )
-    # Determine verification method
     if data['email'].endswith('.edu.ng') or data.get('school'):
         user.verification_method = 'email'
     else:
@@ -53,14 +52,12 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    # Send verification email if method is email (only if mail is configured)
     if user.verification_method == 'email':
         try:
             serializer = get_serializer()
             token = serializer.dumps(user.email, salt='email-verify')
             verify_url = url_for('auth.verify_email', token=token, _external=True)
-            msg = Message('Vendly - Verify your email',
-                          recipients=[user.email])
+            msg = Message('Vendly - Verify your email', recipients=[user.email])
             msg.body = f'Please click this link to verify your email: {verify_url}'
             mail = current_app.extensions.get('mail')
             if mail:
@@ -150,3 +147,74 @@ def get_user(user_id):
     if not user:
         return jsonify({'msg': 'User not found'}), 404
     return jsonify(user_to_dict(user))
+
+# ---------- PASSWORD RESET ----------
+@auth_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email', '').strip()
+    
+    if not email:
+        return jsonify({'msg': 'Email is required'}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    
+    # Always return success to prevent email enumeration
+    if not user:
+        return jsonify({'msg': 'If that email exists, a reset link has been sent.'}), 200
+    
+    try:
+        serializer = get_serializer()
+        token = serializer.dumps(user.email, salt='password-reset')
+        reset_url = url_for('auth.reset_password_form', token=token, _external=True)
+        
+        msg = Message('Vendly - Reset Your Password', recipients=[user.email])
+        msg.body = f'''Hello {user.full_name},
+
+Someone requested a password reset for your Vendly account.
+
+Click the link below to reset your password:
+{reset_url}
+
+This link expires in 30 minutes.
+
+If you didn't request this, please ignore this email.
+
+— Vendly Team'''
+        
+        mail = current_app.extensions.get('mail')
+        if mail:
+            mail.send(msg)
+            print(f"Password reset email sent to {email}")
+    except Exception as e:
+        print(f"Password reset email error: {e}")
+    
+    return jsonify({'msg': 'If that email exists, a reset link has been sent.'}), 200
+
+
+@auth_bp.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    token = data.get('token', '')
+    new_password = data.get('password', '')
+    
+    if not token or not new_password:
+        return jsonify({'msg': 'Token and new password are required'}), 400
+    
+    if len(new_password) < 6:
+        return jsonify({'msg': 'Password must be at least 6 characters'}), 400
+    
+    serializer = get_serializer()
+    try:
+        email = serializer.loads(token, salt='password-reset', max_age=1800)
+    except:
+        return jsonify({'msg': 'Invalid or expired reset link. Please request a new one.'}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'msg': 'User not found'}), 404
+    
+    user.password_hash = generate_password_hash(new_password)
+    db.session.commit()
+    
+    return jsonify({'msg': 'Password reset successful! You can now log in.'}), 200
