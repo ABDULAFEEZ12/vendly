@@ -142,8 +142,11 @@
             transform: translateY(-1px);
             box-shadow: 0 6px 16px rgba(255,107,53,0.35);
         }
-        .btn-submit:active {
-            transform: translateY(0);
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
 
         .divider {
@@ -190,6 +193,11 @@
         }
         .alert.show {
             display: block;
+        }
+        .alert-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
         }
 
         .campus-badge {
@@ -238,9 +246,9 @@
                     <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
                 </div>
 
-                <a href="#" class="forgot-link">Forgot password?</a>
+                <a href="/forgot-password" class="forgot-link">Forgot password?</a>
 
-                <button type="submit" class="btn-submit">Log In</button>
+                <button type="submit" class="btn-submit" id="submit-btn">Log In</button>
             </form>
 
             <div class="divider">or</div>
@@ -264,10 +272,24 @@
             localStorage.setItem('vendly_token', token);
         }
 
-        function showAlert(msg) {
+        function showAlert(msg, type) {
             alertBox.textContent = msg;
-            alertBox.classList.add('show');
-            setTimeout(() => alertBox.classList.remove('show'), 4000);
+            alertBox.className = 'alert show';
+            if (type === 'info') {
+                alertBox.classList.add('alert-info');
+            }
+            setTimeout(() => {
+                alertBox.className = 'alert';
+            }, 5000);
+        }
+
+        // Show message from URL if redirected from another page
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('message');
+        if (msg) {
+            showAlert(decodeURIComponent(msg), 'info');
+            // Clean URL
+            window.history.replaceState({}, document.title, '/login');
         }
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -275,13 +297,13 @@
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
+            const btn = document.getElementById('submit-btn');
 
             if (!email || !password) {
                 showAlert('Please fill in all fields');
                 return;
             }
 
-            const btn = e.target.querySelector('button');
             btn.textContent = 'Logging in...';
             btn.disabled = true;
 
@@ -299,7 +321,11 @@
                 }
 
                 setToken(data.access_token);
-                window.location.href = '/marketplace';
+
+                // Redirect to return URL or marketplace
+                const returnUrl = sessionStorage.getItem('vendly_return_url') || '/marketplace';
+                sessionStorage.removeItem('vendly_return_url');
+                window.location.href = returnUrl;
 
             } catch (err) {
                 showAlert(err.message || 'Something went wrong. Try again.');
