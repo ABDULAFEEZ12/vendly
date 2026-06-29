@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
@@ -67,6 +67,15 @@ def create_app():
     def login_page():
         return render_template('login.html')
 
+    @app.route('/forgot-password')
+    def forgot_password_page():
+        return render_template('forgot_password.html')
+
+    @app.route('/reset-password')
+    def reset_password_page():
+        token = request.args.get('token', '')
+        return render_template('reset_password.html', token=token)
+
     @app.route('/marketplace')
     def marketplace_page():
         return render_template('marketplace.html')
@@ -98,15 +107,6 @@ def create_app():
     @app.route('/saved')
     def saved_page():
         return render_template('saved.html')
-        
-    @app.route('/forgot-password')
-def forgot_password_page():
-    return render_template('forgot_password.html')
-
-@app.route('/reset-password')
-def reset_password_form():
-    token = request.args.get('token', '')
-    return render_template('reset_password.html', token=token)
 
     @app.route('/dashboard')
     def dashboard_page():
