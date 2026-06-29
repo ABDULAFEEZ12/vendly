@@ -29,7 +29,7 @@
 
         .navbar {
             background: var(--navy);
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -44,13 +44,13 @@
             text-decoration: none;
         }
         .logo span { color: white; font-weight: 700; }
-        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+        .nav-links { display: flex; gap: 0.5rem; align-items: center; }
         .nav-links a {
             color: rgba(255,255,255,0.75);
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 500;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 8px;
             transition: all 0.2s;
         }
@@ -64,6 +64,63 @@
             padding: 0.6rem 1.3rem !important;
         }
         .btn-nav:hover { background: #e8551f !important; }
+
+        /* Profile avatar in navbar */
+        .nav-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-decoration: none;
+            padding: 0.3rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+        }
+        .nav-profile:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        .nav-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .nav-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .nav-profile-name {
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: none;
+        }
+        @media (min-width: 600px) {
+            .nav-profile-name { display: block; }
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
 
         .container {
             max-width: 1100px;
@@ -307,7 +364,7 @@
             <a href="/chat">Messages</a>
             <a href="/saved">Saved</a>
             <a href="/dashboard">Dashboard</a>
-            <span id="auth-action"></span>
+            <span id="auth-area"></span>
         </div>
     </nav>
 
@@ -368,16 +425,45 @@
         function getToken() {
             return localStorage.getItem('vendly_token');
         }
+        function clearToken() {
+            localStorage.removeItem('vendly_token');
+        }
+        function logout() {
+            clearToken();
+            window.location.href = '/login';
+        }
 
-        // Auth-aware nav
-        (function updateAuthNav() {
+        // Auth-aware nav with profile avatar
+        (async function updateNav() {
+            const authEl = document.getElementById('auth-area');
             const token = getToken();
-            const authEl = document.getElementById('auth-action');
+
             if (token) {
-                authEl.innerHTML = '<button class="btn-nav" style="background:transparent;border:1px solid rgba(255,255,255,0.2);cursor:pointer;font-family:Inter,sans-serif;font-size:0.8rem;" onclick="localStorage.removeItem(\'vendly_token\');window.location.reload();">Logout</button>';
-            } else {
-                authEl.innerHTML = '<a href="/login" class="btn-nav">Login</a>';
+                try {
+                    const res = await fetch(`${API_BASE}/api/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const user = data.user;
+                        authEl.innerHTML = `
+                            <a href="/profile/${user.id}" class="nav-profile" title="View Profile">
+                                <div class="nav-avatar">
+                                    ${user.profile_picture
+                                        ? `<img src="${user.profile_picture}" alt="${user.full_name}">`
+                                        : (user.full_name || '?')[0].toUpperCase()}
+                                </div>
+                                <span class="nav-profile-name">${(user.full_name || '').split(' ')[0]}</span>
+                            </a>
+                            <button class="btn-logout" onclick="logout()">Logout</button>
+                        `;
+                        return;
+                    }
+                } catch (e) {}
             }
+
+            // Not logged in
+            authEl.innerHTML = '<a href="/login" class="btn-nav">Login</a>';
         })();
 
         // State
@@ -496,7 +582,8 @@
         async function toggleSave(listingId, el) {
             const token = getToken();
             if (!token) {
-                window.location.href = '/login';
+                sessionStorage.setItem('vendly_return_url', window.location.href);
+                window.location.href = '/login?message=' + encodeURIComponent('Please log in to save items.');
                 return;
             }
             try {
