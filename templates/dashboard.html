@@ -29,7 +29,7 @@
 
         .navbar {
             background: var(--navy);
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -44,29 +44,75 @@
             text-decoration: none;
         }
         .logo span { color: white; font-weight: 700; }
-        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
+        .nav-links { display: flex; gap: 0.5rem; align-items: center; }
         .nav-links a {
             color: rgba(255,255,255,0.75);
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 500;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 8px;
             transition: all 0.2s;
         }
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
+
+        /* Profile avatar in navbar */
+        .nav-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            padding: 0.3rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+            margin-left: 0.5rem;
+        }
+        .nav-profile:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        .nav-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .nav-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .nav-profile-name {
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: none;
+        }
+        @media (min-width: 600px) {
+            .nav-profile-name { display: block; }
+        }
+
         .btn-logout {
             background: transparent;
             color: rgba(255,255,255,0.6);
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 8px;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             font-size: 0.8rem;
             font-weight: 500;
             transition: all 0.2s;
+            margin-left: 0.3rem;
         }
         .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); background: rgba(255,0,0,0.1); }
 
@@ -214,6 +260,13 @@
             <a href="/chat">Messages</a>
             <a href="/saved">Saved</a>
             <a href="/dashboard" class="active">Dashboard</a>
+
+            <!-- Profile avatar + name -->
+            <a href="/profile/me" class="nav-profile" id="nav-profile-link">
+                <div class="nav-avatar" id="nav-avatar">?</div>
+                <span class="nav-profile-name" id="nav-profile-name">Profile</span>
+            </a>
+
             <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
     </nav>
@@ -256,6 +309,7 @@
 
     <script>
         const API_BASE = '';
+        let currentUserId = null;
 
         function getToken() {
             return localStorage.getItem('vendly_token');
@@ -277,6 +331,25 @@
             return res.json();
         }
 
+        function updateNavProfile(user) {
+            currentUserId = user.id;
+            const avatarEl = document.getElementById('nav-avatar');
+            const nameEl = document.getElementById('nav-profile-name');
+            const linkEl = document.getElementById('nav-profile-link');
+
+            linkEl.href = `/profile/${user.id}`;
+
+            if (user.profile_picture) {
+                avatarEl.innerHTML = `<img src="${user.profile_picture}" alt="${user.full_name}">`;
+            } else {
+                avatarEl.textContent = (user.full_name || '?')[0].toUpperCase();
+                avatarEl.innerHTML = '';  // clear any img
+                avatarEl.textContent = (user.full_name || '?')[0].toUpperCase();
+            }
+
+            nameEl.textContent = user.full_name.split(' ')[0];
+        }
+
         async function loadDashboard() {
             if (!getToken()) { window.location.href = '/login'; return; }
 
@@ -284,6 +357,9 @@
             const userRes = await apiGet('/api/auth/me');
             if (!userRes) return;
             const user = userRes.user;
+
+            // Update nav profile
+            updateNavProfile(user);
 
             document.getElementById('greeting').textContent = `Welcome back, ${user.full_name.split(' ')[0]} 👋`;
             document.getElementById('user-info').textContent = `${user.school || 'LASU'} · ${user.department || ''}`;
