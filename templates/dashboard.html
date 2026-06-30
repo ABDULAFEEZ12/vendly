@@ -53,9 +53,27 @@
             padding: 0.5rem 0.8rem;
             border-radius: 8px;
             transition: all 0.2s;
+            position: relative;
         }
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
+
+        .nav-badge {
+            position: absolute;
+            top: -4px;
+            right: -8px;
+            background: var(--orange);
+            color: white;
+            font-size: 0.6rem;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            padding: 0 4px;
+        }
 
         .nav-profile {
             display: flex;
@@ -118,9 +136,9 @@
         }
 
         .welcome-banner {
-            background: var(--navy);
+            background: linear-gradient(135deg, var(--navy), #1a3448);
             color: white;
-            padding: 2rem;
+            padding: 2.5rem 2rem;
             border-radius: var(--radius);
             margin-bottom: 2rem;
             display: flex;
@@ -128,6 +146,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .welcome-banner h1 { font-size: 1.5rem; font-weight: 800; }
         .welcome-banner p { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.3rem; }
@@ -140,6 +159,7 @@
             text-decoration: none;
             font-size: 0.85rem;
             transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
         }
         .btn-primary:hover { background: #e8551f; transform: translateY(-1px); }
 
@@ -250,12 +270,15 @@
         <a href="/" class="logo">VEND<span>LY</span></a>
         <div class="nav-links">
             <a href="/marketplace">Marketplace</a>
-            <a href="/chat">Messages</a>
+            <a href="/chat">
+                Messages
+                <span class="nav-badge" id="msg-badge"></span>
+            </a>
             <a href="/saved">Saved</a>
             <a href="/dashboard" class="active">Dashboard</a>
-            <a href="/notifications" style="position:relative;color:white;text-decoration:none;font-size:1.2rem;padding:0.5rem;" title="Notifications">
+            <a href="/notifications">
                 🔔
-                <span id="notif-badge" style="display:none;position:absolute;top:0px;right:0px;background:var(--orange);color:white;font-size:0.6rem;min-width:18px;height:18px;border-radius:50%;align-items:center;justify-content:center;font-weight:700;padding:0 4px;"></span>
+                <span class="nav-badge" id="notif-badge"></span>
             </a>
             <a href="/profile/me" class="nav-profile" id="nav-profile-link">
                 <div class="nav-avatar" id="nav-avatar">?</div>
@@ -328,19 +351,27 @@
             nameEl.textContent = user.full_name.split(' ')[0];
         }
 
-        async function loadNotifBadge() {
+        function showBadge(el, count) {
+            if (count > 0) {
+                el.textContent = count > 99 ? '99+' : count;
+                el.style.display = 'flex';
+            } else {
+                el.style.display = 'none';
+            }
+        }
+
+        async function loadBadges() {
             const token = getToken();
             if (!token) return;
             try {
-                const res = await fetch(`${API_BASE}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                const badge = document.getElementById('notif-badge');
-                if (data.count > 0) {
-                    badge.textContent = data.count > 99 ? '99+' : data.count;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
+                const notifRes = await fetch(`${API_BASE}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const notifData = await notifRes.json();
+                showBadge(document.getElementById('notif-badge'), notifData.count);
+            } catch (e) {}
+            try {
+                const chatRes = await fetch(`${API_BASE}/api/chat/rooms`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const rooms = await chatRes.json();
+                showBadge(document.getElementById('msg-badge'), rooms ? rooms.length : 0);
             } catch (e) {}
         }
 
@@ -394,11 +425,12 @@
                     </a>
                 `).join('');
             }
+
+            loadBadges();
         }
 
         loadDashboard();
-        loadNotifBadge();
-        setInterval(loadNotifBadge, 30000);
+        setInterval(loadBadges, 30000);
     </script>
 </body>
 </html>
