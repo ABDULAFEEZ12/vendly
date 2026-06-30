@@ -38,6 +38,7 @@ def create_app():
     from routes.reviews import reviews_bp
     from routes.reports import reports_bp
     from routes.admin import admin_bp
+    from routes.notifications import notifications_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(listings_bp, url_prefix='/api/listings')
@@ -46,6 +47,7 @@ def create_app():
     app.register_blueprint(reviews_bp, url_prefix='/api/reviews')
     app.register_blueprint(reports_bp, url_prefix='/api/reports')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
+    app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
 
     from socket_events import register_socket_events
     register_socket_events(socketio)
@@ -118,6 +120,10 @@ def create_app():
     @app.route('/saved')
     def saved_page():
         return render_template('saved.html')
+
+    @app.route('/notifications')
+    def notifications_page():
+        return render_template('notifications.html')
 
     @app.route('/dashboard')
     def dashboard_page():
