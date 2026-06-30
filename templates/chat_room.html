@@ -136,7 +136,7 @@
     </nav>
 
     <div class="messages-container" id="messages">
-        <div class="empty-chat">⏳ Loading messages...</div>
+        <div class="empty-chat" id="chat-loader">💬<br><span style="font-size:0.85rem;">Loading conversation...</span></div>
     </div>
 
     <div class="chat-input-area">
@@ -158,38 +158,39 @@
         let listingId = null;
         let lastMessageId = 0;
         let pollingInterval = null;
+        let isLoading = false;
 
         async function init() {
             const token = getToken();
-
-            const meRes = await fetch(`${API_BASE}/api/auth/me`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const meData = await meRes.json();
-            currentUserId = meData.user.id;
-
-            const roomsRes = await fetch(`${API_BASE}/api/chat/rooms`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const rooms = await roomsRes.json();
-            const room = rooms.find(r => r.room_id == roomId);
-
-            if (room) {
-                document.getElementById('chat-name').textContent = room.other_user.full_name;
-                document.getElementById('chat-item').textContent = `${room.listing.title} · ₦${room.listing.price.toLocaleString()}`;
-                listingId = room.listing.id;
-            }
+            try {
+                // Run both requests in parallel for speed
+                const [meRes, roomsRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch(`${API_BASE}/api/chat/rooms`, { headers: { 'Authorization': `Bearer ${token}` } })
+                ]);
+                const meData = await meRes.json();
+                currentUserId = meData.user.id;
+                const rooms = await roomsRes.json();
+                const room = rooms.find(r => r.room_id == roomId);
+                if (room) {
+                    document.getElementById('chat-name').textContent = room.other_user.full_name;
+                    document.getElementById('chat-item').textContent = `${room.listing.title} · ₦${room.listing.price.toLocaleString()}`;
+                    listingId = room.listing.id;
+                }
+            } catch (e) {}
 
             await loadMessages();
-            pollingInterval = setInterval(loadMessages, 2000);
+            pollingInterval = setInterval(loadMessages, 3000);
 
             if (prefillOffer && listingId) {
-                setTimeout(() => sendOfferViaApi(prefillOffer), 500);
+                setTimeout(() => sendOfferViaApi(prefillOffer), 800);
                 window.history.replaceState({}, document.title, `/chat/${roomId}`);
             }
         }
 
         async function loadMessages() {
+            if (isLoading) return;
+            isLoading = true;
             try {
                 const token = getToken();
                 const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/messages`, {
@@ -197,12 +198,14 @@
                 });
                 const messages = await res.json();
                 const container = document.getElementById('messages');
+                const loader = document.getElementById('chat-loader');
                 const newMessages = messages.filter(m => m.id > lastMessageId);
 
+                if (messages.length > 0 && loader) {
+                    loader.style.display = 'none';
+                }
+
                 if (newMessages.length > 0) {
-                    if (container.querySelector('.empty-chat') && messages.length > 0) {
-                        container.innerHTML = '';
-                    }
                     newMessages.forEach(m => {
                         appendMessage(m);
                         lastMessageId = Math.max(lastMessageId, m.id);
@@ -212,15 +215,11 @@
             } catch (err) {
                 console.error('Polling error:', err);
             }
+            isLoading = false;
         }
 
         function appendMessage(msg) {
             const container = document.getElementById('messages');
-            if (container.querySelector('.empty-chat')) {
-                container.innerHTML = '';
-            }
-
-            // Don't duplicate messages
             if (document.getElementById(`msg-${msg.id}`)) return;
 
             const isMine = msg.sender_id == currentUserId;
@@ -291,7 +290,7 @@
 
             try {
                 const token = getToken();
-                await fetch(`${API_BASE}/api/chat/rooms/${roomId}/send`, {
+                const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/send`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -299,10 +298,15 @@
                     },
                     body: JSON.stringify({ content })
                 });
-                await loadMessages();
+                if (res.ok) {
+                    const msg = await res.json();
+                    // Instant display - add the message immediately
+                    appendMessage(msg);
+                    lastMessageId = Math.max(lastMessageId, msg.id);
+                    scrollToBottom();
+                }
             } catch (err) {
                 console.error('Send failed:', err);
-                alert('Failed to send message');
             }
 
             input.disabled = false;
@@ -328,7 +332,11 @@
                 });
 
                 if (res.ok) {
-                    await loadMessages();
+                    const data = await res.json();
+                    // Instant display
+                    appendMessage(data.message);
+                    lastMessageId = Math.max(lastMessageId, data.message.id);
+                    scrollToBottom();
                 } else {
                     const err = await res.json();
                     alert(err.msg || 'Offer failed');
@@ -339,7 +347,6 @@
         }
 
         async function respondOffer(offerId, action) {
-            console.log('respondOffer called:', offerId, action);
             try {
                 const token = getToken();
                 const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/offer/${offerId}`, {
@@ -352,16 +359,19 @@
                 });
 
                 const data = await res.json();
-                console.log('respondOffer response:', data);
-
                 if (res.ok) {
-                    await loadMessages();
+                    // Instant display
+                    appendMessage(data.message);
+                    lastMessageId = Math.max(lastMessageId, data.message.id);
+                    scrollToBottom();
+                    // Remove action buttons
+                    const actions = document.getElementById(`offer-actions-${offerId}`);
+                    if (actions) actions.style.display = 'none';
                 } else {
                     alert(data.msg || 'Failed to respond');
                 }
             } catch (err) {
                 console.error('Response failed:', err);
-                alert('Failed to respond to offer');
             }
         }
 
@@ -382,10 +392,12 @@
                     });
 
                     const data = await res.json();
-                    console.log('counterOffer response:', data);
-
                     if (res.ok) {
-                        await loadMessages();
+                        appendMessage(data.message);
+                        lastMessageId = Math.max(lastMessageId, data.message.id);
+                        scrollToBottom();
+                        const actions = document.getElementById(`offer-actions-${offerId}`);
+                        if (actions) actions.style.display = 'none';
                     } else {
                         alert(data.msg || 'Counter failed');
                     }
