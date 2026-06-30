@@ -2,334 +2,755 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
     <title>Saved Items — Vendly</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --navy: #0D1B2A;
-            --orange: #FF6B35;
-            --white: #ffffff;
-            --gray-50: #f8f9fb;
-            --gray-100: #f0f2f5;
-            --text-muted: #6b7b8d;
-            --border: #e8ecf0;
-            --radius: 14px;
-            --radius-sm: 10px;
+            --bg-deep: #050508;
+            --bg-base: #0a0a10;
+            --surface-elevated: #12121c;
+            --surface-glass: rgba(14, 14, 24, 0.75);
+            --surface-glass-heavy: rgba(10, 10, 18, 0.88);
+            --text-primary: #f2f2f7;
+            --text-secondary: #9a9ab0;
+            --text-tertiary: #5a5a70;
+            --accent: #ff5e3a;
+            --accent-soft: rgba(255, 94, 58, 0.15);
+            --accent-glow: rgba(255, 94, 58, 0.4);
+            --green: #2ecc71;
+            --green-soft: rgba(46, 204, 113, 0.15);
+            --blue: #5e9eff;
+            --blue-soft: rgba(94, 158, 255, 0.12);
+            --purple: #b98eff;
+            --purple-soft: rgba(185, 142, 255, 0.12);
+            --red: #ff4757;
+            --red-soft: rgba(255, 71, 87, 0.15);
+            --amber: #ffb43c;
+            --amber-soft: rgba(255, 180, 60, 0.12);
+            --border-glass: rgba(255, 255, 255, 0.07);
+            --border-active: rgba(255, 255, 255, 0.14);
+            --radius-sm: 14px;
+            --radius-md: 22px;
+            --radius-lg: 32px;
+            --radius-full: 999px;
+            --shadow-float: 0 20px 40px -20px rgba(0,0,0,0.7);
+            --shadow-glow: 0 0 30px rgba(255,94,58,0.25);
+            --ease-spring: cubic-bezier(0.22, 0.61, 0.36, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--navy);
-            min-height: 100vh;
+        html {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
 
-        .navbar {
-            background: var(--navy);
-            padding: 1rem 2rem;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: var(--safe-top);
+            padding-bottom: calc(90px + var(--safe-bottom));
+            position: relative;
+            isolation: isolate;
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 5%, rgba(255,94,58,0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(94,158,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(185,142,255,0.04) 0%, transparent 60%);
+            background-attachment: fixed;
+        }
+
+        /* ---------- HEADER ---------- */
+        .app-header {
             position: sticky;
             top: 0;
             z-index: 100;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border-bottom: 1px solid var(--border-glass);
+            padding: calc(16px + var(--safe-top)) 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.5);
         }
-        .logo {
-            font-size: 1.4rem;
+        .header-logo {
+            font-size: 1.3rem;
             font-weight: 900;
-            color: var(--orange);
+            letter-spacing: -0.03em;
             text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
-        .logo span { color: white; font-weight: 700; }
-        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
-        .nav-links a {
-            color: rgba(255,255,255,0.75);
+        .header-logo .accent {
+            color: var(--accent);
+            font-weight: 800;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .header-btn {
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.2s;
+            transition: all 0.25s var(--ease-smooth);
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
-        .nav-links a.active { color: var(--orange); }
+        .header-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-active);
+        }
+        .header-btn.active {
+            color: var(--accent);
+            background: var(--accent-soft);
+            border-color: rgba(255,94,58,0.3);
+        }
+        .header-btn:active {
+            transform: scale(0.95);
+        }
         .btn-logout {
             background: transparent;
-            color: rgba(255,255,255,0.6);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+            color: var(--text-tertiary);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 30px;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             font-size: 0.8rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-weight: 600;
+            transition: all 0.25s var(--ease-smooth);
+            white-space: nowrap;
         }
-        .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
-
-        .container {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
+        .btn-logout:hover {
+            color: var(--red);
+            border-color: rgba(255,71,87,0.3);
+        }
+        .btn-logout:active {
+            transform: scale(0.95);
         }
 
+        /* ---------- CONTAINER ---------- */
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 2;
+            padding: 24px 18px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 900px;
+                padding: 36px 28px 0;
+                gap: 32px;
+            }
+        }
+
+        /* ---------- PAGE HEADER ---------- */
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 16px;
+            margin-bottom: 4px;
         }
         .page-header h1 {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: var(--navy);
-            letter-spacing: -0.3px;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0ff 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .page-header p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 0.2rem;
-        }
-        .page-header .count {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            background: white;
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 100px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 4px;
             font-weight: 500;
         }
+        .page-header .count {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
         .page-header .count strong {
-            color: var(--orange);
+            color: var(--accent);
+            font-weight: 800;
         }
 
+        /* ---------- LISTING GRID ---------- */
         .listing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1.25rem;
+            gap: 16px;
+        }
+        @media (max-width: 550px) {
+            .listing-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
         }
 
+        /* ---------- LISTING CARD ---------- */
         .listing-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
             overflow: hidden;
             text-decoration: none;
             color: inherit;
-            transition: all 0.2s;
+            transition: all 0.3s var(--ease-spring);
             display: block;
             position: relative;
+            box-shadow: 0 4px 20px -8px rgba(0,0,0,0.3);
         }
         .listing-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(13,27,42,0.06);
-            border-color: var(--orange);
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 36px -12px rgba(0,0,0,0.6), 0 0 24px rgba(255,94,58,0.1);
+        }
+        .listing-card:active {
+            transform: scale(0.97);
         }
 
         .listing-img {
-            height: 160px;
+            height: 170px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: 3.5rem;
             position: relative;
+            background: var(--surface-elevated);
+            overflow: hidden;
         }
         .listing-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.4s var(--ease-smooth);
         }
+        .listing-card:hover .listing-img img {
+            transform: scale(1.05);
+        }
+        .listing-img .placeholder-emoji {
+            opacity: 0.4;
+            font-size: 3.5rem;
+        }
+
+        /* Condition Badge */
         .condition-badge {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--navy);
-            color: white;
-            font-size: 0.62rem;
+            top: 12px;
+            left: 12px;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(16px);
+            color: var(--text-primary);
+            font-size: 0.65rem;
             font-weight: 700;
-            padding: 3px 9px;
+            padding: 5px 12px;
             border-radius: 20px;
             text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: 1px solid var(--border-glass);
+            z-index: 2;
         }
-        .condition-badge.used { background: #5c6b7a; }
+        .condition-badge.used {
+            color: var(--text-secondary);
+        }
 
+        /* Remove Button */
         .remove-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 12px;
+            right: 12px;
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            background: white;
-            border: 1px solid var(--border);
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.2s;
-            z-index: 2;
-            color: #999;
+            transition: all 0.25s var(--ease-bounce);
+            z-index: 3;
+            color: var(--text-secondary);
         }
         .remove-btn:hover {
-            background: #fef2f2;
-            border-color: #e74c3c;
-            color: #e74c3c;
+            background: var(--red-soft);
+            border-color: var(--red);
+            color: var(--red);
+            box-shadow: 0 0 16px rgba(255,71,87,0.3);
+            transform: scale(1.1);
+        }
+        .remove-btn:active {
+            transform: scale(0.9);
         }
 
-        .listing-body { padding: 1rem; }
+        /* Listing Body */
+        .listing-body {
+            padding: 14px 16px;
+        }
         .listing-title {
             font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-            line-height: 1.3;
+            font-weight: 650;
+            margin-bottom: 6px;
+            line-height: 1.35;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
         .listing-price {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 800;
-            color: var(--orange);
-            margin-bottom: 0.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: -0.03em;
         }
         .listing-meta {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
+            gap: 8px;
+            font-size: 0.72rem;
+            color: var(--text-tertiary);
             flex-wrap: wrap;
         }
         .listing-meta .seller {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+            font-weight: 500;
         }
         .seller-avatar {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            font-size: 0.55rem;
+            font-size: 0.6rem;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            flex-shrink: 0;
+            border: 1px solid var(--border-glass);
         }
         .verified-dot {
-            width: 6px;
-            height: 6px;
-            background: #22c55e;
+            width: 7px;
+            height: 7px;
+            background: var(--green);
             border-radius: 50%;
+            box-shadow: 0 0 8px rgba(46,204,113,0.5);
+            flex-shrink: 0;
+        }
+        .meta-separator {
+            color: var(--text-tertiary);
+            opacity: 0.5;
         }
 
+        /* ---------- EMPTY STATE ---------- */
         .empty-state {
             text-align: center;
-            padding: 5rem 1rem;
+            padding: 80px 20px;
         }
         .empty-state .icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            font-size: 4.5rem;
+            margin-bottom: 16px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-14px); }
         }
         .empty-state h2 {
             font-size: 1.3rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
         }
         .empty-state p {
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-size: 0.9rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 28px;
             line-height: 1.6;
         }
         .btn-primary {
-            background: var(--orange);
+            background: var(--accent);
             color: white;
-            padding: 0.8rem 1.8rem;
-            border-radius: var(--radius-sm);
+            padding: 14px 28px;
+            border-radius: 30px;
             font-weight: 700;
             text-decoration: none;
             font-size: 0.9rem;
-            display: inline-block;
-            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s var(--ease-bounce);
+            box-shadow: 0 8px 24px var(--accent-glow);
+            font-family: 'Inter', sans-serif;
+            border: none;
+            cursor: pointer;
         }
-        .btn-primary:hover { background: #e8551f; transform: translateY(-1px); }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(255,94,58,0.5);
+        }
+        .btn-primary:active {
+            transform: scale(0.94);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
 
+        /* ---------- TOAST ---------- */
         .toast {
             position: fixed;
-            bottom: 2rem;
+            bottom: 100px;
             left: 50%;
-            transform: translateX(-50%);
-            background: var(--navy);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 100px;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 30px;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             z-index: 200;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: all 0.35s var(--ease-spring);
             pointer-events: none;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 12px 32px -8px rgba(0,0,0,0.7);
+            letter-spacing: -0.01em;
         }
-        .toast.show { opacity: 1; }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
 
-        footer {
+        /* ---------- LOADING SKELETON ---------- */
+        .skeleton-card {
+            background: var(--surface-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        .skeleton-img {
+            height: 170px;
+            background: linear-gradient(90deg, #1a1a2e 25%, #222240 50%, #1a1a2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+        .skeleton-body {
+            padding: 14px 16px;
+        }
+        .skeleton-line {
+            height: 14px;
+            background: linear-gradient(90deg, #1a1a2e 25%, #222240 50%, #1a1a2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 7px;
+            margin-bottom: 10px;
+        }
+        .skeleton-line.short {
+            width: 55%;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ---------- ERROR STATE ---------- */
+        .error-state {
             text-align: center;
-            padding: 2rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+        .error-state .icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
         }
 
-        @media (max-width: 500px) {
-            .listing-grid { grid-template-columns: repeat(2, 1fr); }
-            .listing-img { height: 120px; font-size: 2rem; }
-            .listing-title { font-size: 0.8rem; }
-            .listing-price { font-size: 0.95rem; }
+        /* ---------- BOTTOM NAV ---------- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 420px;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-radius: 40px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 120;
+            box-shadow: 0 20px 44px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04) inset;
+            gap: 4px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            color: var(--text-tertiary);
+            font-size: 0.7rem;
+            font-weight: 550;
+            transition: all 0.25s var(--ease-smooth);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 30px;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+            position: relative;
+        }
+        .nav-item.active {
+            color: var(--accent);
+            font-weight: 650;
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .nav-icon {
+            font-size: 1.4rem;
+            transition: transform 0.25s var(--ease-bounce);
+        }
+        .nav-item.active .nav-icon {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 6px 10px var(--accent-glow));
+        }
+        .floating-sell-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            box-shadow: 0 12px 30px var(--accent-glow), 0 0 0 4px rgba(255,94,58,0.2);
+            transition: all 0.25s var(--ease-bounce);
+            margin-top: -28px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .floating-sell-btn:active {
+            transform: scale(0.88);
+            box-shadow: 0 6px 16px var(--accent-glow);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 550px) {
+            .listing-img {
+                height: 130px;
+                font-size: 2.5rem;
+            }
+            .listing-img .placeholder-emoji {
+                font-size: 2.5rem;
+            }
+            .listing-title {
+                font-size: 0.8rem;
+            }
+            .listing-price {
+                font-size: 1rem;
+            }
+            .listing-body {
+                padding: 10px 12px;
+            }
+            .remove-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+                top: 8px;
+                right: 8px;
+            }
+            .condition-badge {
+                top: 8px;
+                left: 8px;
+                font-size: 0.6rem;
+                padding: 4px 10px;
+            }
+        }
+        @media (max-width: 380px) {
+            .header-btn.hide-mobile {
+                display: none;
+            }
+            .listing-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .listing-img {
+                height: 110px;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/" class="logo">VEND<span>LY</span></a>
-        <div class="nav-links">
-            <a href="/marketplace">Marketplace</a>
-            <a href="/chat">Messages</a>
-            <a href="/saved" class="active">Saved</a>
-            <a href="/dashboard">Dashboard</a>
-            <button class="btn-logout" onclick="logout()">Logout</button>
+    <!-- HEADER -->
+    <header class="app-header">
+        <a href="/" class="header-logo">VEND<span class="accent">LY</span></a>
+        <div class="header-actions">
+            <a href="/marketplace" class="header-btn">🏠 Home</a>
+            <a href="/chat" class="header-btn hide-mobile">💬 Messages</a>
+            <a href="/saved" class="header-btn active">❤️ Saved</a>
+            <a href="/dashboard" class="header-btn hide-mobile">📊 Dashboard</a>
+            <button class="btn-logout" onclick="logout()">🚪 Logout</button>
         </div>
-    </nav>
+    </header>
 
-    <div class="container">
+    <!-- MAIN CONTAINER -->
+    <div class="app-container">
+        <!-- PAGE HEADER -->
         <div class="page-header">
             <div>
                 <h1>❤️ Saved Items</h1>
                 <p>Your bookmarked listings — come back anytime</p>
             </div>
-            <div class="count" id="saved-count">Loading...</div>
+            <div class="count" id="saved-count">
+                <span>📦</span> Loading...
+            </div>
         </div>
 
+        <!-- LISTING GRID -->
         <div id="listing-grid" class="listing-grid">
-            <!-- Populated by JS -->
+            <!-- Skeleton loaders -->
+            <div class="skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                </div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                </div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                </div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-body">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line short"></div>
+                </div>
+            </div>
         </div>
 
+        <!-- EMPTY STATE -->
         <div id="empty-state" class="empty-state" style="display:none;">
-            <div class="icon">🔖</div>
+            <span class="icon">🔖</span>
             <h2>Nothing saved yet</h2>
             <p>Tap the heart on any listing to save it here.<br>Your favorites will be waiting for you.</p>
-            <a href="/marketplace" class="btn-primary">Browse Marketplace</a>
+            <a href="/marketplace" class="btn-primary">🔍 Browse Marketplace</a>
+        </div>
+
+        <!-- ERROR STATE -->
+        <div id="error-state" class="empty-state" style="display:none;">
+            <span class="icon">⚠️</span>
+            <h2>Couldn't load saved items</h2>
+            <p>Please check your connection and try again.</p>
+            <button class="btn-primary" onclick="loadSaved()">🔄 Try Again</button>
         </div>
     </div>
 
+    <!-- TOAST -->
     <div id="toast" class="toast"></div>
 
-    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <a href="/marketplace" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="/chat" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Chat</span>
+        </a>
+        <a href="/listings/new" class="floating-sell-btn">+</a>
+        <a href="/saved" class="nav-item active">
+            <span class="nav-icon">❤️</span>
+            <span>Saved</span>
+        </a>
+        <a href="/profile/me" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </a>
+    </div>
 
     <script>
         const API_BASE = '';
@@ -337,9 +758,11 @@
         function getToken() {
             return localStorage.getItem('vendly_token');
         }
+
         function clearToken() {
             localStorage.removeItem('vendly_token');
         }
+
         function logout() {
             clearToken();
             window.location.href = '/login';
@@ -355,71 +778,127 @@
         };
 
         const categoryColors = {
-            'Electronics': '#e8f0fe',
-            'Fashion': '#f0f7f0',
-            'Books': '#fef2e7',
-            'Food': '#fff3e0',
-            'Services': '#f3e5f5',
-            'Other': '#eceff1'
+            'Electronics': 'rgba(94,158,255,0.2)',
+            'Fashion': 'rgba(185,142,255,0.2)',
+            'Books': 'rgba(255,180,60,0.2)',
+            'Food': 'rgba(255,94,58,0.2)',
+            'Services': 'rgba(46,204,113,0.2)',
+            'Other': 'rgba(154,154,176,0.15)'
         };
+
+        const categoryAvatarColors = {
+            'Electronics': '#5e9eff',
+            'Fashion': '#b98eff',
+            'Books': '#ffb43c',
+            'Food': '#ff5e3a',
+            'Services': '#2ecc71',
+            'Other': '#9a9ab0'
+        };
+
+        let toastTimeout = null;
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
         }
 
         async function loadSaved() {
             const token = getToken();
-            if (!token) { window.location.href = '/login'; return; }
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
 
             const gridEl = document.getElementById('listing-grid');
             const emptyEl = document.getElementById('empty-state');
+            const errorEl = document.getElementById('error-state');
             const countEl = document.getElementById('saved-count');
+
+            // Reset states
+            emptyEl.style.display = 'none';
+            errorEl.style.display = 'none';
 
             try {
                 const res = await fetch(API_BASE + '/api/saved', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                if (res.status === 401) { logout(); return; }
+                if (res.status === 401) {
+                    logout();
+                    return;
+                }
+
+                if (!res.ok) {
+                    throw new Error('Failed to fetch saved items');
+                }
 
                 const listings = await res.json();
 
+                // Update count
+                const count = listings ? listings.length : 0;
+                countEl.innerHTML = `<span>📦</span> <strong>${count}</strong> saved`;
+
                 if (!listings || listings.length === 0) {
+                    gridEl.innerHTML = '';
                     gridEl.style.display = 'none';
                     emptyEl.style.display = 'block';
-                    countEl.innerHTML = '<strong>0</strong> saved';
                     return;
                 }
 
                 gridEl.style.display = 'grid';
                 emptyEl.style.display = 'none';
-                countEl.innerHTML = `<strong>${listings.length}</strong> saved`;
 
                 gridEl.innerHTML = listings.map(l => {
                     const seller = l.seller || {};
-                    const initials = (seller.full_name || '?')[0];
+                    const initials = (seller.full_name || '?')
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2);
+                    const catColor = categoryColors[l.category] || categoryColors['Other'];
+                    const avatarColor = categoryAvatarColors[l.category] || categoryAvatarColors['Other'];
+                    const imgSrc = l.images && l.images[0] ? escapeHTML(l.images[0]) : null;
+
                     return `
                         <a href="/listing/${l.id}" class="listing-card">
-                            <div class="listing-img" style="background:${categoryColors[l.category] || '#eef1f5'};">
-                                ${l.images && l.images[0]
-                                    ? `<img src="${l.images[0]}" alt="${escapeHTML(l.title)}" loading="lazy">`
-                                    : categoryEmojis[l.category] || '📦'}
-                                <span class="condition-badge${l.condition === 'Used' ? ' used' : ''}">${l.condition}</span>
+                            <div class="listing-img" style="background:${catColor};">
+                                ${imgSrc
+                                    ? `<img src="${imgSrc}" alt="${escapeHTML(l.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`
+                                    : ''}
+                                <span class="placeholder-emoji" style="${imgSrc ? 'display:none;' : ''}">${categoryEmojis[l.category] || '📦'}</span>
+                                <span class="condition-badge${l.condition === 'Used' ? ' used' : ''}">${escapeHTML(l.condition || 'N/A')}</span>
                             </div>
-                            <button class="remove-btn" onclick="event.preventDefault();event.stopPropagation();removeSaved(${l.id})" title="Remove from saved">✕</button>
+                            <button class="remove-btn" 
+                                    onclick="event.preventDefault();event.stopPropagation();removeSaved(${l.id})" 
+                                    title="Remove from saved"
+                                    aria-label="Remove from saved">✕</button>
                             <div class="listing-body">
                                 <div class="listing-title">${escapeHTML(l.title)}</div>
                                 <div class="listing-price">₦${l.price.toLocaleString()}</div>
                                 <div class="listing-meta">
                                     <span class="seller">
-                                        <span class="seller-avatar" style="background:${categoryColors[l.category] || '#eef1f5'};color:var(--navy);">${initials}</span>
+                                        <span class="seller-avatar" style="background:${catColor};color:${avatarColor};">
+                                            ${initials}
+                                        </span>
                                         ${escapeHTML(seller.full_name || 'Unknown')}
                                     </span>
-                                    ${seller.verified_badge ? '<span class="verified-dot"></span>' : ''}
-                                    · ${l.campus}
+                                    ${seller.verified_badge ? '<span class="verified-dot" title="Verified seller"></span>' : ''}
+                                    <span class="meta-separator">·</span>
+                                    <span>${escapeHTML(l.campus || 'Campus')}</span>
                                 </div>
                             </div>
                         </a>
@@ -428,18 +907,38 @@
 
             } catch (err) {
                 console.error('Failed to load saved:', err);
-                gridEl.innerHTML = '<div class="empty-state"><p>Failed to load. Please try again.</p></div>';
+                gridEl.style.display = 'none';
+                emptyEl.style.display = 'none';
+                errorEl.style.display = 'block';
+                countEl.innerHTML = '<span>📦</span> <strong>—</strong> saved';
             }
-        }
-
-        function escapeHTML(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
         }
 
         async function removeSaved(listingId) {
             const token = getToken();
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            // Optimistic UI update — remove card immediately
+            const card = document.querySelector(`.listing-card[href="/listing/${listingId}"]`);
+            if (card) {
+                card.style.transition = 'all 0.3s var(--ease-spring)';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    if (card.parentNode) card.remove();
+                    // Check if grid is now empty
+                    const gridEl = document.getElementById('listing-grid');
+                    if (gridEl.children.length === 0) {
+                        gridEl.style.display = 'none';
+                        document.getElementById('empty-state').style.display = 'block';
+                        document.getElementById('saved-count').innerHTML = '<span>📦</span> <strong>0</strong> saved';
+                    }
+                }, 300);
+            }
+
             try {
                 const res = await fetch(`${API_BASE}/api/saved/${listingId}`, {
                     method: 'DELETE',
@@ -447,14 +946,34 @@
                 });
 
                 if (res.ok) {
-                    showToast('Removed from saved');
-                    loadSaved();
+                    showToast('🗑️ Removed from saved');
+
+                    // Update count
+                    const countEl = document.getElementById('saved-count');
+                    const currentCount = parseInt(countEl.querySelector('strong')?.textContent || '0');
+                    const newCount = Math.max(0, currentCount - 1);
+                    countEl.innerHTML = `<span>📦</span> <strong>${newCount}</strong> saved`;
+
+                    // If last item was removed, show empty state
+                    if (newCount === 0) {
+                        document.getElementById('listing-grid').style.display = 'none';
+                        document.getElementById('empty-state').style.display = 'block';
+                    }
+                } else if (res.status === 401) {
+                    logout();
+                } else {
+                    // Revert on failure — reload
+                    showToast('⚠️ Failed to remove. Reloading...');
+                    setTimeout(() => loadSaved(), 1000);
                 }
             } catch (err) {
                 console.error('Remove failed:', err);
+                showToast('⚠️ Network error. Reloading...');
+                setTimeout(() => loadSaved(), 1000);
             }
         }
 
+        // Initialize
         loadSaved();
     </script>
 </body>
