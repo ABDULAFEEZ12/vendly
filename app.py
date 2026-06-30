@@ -30,7 +30,6 @@ def create_app():
             'upload_preset': app.config.get('CLOUDINARY_UPLOAD_PRESET', 'vendly-unsigned')
         }
 
-    # Register API blueprints
     from routes.auth import auth_bp
     from routes.listings import listings_bp
     from routes.saved import saved_bp
@@ -52,7 +51,6 @@ def create_app():
     from socket_events import register_socket_events
     register_socket_events(socketio)
 
-    # ---------- FRONTEND PAGE ROUTES ----------
     @app.route('/')
     def index():
         return render_template('index.html')
@@ -124,6 +122,14 @@ def create_app():
     @app.route('/notifications')
     def notifications_page():
         return render_template('notifications.html')
+
+    @app.route('/admin')
+    def admin_login_page():
+        return render_template('admin_login.html')
+
+    @app.route('/admin/dashboard')
+    def admin_dashboard_page():
+        return render_template('admin.html')
 
     @app.route('/dashboard')
     def dashboard_page():
