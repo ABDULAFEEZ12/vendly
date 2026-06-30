@@ -1,9 +1,20 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, ChatRoom, Message, Offer, Listing, MessageTypeEnum, OfferStatusEnum
+from models import db, ChatRoom, Message, Offer, Listing, MessageTypeEnum, OfferStatusEnum, Notification, NotificationTypeEnum
 from routes.auth import user_to_dict
 
 chat_bp = Blueprint('chat', __name__)
+
+def create_notification(user_id, notif_type, title, message, link):
+    try:
+        notif = Notification(
+            user_id=user_id, type=notif_type, title=title,
+            message=message, link=link
+        )
+        db.session.add(notif)
+        db.session.commit()
+    except Exception as e:
+        print(f"Notification error: {e}")
 
 @chat_bp.route('/start', methods=['POST'])
 @jwt_required()
@@ -57,7 +68,6 @@ def get_messages(room_id):
     if not room:
         return jsonify({'msg': 'Room not found'}), 404
     messages = Message.query.filter_by(room_id=room_id).order_by(Message.created_at.asc()).all()
-    
     result = []
     for m in messages:
         msg_dict = {
@@ -67,13 +77,11 @@ def get_messages(room_id):
             'content': m.content,
             'created_at': m.created_at.isoformat()
         }
-        # If this message is offer-related, attach the latest matching offer
         if m.type in [MessageTypeEnum.OFFER, MessageTypeEnum.COUNTER_OFFER]:
             offer = Offer.query.filter_by(room_id=room_id).order_by(Offer.created_at.desc()).first()
             if offer:
                 msg_dict['offer'] = offer_to_dict(offer)
         result.append(msg_dict)
-    
     return jsonify(result)
 
 @chat_bp.route('/rooms/<int:room_id>/send', methods=['POST'])
@@ -82,26 +90,19 @@ def send_message(room_id):
     user_id = int(get_jwt_identity())
     data = request.get_json()
     content = data.get('content', '').strip()
-    
     if not content:
         return jsonify({'msg': 'Message cannot be empty'}), 400
-    
     room = ChatRoom.query.get(room_id)
     if not room:
         return jsonify({'msg': 'Room not found'}), 404
-    
     if user_id not in [room.buyer_id, room.seller_id]:
         return jsonify({'msg': 'Unauthorized'}), 403
-    
-    msg = Message(
-        room_id=room_id,
-        sender_id=user_id,
-        type=MessageTypeEnum.TEXT,
-        content=content
-    )
+    msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.TEXT, content=content)
     db.session.add(msg)
     db.session.commit()
-    
+    other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
+    create_notification(other_user_id, NotificationTypeEnum.NEW_MESSAGE,
+        'New message', f'New message about {room.listing.title}', f'/chat/{room_id}')
     return jsonify(message_to_dict(msg)), 201
 
 @chat_bp.route('/rooms/<int:room_id>/offer', methods=['POST'])
@@ -117,25 +118,15 @@ def make_offer(room_id):
         return jsonify({'msg': 'Room not found'}), 404
     if user_id not in [room.buyer_id, room.seller_id]:
         return jsonify({'msg': 'Unauthorized'}), 403
-    
-    offer = Offer(
-        room_id=room_id,
-        listing_id=room.listing_id,
-        buyer_id=user_id,
-        amount=float(amount)
-    )
+    offer = Offer(room_id=room_id, listing_id=room.listing_id, buyer_id=user_id, amount=float(amount))
     db.session.add(offer)
-    db.session.flush()  # Get the offer ID before creating message
-    
-    msg = Message(
-        room_id=room_id,
-        sender_id=user_id,
-        type=MessageTypeEnum.OFFER,
-        content=f"💰 Offer: ₦{float(amount):,.2f}"
-    )
+    db.session.flush()
+    msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.OFFER, content=f"💰 Offer: ₦{float(amount):,.2f}")
     db.session.add(msg)
     db.session.commit()
-    
+    other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
+    create_notification(other_user_id, NotificationTypeEnum.NEW_OFFER,
+        'New offer', f'Offer of ₦{float(amount):,.2f} on {room.listing.title}', f'/chat/{room_id}')
     return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 201
 
 @chat_bp.route('/rooms/<int:room_id>/offer/<int:offer_id>', methods=['PUT'])
@@ -144,87 +135,51 @@ def respond_offer(room_id, offer_id):
     user_id = int(get_jwt_identity())
     data = request.get_json()
     action = data.get('action')
-    
-    print(f"DEBUG respond_offer: room={room_id}, offer={offer_id}, user={user_id}, action={action}")
-    
     offer = Offer.query.get(offer_id)
-    if not offer:
-        print(f"DEBUG: Offer {offer_id} not found in DB")
-        return jsonify({'msg': 'Offer not found'}), 404
-    
-    if offer.room_id != room_id:
-        print(f"DEBUG: Room mismatch - offer.room={offer.room_id}, requested={room_id}")
-        return jsonify({'msg': 'Offer does not belong to this room'}), 404
-    
+    if not offer or offer.room_id != room_id:
+        return jsonify({'msg': 'Invalid offer'}), 404
     room = ChatRoom.query.get(room_id)
-    if not room:
-        return jsonify({'msg': 'Room not found'}), 404
-    
     if user_id not in [room.buyer_id, room.seller_id]:
-        print(f"DEBUG: Auth fail - user={user_id}, buyer={room.buyer_id}, seller={room.seller_id}")
         return jsonify({'msg': 'Unauthorized'}), 403
+
+    other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
 
     if action == 'accept':
         offer.status = OfferStatusEnum.ACCEPTED
         msg_type = MessageTypeEnum.ACCEPT
         content = f"✅ Offer accepted at ₦{offer.amount:,.2f}"
+        create_notification(other_user_id, NotificationTypeEnum.OFFER_ACCEPTED,
+            'Offer accepted!', f'Your offer of ₦{offer.amount:,.2f} was accepted!', f'/chat/{room_id}')
     elif action == 'reject':
         offer.status = OfferStatusEnum.REJECTED
         msg_type = MessageTypeEnum.REJECT
         content = "❌ Offer rejected"
+        create_notification(other_user_id, NotificationTypeEnum.OFFER_REJECTED,
+            'Offer rejected', f'Your offer of ₦{offer.amount:,.2f} was rejected', f'/chat/{room_id}')
     elif action == 'counter':
         new_amount = data.get('amount')
         if not new_amount:
             return jsonify({'msg': 'Counter amount required'}), 400
         offer.status = OfferStatusEnum.COUNTERED
-        new_offer = Offer(
-            room_id=room_id,
-            listing_id=room.listing_id,
-            buyer_id=user_id,
-            amount=float(new_amount)
-        )
+        new_offer = Offer(room_id=room_id, listing_id=room.listing_id, buyer_id=user_id, amount=float(new_amount))
         db.session.add(new_offer)
         db.session.flush()
-        msg = Message(
-            room_id=room_id,
-            sender_id=user_id,
-            type=MessageTypeEnum.COUNTER_OFFER,
-            content=f"🔄 Counter offer: ₦{float(new_amount):,.2f}"
-        )
+        msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.COUNTER_OFFER, content=f"🔄 Counter offer: ₦{float(new_amount):,.2f}")
         db.session.add(msg)
         db.session.commit()
-        print(f"DEBUG: Counter offer {new_offer.id} created")
+        create_notification(other_user_id, NotificationTypeEnum.COUNTER_OFFER,
+            'Counter offer', f'Counter offer of ₦{float(new_amount):,.2f}', f'/chat/{room_id}')
         return jsonify({'offer': offer_to_dict(new_offer), 'message': message_to_dict(msg)}), 200
     else:
-        return jsonify({'msg': 'Invalid action. Use: accept, reject, or counter'}), 400
+        return jsonify({'msg': 'Invalid action'}), 400
 
-    msg = Message(
-        room_id=room_id,
-        sender_id=user_id,
-        type=msg_type,
-        content=content
-    )
+    msg = Message(room_id=room_id, sender_id=user_id, type=msg_type, content=content)
     db.session.add(msg)
     db.session.commit()
-    
-    print(f"DEBUG: Offer {offer.id} now {offer.status.value}")
     return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 200
 
 def offer_to_dict(o):
-    return {
-        'id': o.id,
-        'room_id': o.room_id,
-        'amount': o.amount,
-        'status': o.status.value,
-        'buyer_id': o.buyer_id,
-        'created_at': o.created_at.isoformat()
-    }
+    return {'id': o.id, 'room_id': o.room_id, 'amount': o.amount, 'status': o.status.value, 'buyer_id': o.buyer_id, 'created_at': o.created_at.isoformat()}
 
 def message_to_dict(m):
-    return {
-        'id': m.id,
-        'sender_id': m.sender_id,
-        'type': m.type.value,
-        'content': m.content,
-        'created_at': m.created_at.isoformat()
-    }
+    return {'id': m.id, 'sender_id': m.sender_id, 'type': m.type.value, 'content': m.content, 'created_at': m.created_at.isoformat()}
