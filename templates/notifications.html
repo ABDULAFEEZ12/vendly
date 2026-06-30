@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0D1B2A; --orange:#FF6B35; --white:#fff; --gray-50:#f8f9fb; --text-muted:#6b7b8d; --border:#e8ecf0; --radius:14px; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--gray-50); color:var(--navy); min-height:100vh; }
+        .navbar { background:var(--navy); padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+        .logo { font-size:1.4rem; font-weight:900; color:var(--orange); text-decoration:none; }
+        .logo span { color:white; font-weight:700; }
+        .nav-links a { color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.85rem; padding:0.5rem 1rem; border-radius:8px; }
+        .nav-links a:hover { color:white; background:rgba(255,255,255,0.08); }
+        .nav-links a.active { color:var(--orange); }
+        .container { max-width:700px; margin:2rem auto; padding:0 1.5rem; }
+        .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
+        .page-header h1 { font-size:1.6rem; font-weight:800; }
+        .btn-mark-all { background:var(--navy); color:white; border:none; padding:0.5rem 1rem; border-radius:20px; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.8rem; font-weight:600; }
+        .notification-card { background:white; border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.2rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:1rem; text-decoration:none; color:inherit; transition:all 0.2s; cursor:pointer; }
+        .notification-card:hover { border-color:var(--orange); }
+        .notification-card.unread { border-left:3px solid var(--orange); background:#fffaf7; }
+        .notif-icon { font-size:1.5rem; width:40px; text-align:center; flex-shrink:0; }
+        .notif-content { flex:1; }
+        .notif-title { font-weight:600; font-size:0.9rem; }
+        .notif-message { font-size:0.8rem; color:var(--text-muted); margin-top:2px; }
+        .notif-time { font-size:0.7rem; color:var(--text-muted); white-space:nowrap; }
+        .empty-state { text-align:center; padding:4rem; color:var(--text-muted); }
+        footer { text-align:center; padding:2rem; font-size:0.75rem; color:var(--text-muted); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">VEND<span>LY</span></a>
+        <div class="nav-links">
+            <a href="/marketplace">Marketplace</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="page-header">
+            <h1>🔔 Notifications</h1>
+            <button class="btn-mark-all" onclick="markAllRead()">Mark all read</button>
+        </div>
+        <div id="notif-list"></div>
+    </div>
+    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+    <script>
+        const API_BASE = '';
+        function getToken() { return localStorage.getItem('vendly_token'); }
+        if (!getToken()) { window.location.href = '/login'; }
+
+        const icons = { new_message:'💬', new_offer:'💰', offer_accepted:'✅', offer_rejected:'❌', counter_offer:'🔄' };
+
+        async function loadNotifications() {
+            const token = getToken();
+            const res = await fetch(`${API_BASE}/api/notifications`, { headers:{'Authorization':`Bearer ${token}`} });
+            const notifs = await res.json();
+            const el = document.getElementById('notif-list');
+            if (!notifs.length) {
+                el.innerHTML = '<div class="empty-state">🔔<p>No notifications yet</p></div>';
+                return;
+            }
+            el.innerHTML = notifs.map(n => `
+                <a href="${n.link || '#'}" class="notification-card ${n.is_read ? '' : 'unread'}" onclick="markRead(${n.id})">
+                    <div class="notif-icon">${icons[n.type] || '🔔'}</div>
+                    <div class="notif-content">
+                        <div class="notif-title">${n.title}</div>
+                        <div class="notif-message">${n.message}</div>
+                    </div>
+                    <div class="notif-time">${new Date(n.created_at).toLocaleDateString()}</div>
+                </a>
+            `).join('');
+        }
+
+        async function markRead(id) {
+            const token = getToken();
+            await fetch(`${API_BASE}/api/notifications/${id}/read`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+        }
+
+        async function markAllRead() {
+            const token = getToken();
+            await fetch(`${API_BASE}/api/notifications/read-all`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+            loadNotifications();
+        }
+
+        loadNotifications();
+    </script>
+</body>
+</html>
