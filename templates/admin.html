@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0D1B2A; --orange:#FF6B35; --white:#fff; --gray-50:#f8f9fb; --text-muted:#6b7b8d; --border:#e8ecf0; --radius:14px; --red:#ef4444; --green:#22c55e; --blue:#3b82f6; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--gray-50); color:var(--navy); min-height:100vh; }
+        .navbar { background:var(--navy); padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:1.4rem; font-weight:900; color:var(--orange); text-decoration:none; }
+        .logo span { color:white; font-weight:700; }
+        .nav-links { display:flex; gap:0.5rem; align-items:center; }
+        .nav-links a { color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.85rem; padding:0.5rem 1rem; border-radius:8px; }
+        .nav-links a:hover { color:white; }
+        .btn-logout { background:transparent; border:1px solid rgba(255,255,255,0.2); color:white; padding:0.4rem 0.8rem; border-radius:8px; cursor:pointer; font-family:'Inter',sans-serif; }
+        .container { max-width:1100px; margin:2rem auto; padding:0 1.5rem; }
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:2rem; }
+        .stat-card { background:white; border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .stat-card:hover { border-color:var(--orange); transform:translateY(-2px); }
+        .stat-card .num { font-size:2rem; font-weight:800; color:var(--navy); }
+        .stat-card .label { font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem; }
+        .section { background:white; border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem; }
+        .section h2 { font-size:1.1rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+        .table-wrapper { overflow-x:auto; }
+        .table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:600px; }
+        .table th { text-align:left; padding:0.7rem 0.8rem; border-bottom:2px solid var(--border); color:var(--text-muted); font-weight:600; white-space:nowrap; }
+        .table td { padding:0.7rem 0.8rem; border-bottom:1px solid var(--border); }
+        .table tr:hover { background:#fafafa; }
+        .btn-sm { padding:0.35rem 0.8rem; border-radius:20px; border:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.7rem; font-weight:600; white-space:nowrap; transition:all 0.15s; }
+        .btn-approve { background:var(--green); color:white; }
+        .btn-approve:hover { background:#16a34a; }
+        .btn-verify { background:var(--blue); color:white; }
+        .btn-verify:hover { background:#2563eb; }
+        .btn-danger { background:var(--red); color:white; }
+        .btn-danger:hover { background:#dc2626; }
+        .btn-outline { background:white; border:1px solid var(--border); color:var(--navy); }
+        .btn-outline:hover { border-color:var(--orange); }
+        .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.65rem; font-weight:700; }
+        .badge-yes { background:#e8f5e9; color:#2e7d32; }
+        .badge-no { background:#fef2f2; color:#c62828; cursor:pointer; }
+        .badge-no:hover { background:#fecaca; }
+        .badge-active { background:#e8f5e9; color:#2e7d32; }
+        .badge-sold { background:#fce4ec; color:#c62828; }
+        .loading { text-align:center; padding:3rem; color:var(--text-muted); }
+        .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); background:var(--navy); color:white; padding:0.8rem 1.5rem; border-radius:100px; font-size:0.85rem; z-index:200; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+        .toast.show { opacity:1; }
+        footer { text-align:center; padding:1.5rem; font-size:0.75rem; color:var(--text-muted); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">VEND<span>LY</span> · Admin</a>
+        <div class="nav-links">
+            <a href="/marketplace">Marketplace</a>
+            <a href="/dashboard">Dashboard</a>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stats-grid" id="stats">
+            <div class="stat-card"><div class="num">...</div><div class="label">Total Users</div></div>
+            <div class="stat-card"><div class="num">...</div><div class="label">Active Listings</div></div>
+            <div class="stat-card"><div class="num">...</div><div class="label">Pending Verifications</div></div>
+            <div class="stat-card"><div class="num">...</div><div class="label">Reports</div></div>
+        </div>
+
+        <!-- Pending Verifications (Student ID uploads) -->
+        <div class="section">
+            <h2>🆔 Pending Student ID Verifications</h2>
+            <div class="table-wrapper" id="verifications"><div class="loading">Loading...</div></div>
+        </div>
+
+        <!-- Reported Listings -->
+        <div class="section">
+            <h2>🚩 Reported Listings</h2>
+            <div class="table-wrapper" id="reports"><div class="loading">Loading...</div></div>
+        </div>
+
+        <!-- All Users with full management -->
+        <div class="section">
+            <h2>👥 All Users</h2>
+            <div class="table-wrapper" id="users"><div class="loading">Loading...</div></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <footer>&copy; 2026 Vendly · Admin Panel</footer>
+
+    <script>
+        const API_BASE = '';
+        function getToken() { return localStorage.getItem('admin_token'); }
+        function logout() { localStorage.removeItem('admin_token'); window.location.href = '/admin'; }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        async function apiGet(url) {
+            const token = getToken();
+            if (!token) { window.location.href = '/admin'; return null; }
+            const res = await fetch(`${API_BASE}${url}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.status === 401) { localStorage.removeItem('admin_token'); window.location.href = '/admin'; return null; }
+            return res.json();
+        }
+
+        async function apiPost(url) {
+            const token = getToken();
+            const res = await fetch(`${API_BASE}${url}`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+            return res.json();
+        }
+
+        async function loadStats() {
+            const data = await apiGet('/api/admin/stats');
+            if (!data) return;
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card"><div class="num">${data.total_users}</div><div class="label">Total Users</div></div>
+                <div class="stat-card"><div class="num">${data.active_listings}</div><div class="label">Active Listings</div></div>
+                <div class="stat-card"><div class="num" style="color:var(--orange);">${data.pending_verifications}</div><div class="label">Pending Verifications</div></div>
+                <div class="stat-card"><div class="num" style="color:var(--red);">${data.total_reports}</div><div class="label">Reports</div></div>`;
+        }
+
+        async function loadVerifications() {
+            const users = await apiGet('/api/admin/pending-verifications');
+            if (!users) return;
+            const el = document.getElementById('verifications');
+            if (!users.length) { el.innerHTML = '<p style="color:var(--text-muted);padding:1rem;">No pending verifications ✅</p>'; return; }
+            el.innerHTML = `<table class="table"><thead><tr><th>Name</th><th>Email</th><th>School</th><th>Student ID</th><th>Action</th></tr></thead><tbody>
+                ${users.map(u => `<tr><td>${u.full_name}</td><td>${u.email}</td><td>${u.school||'-'}</td>
+                <td>${u.student_id_url?`<a href="${u.student_id_url}" target="_blank" style="color:var(--blue);">View ID</a>`:'<span style="color:var(--text-muted);">No upload</span>'}</td>
+                <td><button class="btn-sm btn-approve" onclick="approveStudent(${u.id})">✅ Approve</button></td></tr>`).join('')}</tbody></table>`;
+        }
+
+        async function loadReports() {
+            const reports = await apiGet('/api/admin/reports');
+            if (!reports) return;
+            const el = document.getElementById('reports');
+            if (!reports.length) { el.innerHTML = '<p style="color:var(--text-muted);padding:1rem;">No reports ✅</p>'; return; }
+            el.innerHTML = `<table class="table"><thead><tr><th>Listing</th><th>Reported by</th><th>Reason</th><th>Actions</th></tr></thead><tbody>
+                ${reports.map(r => `<tr><td><a href="/listing/${r.listing_id}" style="color:var(--navy);">${r.listing_title}</a></td><td>${r.reporter_email}</td><td>${r.reason}</td>
+                <td style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                    <button class="btn-sm btn-danger" onclick="removeListing(${r.listing_id})">🗑 Remove</button>
+                    <button class="btn-sm btn-outline" onclick="dismissReport(${r.id})">Dismiss</button>
+                </td></tr>`).join('')}</tbody></table>`;
+        }
+
+        async function loadUsers() {
+            const users = await apiGet('/api/admin/users');
+            if (!users) return;
+            const el = document.getElementById('users');
+            el.innerHTML = `<table class="table"><thead><tr><th>Name</th><th>Email</th><th>School</th><th>Verified</th><th>Joined</th><th>Actions</th></tr></thead><tbody>
+                ${users.map(u => `<tr>
+                    <td><a href="/profile/${u.id}" style="color:var(--navy);font-weight:600;">${u.full_name}</a></td>
+                    <td>${u.email}</td>
+                    <td>${u.school||'-'}</td>
+                    <td>
+                        ${u.verified_badge 
+                            ? '<span class="badge badge-yes">✅ Yes</span>' 
+                            : `<span class="badge badge-no" onclick="verifyUser(${u.id})" title="Click to verify">❌ No — Tap to Verify</span>`}
+                    </td>
+                    <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                    <td style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                        ${!u.verified_badge ? `<button class="btn-sm btn-verify" onclick="verifyUser(${u.id})">✓ Verify</button>` : ''}
+                        <button class="btn-sm btn-outline" onclick="window.location.href='/profile/${u.id}'">👤 View</button>
+                    </td></tr>`).join('')}</tbody></table>`;
+        }
+
+        // ----- ACTIONS -----
+        async function approveStudent(userId) {
+            await apiPost(`/api/admin/approve-student/${userId}`);
+            showToast('✅ Student verified & badge granted!');
+            loadVerifications(); loadUsers(); loadStats();
+        }
+
+        async function verifyUser(userId) {
+            if (!confirm('Verify this user and grant them a verified badge?')) return;
+            await apiPost(`/api/admin/approve-student/${userId}`);
+            showToast('✅ User verified successfully!');
+            loadUsers(); loadStats();
+        }
+
+        async function removeListing(listingId) {
+            if (!confirm('Are you sure you want to remove this listing? This cannot be undone.')) return;
+            await apiPost(`/api/admin/listings/${listingId}/remove`);
+            showToast('🗑 Listing removed!');
+            loadReports(); loadStats();
+        }
+
+        async function dismissReport(reportId) {
+            await apiPost(`/api/admin/reports/${reportId}/dismiss`);
+            showToast('Report dismissed');
+            loadReports(); loadStats();
+        }
+
+        // Initial load
+        loadStats();
+        loadVerifications();
+        loadReports();
+        loadUsers();
+    </script>
+</body>
+</html>

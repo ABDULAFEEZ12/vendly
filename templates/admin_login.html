@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0D1B2A; --orange:#FF6B35; --white:#fff; --gray-50:#f8f9fb; --text-muted:#6b7b8d; --border:#e8ecf0; --radius:14px; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--navy); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+        .card { background:white; border-radius:var(--radius); padding:2.5rem 2rem; width:100%; max-width:400px; box-shadow:0 20px 40px rgba(0,0,0,0.3); }
+        .card h1 { font-size:1.5rem; font-weight:800; color:var(--navy); margin-bottom:0.5rem; }
+        .card p { color:var(--text-muted); font-size:0.85rem; margin-bottom:2rem; }
+        .form-group { margin-bottom:1.2rem; }
+        .form-group label { display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.3rem; color:var(--navy); }
+        .form-group input { width:100%; padding:0.8rem; border:1px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:0.9rem; }
+        .form-group input:focus { border-color:var(--orange); outline:none; box-shadow:0 0 0 3px rgba(255,107,53,0.1); }
+        .btn { width:100%; padding:0.85rem; background:var(--navy); color:white; border:none; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+        .btn:hover { background:#152639; }
+        .alert { padding:0.7rem; border-radius:8px; font-size:0.8rem; margin-bottom:1rem; display:none; }
+        .alert-error { background:#fef2f2; color:#c62828; border:1px solid #fecaca; }
+        .alert.show { display:block; }
+        .shield { text-align:center; font-size:3rem; margin-bottom:1rem; }
+        .back-link { text-align:center; margin-top:1.5rem; }
+        .back-link a { color:var(--text-muted); font-size:0.8rem; text-decoration:none; }
+        .back-link a:hover { color:var(--orange); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="shield">🛡️</div>
+        <h1>Admin Login</h1>
+        <p>Enter your credentials to access the admin panel.</p>
+        <div id="alert" class="alert"></div>
+        <form id="login-form">
+            <div class="form-group"><label>Email</label><input type="email" id="email" placeholder="admin@vendly.com" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="password" placeholder="Enter admin password" required></div>
+            <button type="submit" class="btn">Log In</button>
+        </form>
+        <div class="back-link"><a href="/">← Back to Vendly</a></div>
+    </div>
+    <script>
+        const API_BASE = '';
+        const alertBox = document.getElementById('alert');
+        function showAlert(msg) { alertBox.textContent = msg; alertBox.className = 'alert alert-error show'; }
+        (async function() {
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                const res = await fetch(`${API_BASE}/api/admin/check`, { headers:{'Authorization':`Bearer ${token}`} });
+                const data = await res.json();
+                if (data.valid) window.location.href = '/admin/dashboard';
+            }
+        })();
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = e.target.querySelector('button');
+            btn.textContent = 'Logging in...'; btn.disabled = true;
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password}) });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.msg || 'Login failed');
+                localStorage.setItem('admin_token', data.token);
+                window.location.href = '/admin/dashboard';
+            } catch (err) {
+                showAlert(err.message || 'Invalid credentials');
+                btn.textContent = 'Log In'; btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
