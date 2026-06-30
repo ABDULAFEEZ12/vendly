@@ -43,18 +43,37 @@
         /* ---------- NAVBAR ---------- */
         .navbar {
             background: var(--navy);
-            padding: calc(0.8rem + var(--safe-top)) 2rem 0.8rem;
+            padding: calc(0.8rem + var(--safe-top)) 1rem 0.8rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 0.75rem;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 20px rgba(0,0,0,0.2);
         }
-        .logo { font-size: 1.4rem; font-weight: 900; color: var(--orange); text-decoration: none; min-height: 44px; display: flex; align-items: center; }
+        .logo {
+            font-size: 1.4rem; font-weight: 900; color: var(--orange); text-decoration: none;
+            min-height: 44px; display: flex; align-items: center; flex-shrink: 0;
+        }
         .logo span { color: white; font-weight: 700; }
-        .nav-links { display: flex; gap: 0.5rem; align-items: center; }
+
+        /* CHANGE: Horizontally scrollable nav links — smooth momentum scroll on iOS */
+        .nav-scroll {
+            flex: 1;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+            overscroll-behavior-x: contain;
+            padding-bottom: 2px; /* space for scrollbar on some browsers */
+        }
+        .nav-scroll::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+        .nav-links {
+            display: flex; gap: 0.5rem; align-items: center;
+            white-space: nowrap;
+        }
         .nav-links a {
             color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.85rem;
             font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px;
@@ -65,18 +84,21 @@
             min-width: 44px; min-height: 44px;
             display: flex; align-items: center; justify-content: center;
             touch-action: manipulation;
+            flex-shrink: 0;
         }
         .nav-links a:active { transform: scale(0.96); opacity: 0.8; background: rgba(255,255,255,0.12); }
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
-        .btn-nav { background: var(--orange); color: white !important; font-weight: 600; border-radius: 8px; padding: 0.6rem 1.3rem !important; }
-        .btn-nav:active { transform: scale(0.96); opacity: 0.85; }
-        .btn-nav:hover { background: #e8551f !important; }
 
         .nav-badge {
             position: absolute; top: -4px; right: -8px; background: var(--orange); color: white;
             font-size: 0.6rem; min-width: 18px; height: 18px; border-radius: 50%;
             display: none; align-items: center; justify-content: center; font-weight: 700; padding: 0 4px;
+        }
+
+        /* CHANGE: Nav right section — profile + logout, fixed to right */
+        .nav-right {
+            display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;
         }
 
         .nav-profile {
@@ -108,6 +130,13 @@
         }
         .btn-logout:active { transform: scale(0.94); opacity: 0.7; }
         .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
+
+        .btn-nav {
+            background: var(--orange); color: white !important; font-weight: 600;
+            border-radius: 8px; padding: 0.6rem 1.3rem !important; flex-shrink: 0;
+        }
+        .btn-nav:active { transform: scale(0.96); opacity: 0.85; }
+        .btn-nav:hover { background: #e8551f !important; }
 
         /* ---------- CONTAINER ---------- */
         .container { max-width: 1100px; margin: 0 auto; padding: clamp(1rem, 3vw, 1.5rem); }
@@ -222,8 +251,6 @@
         }
         .save-btn:active { transform: scale(0.85); }
         .save-btn.saved { color: #e74c3c; border-color: #e74c3c; }
-        /* CHANGE: single keyframe bounce instead of competing inline-style transform —
-           prevents the :active scale and the "bounce" from fighting each other */
         .save-btn.bounce { animation: saveBounce 0.3s var(--ease-soft); }
         @keyframes saveBounce {
             0% { transform: scale(1); }
@@ -281,20 +308,25 @@
     </style>
 </head>
 <body>
+    <!-- CHANGE: Navbar with scrollable links + fixed right section -->
     <nav class="navbar">
         <a href="/" class="logo">VEND<span>LY</span></a>
-        <div class="nav-links">
-            <a href="/marketplace" class="active">Marketplace</a>
-            <a href="/chat">
-                Messages
-                <span class="nav-badge" id="msg-badge"></span>
-            </a>
-            <a href="/saved">Saved</a>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/notifications">
-                🔔
-                <span class="nav-badge" id="notif-badge"></span>
-            </a>
+        <div class="nav-scroll">
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/marketplace" class="active">Marketplace</a>
+                <a href="/chat">
+                    Messages
+                    <span class="nav-badge" id="msg-badge"></span>
+                </a>
+                <a href="/saved">Saved</a>
+                <a href="/notifications">
+                    🔔
+                    <span class="nav-badge" id="notif-badge"></span>
+                </a>
+            </div>
+        </div>
+        <div class="nav-right">
             <span id="auth-area"></span>
         </div>
     </nav>
@@ -432,8 +464,6 @@
         const categoryEmojis = { 'Electronics':'📱', 'Fashion':'👟', 'Books':'📚', 'Food':'🍕', 'Services':'🔧', 'Other':'📦' };
         const categoryColors = { 'Electronics':'#e8f0fe', 'Fashion':'#f0f7f0', 'Books':'#fef2e7', 'Food':'#fff3e0', 'Services':'#f3e5f5', 'Other':'#eceff1' };
 
-        // CHANGE: Fade-based swap between skeleton and real grid instead of an
-        // instant display:none/block toggle — feels less abrupt on mobile.
         function showLoading() {
             skeletonGrid.classList.remove('hidden');
             listingGrid.classList.remove('visible');
@@ -501,10 +531,8 @@
                     await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
                     el.classList.add('saved'); el.textContent = '♥';
                 }
-                // CHANGE: single keyframe bounce class, auto-removes itself —
-                // no competing inline transform with the :active CSS state
                 el.classList.remove('bounce');
-                void el.offsetWidth; // restart animation if double-tapped
+                void el.offsetWidth;
                 el.classList.add('bounce');
                 el.addEventListener('animationend', () => el.classList.remove('bounce'), { once: true });
             } catch (err) { console.error('Save failed:', err); }
