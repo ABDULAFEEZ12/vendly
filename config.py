@@ -16,6 +16,9 @@ class Config:
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-secret')
     JWT_ACCESS_TOKEN_EXPIRES = 86400 * 7  # 7 days
 
+    # Admin config
+    ADMIN_EMAILS = os.getenv('ADMIN_EMAILS', 'admin@vendly.com').split(',')
+
     # Mail config
     MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
     MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
