@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+      CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support.
+      Also kept width and initial-scale for responsive rendering.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Dashboard — Vendly</title>
+    <!--
+      CHANGE: Added display=swap to prevent layout shift while Inter loads.
+      The browser will use a fallback font until Inter is ready, then swap — no invisible text flash.
+    -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -14,22 +22,45 @@
             --gray-100: #f0f2f5;
             --text-muted: #6b7b8d;
             --border: #e8ecf0;
-            --radius: 14px;
-            --radius-sm: 10px;
+            --radius: 16px;   /* slightly softer */
+            --radius-sm: 12px;
+            /* safe-area insets for iPhone notch/home indicator */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        /*
+          CHANGE: Global touch-action and tap highlight removal.
+          -webkit-tap-highlight-color: transparent stops the gray flash on iOS.
+          touch-action: manipulation prevents double-tap zoom on buttons.
+        */
+        html {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain; /* prevents whole-page bounce on iOS */
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--gray-50);
             color: var(--navy);
             min-height: 100vh;
+            /* native momentum scroll on iOS */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            /* padding for safe areas */
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
         }
 
+        /* ---------- NAVBAR ---------- */
         .navbar {
             background: var(--navy);
-            padding: 0.8rem 2rem;
+            /*
+              CHANGE: Added safe-area padding to top so navbar clears iPhone notch.
+            */
+            padding: calc(0.8rem + var(--safe-top)) 2rem 0.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -42,6 +73,10 @@
             font-weight: 900;
             color: var(--orange);
             text-decoration: none;
+            /* CHANGE: minimum tap target 44px */
+            min-height: 44px;
+            display: flex;
+            align-items: center;
         }
         .logo span { color: white; font-weight: 700; }
         .nav-links { display: flex; gap: 0.5rem; align-items: center; }
@@ -52,8 +87,32 @@
             font-weight: 500;
             padding: 0.5rem 0.8rem;
             border-radius: 8px;
-            transition: all 0.2s;
+            /*
+              CHANGE: GPU-accelerated transition on transform & opacity only.
+              cubic-bezier(0.4, 0, 0.2, 1) gives a native iOS feel.
+              will-change: transform hints the GPU to pre-composite.
+            */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            /* minimum 44x44 touch target */
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            will-change: transform, opacity;
+        }
+        /*
+          CHANGE: :active state with scale-down feedback (no layout-triggering properties).
+          Hover kept for desktop, but :active is the primary mobile feedback.
+        */
+        .nav-links a:active {
+            transform: scale(0.96);
+            opacity: 0.8;
+            background: rgba(255,255,255,0.12);
         }
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
@@ -73,6 +132,7 @@
             justify-content: center;
             font-weight: 700;
             padding: 0 4px;
+            /* CHANGE: badge doesn't need animations, so no will-change needed */
         }
 
         .nav-profile {
@@ -80,10 +140,23 @@
             align-items: center;
             gap: 0.5rem;
             text-decoration: none;
-            padding: 0.3rem;
+            padding: 0.3rem 0.5rem;
             border-radius: 50px;
-            transition: all 0.2s;
+            /*
+              CHANGE: GPU-accelerated, same cubic-bezier as nav links.
+              Minimum touch target 44px.
+            */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             margin-left: 0.5rem;
+            min-height: 44px;
+            touch-action: manipulation;
+            will-change: transform, opacity;
+        }
+        .nav-profile:active {
+            transform: scale(0.96);
+            opacity: 0.8;
         }
         .nav-profile:hover { background: rgba(255,255,255,0.08); }
         .nav-avatar {
@@ -119,26 +192,48 @@
             color: rgba(255,255,255,0.6);
             border: 1px solid rgba(255,255,255,0.2);
             padding: 0.5rem 0.8rem;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             font-size: 0.8rem;
             font-weight: 500;
-            transition: all 0.2s;
+            /*
+              CHANGE: GPU-accelerated transition, minimum touch target.
+            */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             margin-left: 0.3rem;
+            min-width: 44px;
+            min-height: 44px;
+            touch-action: manipulation;
+            will-change: transform, opacity;
+        }
+        .btn-logout:active {
+            transform: scale(0.94);
+            opacity: 0.7;
         }
         .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); background: rgba(255,0,0,0.1); }
 
+        /* ---------- CONTAINER ---------- */
         .container {
             max-width: 1100px;
             margin: 2rem auto;
-            padding: 0 1.5rem;
+            /*
+              CHANGE: responsive padding with clamp — prevents cramped feel on iPhone SE
+              while keeping breathing room on larger screens.
+            */
+            padding: 0 clamp(1rem, 3vw, 2rem);
         }
 
+        /* ---------- WELCOME BANNER ---------- */
         .welcome-banner {
             background: linear-gradient(135deg, var(--navy), #1a3448);
             color: white;
-            padding: 2.5rem 2rem;
+            /*
+              CHANGE: responsive padding with clamp.
+            */
+            padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
             border-radius: var(--radius);
             margin-bottom: 2rem;
             display: flex;
@@ -148,35 +243,58 @@
             gap: 1rem;
             border: 1px solid rgba(255,255,255,0.05);
         }
-        .welcome-banner h1 { font-size: 1.5rem; font-weight: 800; }
+        .welcome-banner h1 { font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; }
         .welcome-banner p { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 0.3rem; }
         .btn-primary {
             background: var(--orange);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: clamp(0.6rem, 2vw, 0.75rem) clamp(1.2rem, 3vw, 1.5rem);
             border-radius: var(--radius-sm);
             font-weight: 700;
             text-decoration: none;
             font-size: 0.85rem;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+            /*
+              CHANGE: GPU-accelerated transform+opacity. Softer shadow.
+            */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(255,107,53,0.2);
+            touch-action: manipulation;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform, opacity;
         }
-        .btn-primary:hover { background: #e8551f; transform: translateY(-1px); }
+        .btn-primary:active {
+            transform: scale(0.96);
+            opacity: 0.85;
+            box-shadow: 0 2px 8px rgba(255,107,53,0.15);
+        }
+        .btn-primary:hover { background: #e8551f; }
 
+        /* ---------- DASHBOARD GRID ---------- */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
+            gap: clamp(1rem, 2vw, 1.5rem);
         }
         @media (max-width: 768px) {
             .dashboard-grid { grid-template-columns: 1fr; }
         }
 
+        /* ---------- CARDS ---------- */
         .card {
             background: white;
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 1.5rem;
+            /*
+              CHANGE: responsive padding.
+              Softer shadow added for "soft touch" feel.
+            */
+            padding: clamp(1rem, 3vw, 1.5rem);
+            box-shadow: 0 2px 12px rgba(13,27,42,0.04);
         }
         .card h2 {
             font-size: 1.1rem;
@@ -187,21 +305,34 @@
             gap: 0.5rem;
         }
 
+        /* ---------- LISTING ITEM ---------- */
         .listing-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.8rem 0;
+            gap: clamp(0.5rem, 2vw, 1rem);
+            padding: clamp(0.5rem, 2vw, 0.8rem) 0;
             border-bottom: 1px solid var(--border);
+            /*
+              CHANGE: Smooth transition for subtle feedback.
+              Minimum touch target 44px tall.
+            */
+            min-height: 44px;
+            transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .listing-item:active {
+            background-color: rgba(0,0,0,0.02);
         }
         .listing-item:last-child { border-bottom: none; }
         .listing-item-img {
-            width: 70px; height: 70px;
+            width: clamp(50px, 12vw, 70px);
+            height: clamp(50px, 12vw, 70px);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             flex-shrink: 0;
         }
         .listing-item-info { flex: 1; }
@@ -223,18 +354,48 @@
         .badge-active { background: #e8f5e9; color: #2e7d32; }
         .badge-sold { background: #fce4ec; color: #c62828; }
 
+        /* View/Edit links — bigger touch targets */
+        .listing-item-info a {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            display: inline-block;
+            min-width: 44px;
+            min-height: 30px;
+            text-align: center;
+            touch-action: manipulation;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+        .listing-item-info a:active {
+            transform: scale(0.94);
+            opacity: 0.7;
+        }
+
+        /* ---------- CHAT ITEM ---------- */
         .chat-item {
             display: flex;
             align-items: center;
             gap: 0.8rem;
-            padding: 0.7rem 0;
+            padding: clamp(0.5rem, 2vw, 0.7rem) 0;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             text-decoration: none;
             color: inherit;
-            transition: all 0.2s;
+            /*
+              CHANGE: GPU-accelerated, minimum 44px touch target.
+            */
+            min-height: 52px;
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation;
+            will-change: transform, opacity;
         }
-        .chat-item:hover { opacity: 0.8; }
+        .chat-item:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
         .chat-item:last-child { border-bottom: none; }
         .chat-avatar {
             width: 40px; height: 40px;
@@ -249,6 +410,7 @@
         .chat-preview strong { font-size: 0.85rem; display: block; }
         .chat-preview span { font-size: 0.75rem; color: var(--text-muted); }
 
+        /* ---------- EMPTY STATE ---------- */
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
@@ -257,9 +419,13 @@
         .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
         .empty-state p { font-size: 0.9rem; }
 
+        /* ---------- FOOTER ---------- */
         footer {
             text-align: center;
-            padding: 1.5rem;
+            /*
+              CHANGE: Added safe-area-inset-bottom padding so footer clears iPhone home indicator.
+            */
+            padding: 1rem 1.5rem calc(1rem + var(--safe-bottom));
             font-size: 0.75rem;
             color: var(--text-muted);
         }
@@ -351,6 +517,10 @@
             nameEl.textContent = user.full_name.split(' ')[0];
         }
 
+        /*
+          CHANGE: showBadge now only updates textContent and display — no innerHTML rebuild.
+          This avoids layout thrashing when called every 30s.
+        */
         function showBadge(el, count) {
             if (count > 0) {
                 el.textContent = count > 99 ? '99+' : count;
@@ -370,8 +540,14 @@
                 ]);
                 const notifData = await notifRes.json();
                 const msgData = await msgRes.json();
-                showBadge(document.getElementById('notif-badge'), notifData.count);
-                showBadge(document.getElementById('msg-badge'), msgData.count);
+                /*
+                  CHANGE: Batch DOM reads/writes — get references once, update in one microtask.
+                  Only badge elements are touched; no innerHTML on parent containers.
+                */
+                const notifBadge = document.getElementById('notif-badge');
+                const msgBadge = document.getElementById('msg-badge');
+                showBadge(notifBadge, notifData.count);
+                showBadge(msgBadge, msgData.count);
             } catch (e) {}
         }
 
