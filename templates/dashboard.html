@@ -57,7 +57,6 @@
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
 
-        /* Profile avatar in navbar */
         .nav-profile {
             display: flex;
             align-items: center;
@@ -68,12 +67,9 @@
             transition: all 0.2s;
             margin-left: 0.5rem;
         }
-        .nav-profile:hover {
-            background: rgba(255,255,255,0.08);
-        }
+        .nav-profile:hover { background: rgba(255,255,255,0.08); }
         .nav-avatar {
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             border-radius: 50%;
             object-fit: cover;
             background: var(--orange);
@@ -86,8 +82,7 @@
             flex-shrink: 0;
         }
         .nav-avatar img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -181,8 +176,7 @@
         }
         .listing-item:last-child { border-bottom: none; }
         .listing-item-img {
-            width: 70px;
-            height: 70px;
+            width: 70px; height: 70px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
@@ -223,8 +217,7 @@
         .chat-item:hover { opacity: 0.8; }
         .chat-item:last-child { border-bottom: none; }
         .chat-avatar {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -260,13 +253,14 @@
             <a href="/chat">Messages</a>
             <a href="/saved">Saved</a>
             <a href="/dashboard" class="active">Dashboard</a>
-
-            <!-- Profile avatar + name -->
+            <a href="/notifications" style="position:relative;color:white;text-decoration:none;font-size:1.2rem;padding:0.5rem;" title="Notifications">
+                🔔
+                <span id="notif-badge" style="display:none;position:absolute;top:0px;right:0px;background:var(--orange);color:white;font-size:0.6rem;min-width:18px;height:18px;border-radius:50%;align-items:center;justify-content:center;font-weight:700;padding:0 4px;"></span>
+            </a>
             <a href="/profile/me" class="nav-profile" id="nav-profile-link">
                 <div class="nav-avatar" id="nav-avatar">?</div>
                 <span class="nav-profile-name" id="nav-profile-name">Profile</span>
             </a>
-
             <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
     </nav>
@@ -281,7 +275,6 @@
         </div>
 
         <div class="dashboard-grid">
-            <!-- My Listings -->
             <div class="card">
                 <h2>📦 My Listings</h2>
                 <div id="my-listings">
@@ -291,8 +284,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Recent Chats -->
             <div class="card">
                 <h2>💬 Recent Chats</h2>
                 <div id="recent-chats">
@@ -309,116 +300,4 @@
 
     <script>
         const API_BASE = '';
-        let currentUserId = null;
-
-        function getToken() {
-            return localStorage.getItem('vendly_token');
-        }
-        function clearToken() {
-            localStorage.removeItem('vendly_token');
-        }
-        function logout() {
-            clearToken();
-            window.location.href = '/login';
-        }
-
-        async function apiGet(url) {
-            const token = getToken();
-            const res = await fetch(API_BASE + url, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.status === 401) { logout(); return null; }
-            return res.json();
-        }
-
-        function updateNavProfile(user) {
-            currentUserId = user.id;
-            const avatarEl = document.getElementById('nav-avatar');
-            const nameEl = document.getElementById('nav-profile-name');
-            const linkEl = document.getElementById('nav-profile-link');
-
-            linkEl.href = `/profile/${user.id}`;
-
-            if (user.profile_picture) {
-                avatarEl.innerHTML = `<img src="${user.profile_picture}" alt="${user.full_name}">`;
-            } else {
-                avatarEl.textContent = (user.full_name || '?')[0].toUpperCase();
-                avatarEl.innerHTML = '';  // clear any img
-                avatarEl.textContent = (user.full_name || '?')[0].toUpperCase();
-            }
-
-            nameEl.textContent = user.full_name.split(' ')[0];
-        }
-
-        async function loadDashboard() {
-            if (!getToken()) { window.location.href = '/login'; return; }
-
-            // Get user profile
-            const userRes = await apiGet('/api/auth/me');
-            if (!userRes) return;
-            const user = userRes.user;
-
-            // Update nav profile
-            updateNavProfile(user);
-
-            document.getElementById('greeting').textContent = `Welcome back, ${user.full_name.split(' ')[0]} 👋`;
-            document.getElementById('user-info').textContent = `${user.school || 'LASU'} · ${user.department || ''}`;
-
-            // Get my listings
-            const listingsRes = await apiGet(`/api/listings/user/${user.id}`);
-            const listings = listingsRes || [];
-            const listingsEl = document.getElementById('my-listings');
-
-            if (listings.length === 0) {
-                listingsEl.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📭</div>
-                        <p>You haven't listed anything yet.</p>
-                        <a href="/listings/new" class="btn-primary" style="display:inline-block; margin-top:1rem;">+ Create Your First Listing</a>
-                    </div>`;
-            } else {
-                listingsEl.innerHTML = listings.map(l => `
-                    <div class="listing-item">
-                        <div class="listing-item-img" style="background:#${l.category === 'Electronics' ? 'e8f0fe' : l.category === 'Books' ? 'fef2e7' : l.category === 'Fashion' ? 'f0f7f0' : 'f7edf8'};">${l.category === 'Electronics' ? '📱' : l.category === 'Books' ? '📚' : l.category === 'Fashion' ? '👟' : '📦'}</div>
-                        <div class="listing-item-info">
-                            <strong>${l.title}</strong>
-                            <span>${l.campus} · ${l.condition} · <span class="badge ${l.is_sold ? 'badge-sold' : 'badge-active'}">${l.is_sold ? 'Sold' : 'Active'}</span></span>
-                            <div style="margin-top:0.3rem;">
-                                <a href="/listing/${l.id}" style="font-size:0.75rem;color:var(--orange);margin-right:0.5rem;">View</a>
-                                <a href="/listings/${l.id}/edit" style="font-size:0.75rem;color:var(--navy);">Edit</a>
-                            </div>
-                        </div>
-                        <div class="listing-item-price">₦${l.price.toLocaleString()}</div>
-                    </div>
-                `).join('');
-            }
-
-            // Get recent chats
-            const chatsRes = await apiGet('/api/chat/rooms');
-            const chats = chatsRes || [];
-            const chatsEl = document.getElementById('recent-chats');
-
-            if (chats.length === 0) {
-                chatsEl.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">💬</div>
-                        <p>No conversations yet.</p>
-                        <a href="/marketplace" style="font-size:0.85rem;color:var(--orange);">Browse items to start chatting</a>
-                    </div>`;
-            } else {
-                chatsEl.innerHTML = chats.slice(0, 6).map(c => `
-                    <a href="/chat/${c.room_id}" class="chat-item">
-                        <div class="chat-avatar" style="background:#${c.other_user.full_name.charCodeAt(0) % 2 === 0 ? 'e8f0fe' : 'fef2e7'};color:var(--navy);">${c.other_user.full_name[0]}</div>
-                        <div class="chat-preview">
-                            <strong>${c.other_user.full_name}</strong>
-                            <span>${c.listing.title} · ${c.last_message ? c.last_message.content : 'No messages yet'}</span>
-                        </div>
-                    </a>
-                `).join('');
-            }
-        }
-
-        loadDashboard();
-    </script>
-</body>
-</html>
+        let current
