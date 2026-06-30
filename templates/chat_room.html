@@ -2,175 +2,457 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
     <title>Chat — Vendly</title>
-    <!-- CHANGE: Added display=swap to prevent flash of invisible text while font loads -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --navy: #0D1B2A;
-            --orange: #FF6B35;
-            --white: #ffffff;
-            --gray-50: #f8f9fb;
-            --text-muted: #6b7b8d;
-            --border: #e8ecf0;
-            --radius: 16px;
-            --radius-sm: 12px;
-            /* CHANGE: safe-area insets for iPhone notch/home indicator */
+            --bg-deep: #050508;
+            --bg-base: #0a0a10;
+            --surface-elevated: #12121c;
+            --surface-glass: rgba(14, 14, 24, 0.75);
+            --surface-glass-heavy: rgba(10, 10, 18, 0.88);
+            --text-primary: #f2f2f7;
+            --text-secondary: #9a9ab0;
+            --text-tertiary: #5a5a70;
+            --accent: #ff5e3a;
+            --accent-soft: rgba(255, 94, 58, 0.15);
+            --accent-glow: rgba(255, 94, 58, 0.4);
+            --green: #2ecc71;
+            --green-soft: rgba(46, 204, 113, 0.15);
+            --blue: #5e9eff;
+            --blue-soft: rgba(94, 158, 255, 0.12);
+            --purple: #b98eff;
+            --purple-soft: rgba(185, 142, 255, 0.12);
+            --red: #ff4757;
+            --red-soft: rgba(255, 71, 87, 0.15);
+            --border-glass: rgba(255, 255, 255, 0.07);
+            --border-active: rgba(255, 255, 255, 0.14);
+            --radius-sm: 14px;
+            --radius-md: 22px;
+            --radius-lg: 32px;
+            --radius-full: 999px;
+            --shadow-float: 0 20px 40px -20px rgba(0,0,0,0.7);
+            --shadow-glow: 0 0 30px rgba(255,94,58,0.25);
+            --ease-spring: cubic-bezier(0.22, 0.61, 0.36, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
             --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* CHANGE: Global tap highlight removal and momentum scrolling */
         html {
             -webkit-tap-highlight-color: transparent;
-            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--navy);
+            background: var(--bg-deep);
+            color: var(--text-primary);
             height: 100vh;
-            height: -webkit-fill-available; /* CHANGE: fix for iOS Safari address bar */
+            height: -webkit-fill-available;
             display: flex;
             flex-direction: column;
             overscroll-behavior-y: contain;
-            padding-top: var(--safe-top);
-            padding-bottom: var(--safe-bottom);
+            position: relative;
+            isolation: isolate;
+            letter-spacing: -0.01em;
+            background-image: 
+                radial-gradient(circle at 15% 5%, rgba(255,94,58,0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(94,158,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(185,142,255,0.04) 0%, transparent 60%);
+            background-attachment: fixed;
         }
 
+        /* ---------- NAVBAR ---------- */
         .navbar {
-            background: var(--navy);
-            /* CHANGE: safe-area top padding so navbar clears iPhone notch */
-            padding: calc(0.8rem + var(--safe-top)) 1.5rem 0.8rem;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border-bottom: 1px solid var(--border-glass);
+            padding: calc(12px + var(--safe-top)) 16px 12px;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 12px;
             z-index: 100;
+            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.5);
         }
-        /* CHANGE: back button — minimum 44px tap target */
         .back-btn {
-            color: white; text-decoration: none; font-size: 1.2rem;
-            min-width: 44px; min-height: 44px;
-            display: flex; align-items: center; justify-content: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.3rem;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--surface-glass);
+            border: 1px solid var(--border-glass);
             touch-action: manipulation;
-            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s var(--ease-smooth);
             will-change: transform, opacity;
         }
-        .back-btn:active { transform: scale(0.9); opacity: 0.7; }
-        .chat-header-info { flex: 1; }
-        .chat-header-info .name { color: white; font-weight: 600; font-size: 0.9rem; }
-        .chat-header-info .item { color: rgba(255,255,255,0.6); font-size: 0.75rem; }
+        .back-btn:active {
+            transform: scale(0.9);
+            background: var(--accent-soft);
+            border-color: var(--accent);
+        }
+        .chat-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-header-info .name {
+            color: var(--text-primary);
+            font-weight: 650;
+            font-size: 0.95rem;
+            letter-spacing: -0.02em;
+        }
+        .chat-header-info .item {
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 500;
+            margin-top: 2px;
+        }
 
-        /* CHANGE: messages container — momentum scroll on iOS */
+        /* ---------- MESSAGES CONTAINER ---------- */
         .messages-container {
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior-y: contain;
-            padding: 1rem;
+            padding: 16px 14px;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 8px;
+            scroll-behavior: smooth;
+        }
+        .messages-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .messages-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .messages-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
         }
 
+        /* ---------- MESSAGE BUBBLES ---------- */
         .message {
-            max-width: 75%;
-            padding: 0.7rem 1rem;
-            border-radius: 16px;
+            max-width: 78%;
+            padding: 12px 16px;
+            border-radius: 20px;
             font-size: 0.9rem;
-            line-height: 1.4;
+            line-height: 1.45;
             word-wrap: break-word;
-            /* CHANGE: fade-in for new messages */
-            animation: fadeIn 0.2s ease;
+            animation: fadeInSlide 0.3s var(--ease-spring);
+            position: relative;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
 
         .message-sent {
             align-self: flex-end;
-            background: var(--navy);
+            background: linear-gradient(135deg, var(--accent), #ff7b5e);
             color: white;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 4px 16px rgba(255,94,58,0.3);
         }
         .message-received {
             align-self: flex-start;
-            background: white;
-            border: 1px solid var(--border);
-            border-bottom-left-radius: 4px;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            border-bottom-left-radius: 6px;
         }
-        .message-time { font-size: 0.65rem; opacity: 0.6; margin-top: 4px; text-align: right; }
+        .message-time {
+            font-size: 0.65rem;
+            opacity: 0.65;
+            margin-top: 5px;
+            text-align: right;
+            letter-spacing: 0.02em;
+        }
 
         .system-message {
             align-self: center;
             font-size: 0.75rem;
-            color: var(--text-muted);
-            background: #f0f2f5;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
+            color: var(--text-tertiary);
+            background: var(--surface-glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            padding: 8px 18px;
+            border-radius: 24px;
+            letter-spacing: 0.01em;
+            font-weight: 500;
         }
 
-        /* CHANGE: offer card — softer, with tap feedback */
+        /* ---------- OFFER CARD ---------- */
         .offer-card {
             align-self: center;
-            background: #fff8f0;
-            border: 1px solid var(--orange);
-            border-radius: var(--radius-sm);
-            padding: 1rem;
+            background: var(--surface-elevated);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-md);
+            padding: 18px;
             width: 90%;
-            max-width: 350px;
-            animation: fadeIn 0.25s ease;
+            max-width: 360px;
+            animation: fadeInSlide 0.35s var(--ease-spring);
+            box-shadow: 0 0 30px rgba(255,94,58,0.15), 0 12px 32px -12px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
         }
-        .offer-card .offer-amount { font-size: 1.3rem; font-weight: 800; color: var(--orange); }
-        .offer-card .offer-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .offer-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-        /* CHANGE: offer buttons — 44px minimum, GPU-accelerated */
+        .offer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.6;
+        }
+        .offer-card .offer-label {
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .offer-card .offer-amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.03em;
+        }
+        .offer-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
         .btn-accept, .btn-reject, .btn-counter {
-            padding: 0.5rem 1rem; border-radius: 20px;
-            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer;
-            min-height: 44px; touch-action: manipulation;
-            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 650;
+            font-size: 0.82rem;
+            cursor: pointer;
+            min-height: 44px;
+            touch-action: manipulation;
+            transition: all 0.2s var(--ease-bounce);
             will-change: transform, opacity;
+            border: none;
+            letter-spacing: -0.01em;
         }
-        .btn-accept:active, .btn-reject:active, .btn-counter:active { transform: scale(0.94); opacity: 0.8; }
-        .btn-accept { background: #22c55e; color: white; border: none; }
-        .btn-reject { background: #ef4444; color: white; border: none; }
-        .btn-counter { background: white; color: var(--navy); border: 1px solid var(--border); }
-        .offer-status { text-align: center; font-size: 0.8rem; font-weight: 600; margin-top: 0.5rem; }
-        .offer-accepted { color: #22c55e; }
-        .offer-rejected { color: #ef4444; }
+        .btn-accept {
+            background: var(--green);
+            color: white;
+            box-shadow: 0 4px 16px rgba(46,204,113,0.3);
+        }
+        .btn-accept:active {
+            transform: scale(0.93);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.4);
+        }
+        .btn-reject {
+            background: var(--red);
+            color: white;
+            box-shadow: 0 4px 16px rgba(255,71,87,0.3);
+        }
+        .btn-reject:active {
+            transform: scale(0.93);
+            box-shadow: 0 2px 8px rgba(255,71,87,0.4);
+        }
+        .btn-counter {
+            background: var(--surface-glass);
+            color: var(--text-primary);
+            border: 1px solid var(--border-active);
+            backdrop-filter: blur(16px);
+        }
+        .btn-counter:active {
+            transform: scale(0.93);
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .offer-status {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 650;
+            margin-top: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .offer-accepted {
+            color: var(--green);
+            background: var(--green-soft);
+        }
+        .offer-rejected {
+            color: var(--red);
+            background: var(--red-soft);
+        }
+        .offer-pending {
+            color: #ffb43c;
+            background: rgba(255,180,60,0.12);
+        }
+        .offer-countered {
+            color: var(--blue);
+            background: var(--blue-soft);
+        }
 
-        /* CHANGE: chat input area — safe-area bottom padding */
+        /* ---------- CHAT INPUT AREA ---------- */
         .chat-input-area {
-            display: flex; gap: 0.5rem;
-            padding: 0.75rem 1rem calc(0.75rem + var(--safe-bottom));
-            background: white; border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            padding: 12px 14px calc(12px + var(--safe-bottom));
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border-top: 1px solid var(--border-glass);
+            align-items: center;
         }
         .chat-input-area input {
-            flex: 1; padding: 0.7rem 1rem; border: 1px solid var(--border);
-            border-radius: 24px; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none;
-            min-height: 44px;
-            transition: border-color 0.2s;
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid var(--border-glass);
+            border-radius: 28px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            min-height: 46px;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            transition: all 0.25s var(--ease-smooth);
+            letter-spacing: -0.01em;
         }
-        .chat-input-area input:focus { border-color: var(--orange); }
-        /* CHANGE: send/offer buttons — 44px minimum */
+        .chat-input-area input::placeholder {
+            color: var(--text-tertiary);
+        }
+        .chat-input-area input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255,94,58,0.2), 0 0 0 3px var(--accent-soft);
+        }
         .btn-send, .btn-offer {
-            padding: 0.7rem 1.2rem; border-radius: 24px;
-            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer;
-            min-height: 44px; touch-action: manipulation;
-            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 10px 16px;
+            border-radius: 28px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 650;
+            font-size: 0.85rem;
+            cursor: pointer;
+            min-height: 46px;
+            min-width: 46px;
+            touch-action: manipulation;
+            transition: all 0.2s var(--ease-bounce);
             will-change: transform, opacity;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -0.01em;
         }
-        .btn-send:active, .btn-offer:active { transform: scale(0.94); opacity: 0.8; }
-        .btn-send { background: var(--orange); color: white; border: none; }
-        .btn-offer { background: white; color: var(--orange); border: 1px solid var(--orange); }
+        .btn-send {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        .btn-send:active {
+            transform: scale(0.92);
+            box-shadow: 0 2px 10px var(--accent-glow);
+        }
+        .btn-offer {
+            background: var(--surface-glass);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            backdrop-filter: blur(16px);
+            font-size: 1.2rem;
+            padding: 10px 14px;
+        }
+        .btn-offer:active {
+            transform: scale(0.92);
+            background: var(--accent-soft);
+            box-shadow: 0 0 20px rgba(255,94,58,0.3);
+        }
 
-        .empty-chat { text-align: center; padding: 3rem; color: var(--text-muted); }
+        /* ---------- EMPTY CHAT / LOADER ---------- */
+        .empty-chat {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+        .empty-chat .loader-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+            animation: float 2.5s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .typing-indicator {
+            align-self: flex-start;
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--surface-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
+            animation: fadeInSlide 0.3s var(--ease-spring);
+        }
+        .typing-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--text-tertiary);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 500px) {
+            .message {
+                max-width: 85%;
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            .offer-card {
+                width: 95%;
+                padding: 14px;
+            }
+            .offer-card .offer-amount {
+                font-size: 1.3rem;
+            }
+            .btn-accept, .btn-reject, .btn-counter {
+                padding: 8px 14px;
+                font-size: 0.78rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- NAVBAR -->
     <nav class="navbar">
         <a href="/chat" class="back-btn">←</a>
         <div class="chat-header-info">
@@ -179,13 +461,18 @@
         </div>
     </nav>
 
+    <!-- MESSAGES CONTAINER -->
     <div class="messages-container" id="messages">
-        <div class="empty-chat" id="chat-loader">💬<br><span style="font-size:0.85rem;">Loading conversation...</span></div>
+        <div class="empty-chat" id="chat-loader">
+            <span class="loader-icon">💬</span>
+            <span style="font-size:0.85rem;">Loading conversation...</span>
+        </div>
     </div>
 
+    <!-- CHAT INPUT AREA -->
     <div class="chat-input-area">
-        <input type="text" id="message-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMessage()">
-        <button class="btn-offer" onclick="makeOffer()">💰</button>
+        <input type="text" id="message-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMessage()" autocomplete="off">
+        <button class="btn-offer" onclick="makeOffer()" aria-label="Make offer">💰</button>
         <button class="btn-send" onclick="sendMessage()">Send</button>
     </div>
 
@@ -211,16 +498,26 @@
                     fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } }),
                     fetch(`${API_BASE}/api/chat/rooms`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
+
+                if (meRes.status === 401 || roomsRes.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 const meData = await meRes.json();
                 currentUserId = meData.user.id;
                 const rooms = await roomsRes.json();
+
                 const room = rooms.find(r => r.room_id == roomId);
                 if (room) {
                     document.getElementById('chat-name').textContent = room.other_user.full_name;
                     document.getElementById('chat-item').textContent = `${room.listing.title} · ₦${room.listing.price.toLocaleString()}`;
                     listingId = room.listing.id;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error('Init error:', e);
+            }
 
             await loadMessages();
             pollingInterval = setInterval(loadMessages, 3000);
@@ -239,6 +536,13 @@
                 const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/messages`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 const messages = await res.json();
                 const container = document.getElementById('messages');
                 const loader = document.getElementById('chat-loader');
@@ -275,9 +579,14 @@
                 const offerId = offerData.id;
                 const status = offerData.status || 'pending';
 
+                let statusClass = 'offer-pending';
+                if (status === 'accepted') statusClass = 'offer-accepted';
+                else if (status === 'rejected') statusClass = 'offer-rejected';
+                else if (status === 'countered') statusClass = 'offer-countered';
+
                 div.innerHTML = `
                     <div class="offer-label">${msg.type === 'counter_offer' ? '🔄 Counter Offer' : '💰 New Offer'}</div>
-                    <div class="offer-amount">${msg.content}</div>
+                    <div class="offer-amount">${escapeHTML(msg.content)}</div>
                     ${status === 'pending' && !isMine ? `
                         <div class="offer-actions" id="offer-actions-${offerId}">
                             <button class="btn-accept" onclick="respondOffer(${offerId},'accept')">✓ Accept</button>
@@ -285,25 +594,26 @@
                             <button class="btn-counter" onclick="counterOffer(${offerId})">↩ Counter</button>
                         </div>
                     ` : `
-                        <div class="offer-status ${status === 'accepted' ? 'offer-accepted' : status === 'rejected' ? 'offer-rejected' : ''}">
+                        <div class="offer-status ${statusClass}">
                             ${status === 'accepted' ? '✅ Accepted' : status === 'rejected' ? '❌ Rejected' : status === 'countered' ? '🔄 Countered' : '⏳ Pending'}
                         </div>
                     `}
-                    <div class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                    <div class="message-time">${formatTime(new Date(msg.created_at))}</div>
                 `;
             } else if (msg.type === 'accept' || msg.type === 'reject') {
                 div.className = 'offer-card';
+                const isAccepted = msg.type === 'accept';
                 div.innerHTML = `
-                    <div class="offer-status ${msg.type === 'accept' ? 'offer-accepted' : 'offer-rejected'}">
-                        ${msg.content}
+                    <div class="offer-status ${isAccepted ? 'offer-accepted' : 'offer-rejected'}">
+                        ${escapeHTML(msg.content)}
                     </div>
-                    <div class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                    <div class="message-time">${formatTime(new Date(msg.created_at))}</div>
                 `;
             } else {
                 div.className = `message ${isMine ? 'message-sent' : 'message-received'}`;
                 div.innerHTML = `
                     ${escapeHTML(msg.content)}
-                    <div class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                    <div class="message-time">${formatTime(new Date(msg.created_at))}</div>
                 `;
             }
 
@@ -311,16 +621,25 @@
         }
 
         function escapeHTML(str) {
+            if (!str) return '';
             const d = document.createElement('div');
             d.textContent = str;
             return d.innerHTML;
         }
 
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
         function scrollToBottom() {
             const container = document.getElementById('messages');
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 container.scrollTop = container.scrollHeight;
-            }, 100);
+            });
         }
 
         async function sendMessage() {
@@ -341,6 +660,13 @@
                     },
                     body: JSON.stringify({ content })
                 });
+
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 if (res.ok) {
                     const msg = await res.json();
                     appendMessage(msg);
@@ -357,7 +683,10 @@
 
         function makeOffer() {
             const amount = prompt('Enter your offer amount (₦):');
-            if (!amount || isNaN(amount)) return;
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                if (amount !== null) alert('Please enter a valid amount.');
+                return;
+            }
             sendOfferViaApi(amount);
         }
 
@@ -373,6 +702,12 @@
                     body: JSON.stringify({ amount: parseFloat(amount) })
                 });
 
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 if (res.ok) {
                     const data = await res.json();
                     appendMessage(data.message);
@@ -384,6 +719,7 @@
                 }
             } catch (err) {
                 console.error('Offer failed:', err);
+                alert('Failed to send offer. Please try again.');
             }
         }
 
@@ -399,6 +735,12 @@
                     body: JSON.stringify({ action })
                 });
 
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 const data = await res.json();
                 if (res.ok) {
                     appendMessage(data.message);
@@ -411,12 +753,16 @@
                 }
             } catch (err) {
                 console.error('Response failed:', err);
+                alert('Failed to respond. Please try again.');
             }
         }
 
         function counterOffer(offerId) {
             const amount = prompt('Enter your counter amount (₦):');
-            if (!amount || isNaN(amount)) return;
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                if (amount !== null) alert('Please enter a valid amount.');
+                return;
+            }
 
             (async () => {
                 try {
@@ -430,6 +776,12 @@
                         body: JSON.stringify({ action: 'counter', amount: parseFloat(amount) })
                     });
 
+                    if (res.status === 401) {
+                        localStorage.removeItem('vendly_token');
+                        window.location.href = '/login';
+                        return;
+                    }
+
                     const data = await res.json();
                     if (res.ok) {
                         appendMessage(data.message);
@@ -442,6 +794,7 @@
                     }
                 } catch (err) {
                     console.error('Counter failed:', err);
+                    alert('Failed to counter offer. Please try again.');
                 }
             })();
         }
