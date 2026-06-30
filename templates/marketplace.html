@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Marketplace — Vendly</title>
-    <!-- CHANGE: Added display=swap to prevent flash of invisible text while font loads -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,14 +16,13 @@
             --border: #e8ecf0;
             --radius: 16px;
             --radius-sm: 12px;
-            /* CHANGE: safe-area insets for iPhone notch/home indicator */
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* CHANGE: Global tap highlight removal and momentum scrolling */
         html {
             -webkit-tap-highlight-color: transparent;
             -webkit-overflow-scrolling: touch;
@@ -46,7 +43,6 @@
         /* ---------- NAVBAR ---------- */
         .navbar {
             background: var(--navy);
-            /* CHANGE: safe-area top padding so navbar clears iPhone notch */
             padding: calc(0.8rem + var(--safe-top)) 2rem 0.8rem;
             display: flex;
             justify-content: space-between;
@@ -62,17 +58,14 @@
         .nav-links a {
             color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.85rem;
             font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px;
-            /* CHANGE: GPU-accelerated transition, minimum 44px tap target */
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.15s var(--ease-soft),
+                        opacity 0.15s var(--ease-soft),
+                        background-color 0.15s var(--ease-soft);
             position: relative;
             min-width: 44px; min-height: 44px;
             display: flex; align-items: center; justify-content: center;
             touch-action: manipulation;
-            will-change: transform, opacity;
         }
-        /* CHANGE: :active tap feedback instead of hover-only */
         .nav-links a:active { transform: scale(0.96); opacity: 0.8; background: rgba(255,255,255,0.12); }
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
@@ -89,11 +82,10 @@
         .nav-profile {
             display: flex; align-items: center; gap: 0.4rem; text-decoration: none;
             padding: 0.3rem 0.5rem; border-radius: 50px;
-            /* CHANGE: GPU-accelerated, 44px minimum */
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            min-height: 44px; touch-action: manipulation; will-change: transform, opacity;
+            transition: transform 0.15s var(--ease-soft),
+                        opacity 0.15s var(--ease-soft),
+                        background-color 0.15s var(--ease-soft);
+            min-height: 44px; touch-action: manipulation;
         }
         .nav-profile:active { transform: scale(0.96); opacity: 0.8; }
         .nav-profile:hover { background: rgba(255,255,255,0.08); }
@@ -109,10 +101,10 @@
             background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2);
             padding: 0.5rem 0.8rem; border-radius: 10px; cursor: pointer; font-family: 'Inter', sans-serif;
             font-size: 0.78rem; font-weight: 500;
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 44px; min-height: 44px; touch-action: manipulation; will-change: transform, opacity;
+            transition: transform 0.15s var(--ease-soft),
+                        opacity 0.15s var(--ease-soft),
+                        background-color 0.15s var(--ease-soft);
+            min-width: 44px; min-height: 44px; touch-action: manipulation;
         }
         .btn-logout:active { transform: scale(0.94); opacity: 0.7; }
         .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
@@ -140,8 +132,7 @@
             width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; border: 1px solid var(--border);
             border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 0.95rem;
             background: var(--gray-50); outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            /* CHANGE: no layout-triggering transition */
+            transition: border-color 0.2s var(--ease-soft), box-shadow 0.2s var(--ease-soft);
         }
         .search-input-wrapper input:focus { border-color: var(--orange); background: white; box-shadow: 0 0 0 3px rgba(255,107,53,0.1); }
         .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; }
@@ -149,25 +140,22 @@
             padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
             font-family: 'Inter', sans-serif; font-size: 0.85rem; background: var(--gray-50); color: var(--navy);
             cursor: pointer; outline: none; min-width: 130px; flex: 1;
-            /* CHANGE: minimum tap target 44px, native-like transition */
             min-height: 44px; touch-action: manipulation;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s var(--ease-soft), box-shadow 0.2s var(--ease-soft);
         }
         .filter-select:focus { border-color: var(--orange); }
-        .filter-select:active { transform: scale(0.98); }
 
         /* ---------- CATEGORY PILLS ---------- */
         .category-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
         .pill {
             padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600;
             cursor: pointer; border: 1px solid var(--border); background: white; color: var(--navy);
-            /* CHANGE: GPU-accelerated, soft-feel, 44px minimum */
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.15s var(--ease-soft),
+                        opacity 0.15s var(--ease-soft),
+                        background-color 0.15s var(--ease-soft),
+                        border-color 0.15s var(--ease-soft);
             white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center;
-            touch-action: manipulation; will-change: transform, opacity;
+            touch-action: manipulation;
         }
         .pill:active { transform: scale(0.95); opacity: 0.8; }
         .pill.active {
@@ -188,32 +176,28 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 1.25rem;
-            /* CHANGE: smooth fade transition on opacity for content swaps */
-            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transition: opacity 0.25s var(--ease-soft);
         }
-        .listing-grid.loading { opacity: 0.5; pointer-events: none; }
+        .listing-grid.visible { opacity: 1; }
 
         .listing-card {
             background: white; border: 1px solid var(--border); border-radius: var(--radius);
             overflow: hidden; cursor: pointer; text-decoration: none; color: inherit;
             display: block;
-            /* CHANGE: GPU-accelerated — transform + opacity only. Softer shadow. */
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: manipulation; will-change: transform, opacity;
+            transition: transform 0.2s var(--ease-soft),
+                        opacity 0.2s var(--ease-soft),
+                        border-color 0.2s var(--ease-soft);
+            touch-action: manipulation;
         }
-        /* CHANGE: :active tap state for mobile (no box-shadow animation) */
         .listing-card:active { transform: scale(0.97); opacity: 0.9; }
         .listing-card:hover { border-color: var(--orange); }
 
         .listing-img {
             height: 180px; display: flex; align-items: center; justify-content: center;
             font-size: 3.5rem; position: relative;
-            /* CHANGE: background for emoji placeholder */
             background: var(--gray-100);
         }
-        /* CHANGE: Smooth fade-in for lazy-loaded images */
         .listing-img img {
             width: 100%; height: 100%; object-fit: cover;
             opacity: 0; transition: opacity 0.3s ease;
@@ -227,20 +211,25 @@
         }
         .condition-badge.used { background: #5c6b7a; }
 
-        /* CHANGE: Save button — 44x44 minimum, GPU-accelerated bounce */
         .save-btn {
             position: absolute; top: 12px; right: 12px;
             width: 44px; height: 44px;
             border-radius: 50%; background: rgba(255,255,255,0.9); border: 1px solid var(--border);
             display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
             cursor: pointer; z-index: 2;
-            /* CHANGE: transform + opacity only for smooth bounce */
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: manipulation; will-change: transform;
+            transition: transform 0.15s var(--ease-soft), opacity 0.15s var(--ease-soft);
+            touch-action: manipulation;
         }
         .save-btn:active { transform: scale(0.85); }
         .save-btn.saved { color: #e74c3c; border-color: #e74c3c; }
+        /* CHANGE: single keyframe bounce instead of competing inline-style transform —
+           prevents the :active scale and the "bounce" from fighting each other */
+        .save-btn.bounce { animation: saveBounce 0.3s var(--ease-soft); }
+        @keyframes saveBounce {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
 
         .listing-body { padding: clamp(0.8rem, 2vw, 1.1rem); }
         .listing-title {
@@ -252,8 +241,12 @@
         .verified-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block; }
 
         /* ---------- SKELETON LOADER ---------- */
-        /* CHANGE: Skeleton shimmer instead of blank loader — no flash on re-render */
-        .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+        .skeleton-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem;
+            opacity: 1;
+            transition: opacity 0.2s var(--ease-soft);
+        }
+        .skeleton-grid.hidden { opacity: 0; pointer-events: none; position: absolute; }
         .skeleton-card { background: white; border-radius: var(--radius); overflow: hidden; }
         .skeleton-img { height: 180px; background: linear-gradient(90deg, #eef1f5 25%, #e2e6ea 50%, #eef1f5 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
         .skeleton-body { padding: 1rem; }
@@ -270,7 +263,6 @@
         /* ---------- FOOTER ---------- */
         footer {
             text-align: center;
-            /* CHANGE: safe-area bottom padding for iPhone home indicator */
             padding: 1rem 2rem calc(1rem + var(--safe-bottom));
             font-size: 0.75rem; color: var(--text-muted); margin-top: 2rem;
         }
@@ -284,7 +276,6 @@
             .listing-price { font-size: 1rem; }
             .marketplace-hero { padding: 1.5rem; }
             .marketplace-hero h1 { font-size: 1.3rem; }
-            /* CHANGE: save button still 44px on mobile */
             .save-btn { width: 40px; height: 40px; font-size: 1rem; top: 8px; right: 8px; }
         }
     </style>
@@ -353,7 +344,6 @@
             <span class="results-count" id="results-count">Loading...</span>
         </div>
 
-        <!-- CHANGE: Skeleton loader instead of text-only loader -->
         <div class="skeleton-grid" id="skeleton-grid">
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
@@ -361,7 +351,7 @@
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
         </div>
 
-        <div class="listing-grid" id="listing-grid" style="display:none;"></div>
+        <div class="listing-grid" id="listing-grid"></div>
     </div>
 
     <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
@@ -442,15 +432,16 @@
         const categoryEmojis = { 'Electronics':'📱', 'Fashion':'👟', 'Books':'📚', 'Food':'🍕', 'Services':'🔧', 'Other':'📦' };
         const categoryColors = { 'Electronics':'#e8f0fe', 'Fashion':'#f0f7f0', 'Books':'#fef2e7', 'Food':'#fff3e0', 'Services':'#f3e5f5', 'Other':'#eceff1' };
 
-        // CHANGE: Show skeleton instead of clearing grid — no flash
+        // CHANGE: Fade-based swap between skeleton and real grid instead of an
+        // instant display:none/block toggle — feels less abrupt on mobile.
         function showLoading() {
-            skeletonGrid.style.display = 'grid';
-            listingGrid.style.display = 'none';
+            skeletonGrid.classList.remove('hidden');
+            listingGrid.classList.remove('visible');
         }
 
         function hideLoading() {
-            skeletonGrid.style.display = 'none';
-            listingGrid.style.display = 'grid';
+            skeletonGrid.classList.add('hidden');
+            listingGrid.classList.add('visible');
         }
 
         async function fetchListings() {
@@ -468,11 +459,11 @@
             try {
                 const res = await fetch(`${API_BASE}/api/listings?${params.toString()}`);
                 const listings = await res.json();
-                hideLoading();
 
                 if (!listings || listings.length === 0) {
                     listingGrid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h2>No listings found</h2><p>Try a different search or category</p></div>';
                     resultsCount.innerHTML = '<strong>0</strong> items';
+                    hideLoading();
                     return;
                 }
                 resultsCount.innerHTML = `<strong>${listings.length}</strong> item${listings.length > 1 ? 's' : ''} found`;
@@ -489,10 +480,11 @@
                             <div class="listing-meta">${l.seller&&l.seller.verified_badge?'<span class="verified-dot"></span> Verified ·':''}${l.campus}</div>
                         </div>
                     </a>`).join('');
+                hideLoading();
 
             } catch (err) {
-                hideLoading();
                 listingGrid.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h2>Couldn\'t load listings</h2><p>Check your connection</p></div>';
+                hideLoading();
             }
         }
 
@@ -505,14 +497,16 @@
                 if (el.classList.contains('saved')) {
                     await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} });
                     el.classList.remove('saved'); el.textContent = '♡';
-                    // CHANGE: quick scale bounce on unsave
-                    el.style.transform = 'scale(0.8)'; setTimeout(() => el.style.transform = '', 150);
                 } else {
                     await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
                     el.classList.add('saved'); el.textContent = '♥';
-                    // CHANGE: quick scale bounce on save
-                    el.style.transform = 'scale(1.2)'; setTimeout(() => el.style.transform = '', 150);
                 }
+                // CHANGE: single keyframe bounce class, auto-removes itself —
+                // no competing inline transform with the :active CSS state
+                el.classList.remove('bounce');
+                void el.offsetWidth; // restart animation if double-tapped
+                el.classList.add('bounce');
+                el.addEventListener('animationend', () => el.classList.remove('bounce'), { once: true });
             } catch (err) { console.error('Save failed:', err); }
         }
 
