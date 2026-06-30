@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-  <title>Vendly • student marketplace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0" />
+  <title>Vendly • student universe</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-deep: #050508;
-      --bg-base: #0b0b12;
-      --surface-elevated: #14141f;
-      --surface-glass: rgba(18, 18, 28, 0.75);
-      --surface-glass-heavy: rgba(14, 14, 22, 0.85);
-      --text-primary: #f4f4f9;
-      --text-secondary: #9a9bb0;
-      --text-tertiary: #5f6078;
+      --bg-base: #0a0a10;
+      --surface-elevated: #12121c;
+      --surface-glass: rgba(14, 14, 24, 0.75);
+      --surface-glass-heavy: rgba(10, 10, 18, 0.88);
+      --text-primary: #f2f2f7;
+      --text-secondary: #9a9ab0;
+      --text-tertiary: #5a5a70;
       --accent: #ff5e3a;
       --accent-soft: rgba(255, 94, 58, 0.15);
       --accent-glow: rgba(255, 94, 58, 0.4);
@@ -24,23 +24,26 @@
       --blue-soft: rgba(94, 158, 255, 0.12);
       --purple: #b98eff;
       --purple-soft: rgba(185, 142, 255, 0.12);
-      --border-glass: rgba(255, 255, 255, 0.08);
-      --border-active: rgba(255, 255, 255, 0.15);
+      --border-glass: rgba(255, 255, 255, 0.07);
+      --border-active: rgba(255, 255, 255, 0.14);
       --radius-sm: 14px;
       --radius-md: 22px;
       --radius-lg: 32px;
       --radius-full: 999px;
-      --shadow-float: 0 20px 40px -20px rgba(0,0,0,0.6);
+      --shadow-float: 0 20px 40px -20px rgba(0,0,0,0.7);
       --shadow-glow: 0 0 30px rgba(255,94,58,0.25);
       --ease-spring: cubic-bezier(0.22, 0.61, 0.36, 1);
       --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
       --safe-bottom: env(safe-area-inset-bottom, 20px);
+      --header-height: 80px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html {
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior: none;
       font-size: 16px;
+      scroll-behavior: smooth;
     }
     body {
       font-family: 'Inter', sans-serif;
@@ -50,353 +53,506 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding-bottom: calc(80px + var(--safe-bottom));
+      padding-bottom: calc(90px + var(--safe-bottom));
       position: relative;
       isolation: isolate;
       letter-spacing: -0.01em;
       overflow-x: hidden;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at 30% 10%, rgba(255,94,58,0.08) 0%, transparent 40%),
-                  radial-gradient(circle at 80% 70%, rgba(94,158,255,0.06) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
+      background-image: 
+        radial-gradient(circle at 15% 5%, rgba(255,94,58,0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(94,158,255,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(185,142,255,0.04) 0%, transparent 60%);
+      background-attachment: fixed;
     }
     .app-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       position: relative;
       z-index: 2;
-      padding: 20px 18px 0;
+      padding: 24px 18px 0;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 28px;
     }
     @media (min-width: 768px) {
       .app-container {
-        max-width: 720px;
-        padding: 32px 28px 0;
+        max-width: 740px;
+        padding: 36px 28px 0;
+        gap: 36px;
       }
     }
-    /* ----- mobile bottom nav ----- */
+
+    /* ----- bottom nav reinvented ----- */
     .bottom-nav {
       position: fixed;
-      bottom: 18px;
+      bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
-      width: calc(100% - 36px);
-      max-width: 400px;
+      width: calc(100% - 40px);
+      max-width: 420px;
       background: var(--surface-glass-heavy);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
+      backdrop-filter: blur(32px) saturate(180%);
+      -webkit-backdrop-filter: blur(32px) saturate(180%);
       border: 1px solid var(--border-glass);
-      border-radius: var(--radius-full);
-      padding: 10px 20px;
+      border-radius: 40px;
+      padding: 8px 12px;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       align-items: center;
       z-index: 120;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-      transition: transform 0.2s var(--ease-spring);
+      box-shadow: 0 20px 44px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      transition: transform 0.25s var(--ease-spring);
+      gap: 4px;
     }
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 1px;
       color: var(--text-tertiary);
       font-size: 0.7rem;
       font-weight: 550;
-      transition: all 0.2s var(--ease-smooth);
-      background: none;
+      transition: all 0.25s var(--ease-smooth);
+      background: transparent;
       border: none;
       cursor: pointer;
-      padding: 6px 10px;
+      padding: 8px 12px;
       border-radius: 30px;
       letter-spacing: -0.01em;
+      position: relative;
+      text-decoration: none;
     }
     .nav-item.active {
       color: var(--accent);
       font-weight: 650;
     }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 0 0 4px 4px;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
     .nav-icon {
-      font-size: 1.5rem;
-      transition: transform 0.2s var(--ease-spring);
+      font-size: 1.4rem;
+      transition: transform 0.25s var(--ease-bounce);
     }
     .nav-item.active .nav-icon {
       transform: translateY(-2px);
-      filter: drop-shadow(0 4px 8px var(--accent-glow));
+      filter: drop-shadow(0 6px 10px var(--accent-glow));
     }
     .floating-sell-btn {
       background: var(--accent);
       color: white;
       border: none;
-      width: 52px;
-      height: 52px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
-      box-shadow: 0 10px 28px var(--accent-glow);
-      transition: all 0.2s var(--ease-spring);
-      margin-top: -24px;
+      font-size: 1.7rem;
+      box-shadow: 0 12px 30px var(--accent-glow), 0 0 0 4px rgba(255,94,58,0.2);
+      transition: all 0.25s var(--ease-bounce);
+      margin-top: -28px;
       cursor: pointer;
+      position: relative;
+      text-decoration: none;
     }
-    .floating-sell-btn:active { transform: scale(0.9); }
-    /* ----- search centerpiece ----- */
-    .search-hero {
+    .floating-sell-btn:active { transform: scale(0.88); box-shadow: 0 6px 16px var(--accent-glow); }
+
+    /* ----- header area ----- */
+    .greeting-block {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .greeting-text h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, #e0e0ff 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .greeting-text .sub {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+    .profile-pill {
+      background: var(--surface-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: 40px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: 0.2s;
+    }
+
+    /* ----- search reinvented as magnetic field ----- */
+    .search-magnetic {
+      position: relative;
+      margin: 4px 0;
+    }
+    .search-field {
       background: var(--surface-glass);
       backdrop-filter: blur(28px);
       -webkit-backdrop-filter: blur(28px);
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
+      border-radius: 34px;
+      padding: 16px 22px;
       border: 1px solid var(--border-glass);
       display: flex;
       align-items: center;
       gap: 12px;
-      box-shadow: 0 20px 40px -18px rgba(0,0,0,0.7);
-      transition: box-shadow 0.3s;
+      box-shadow: 0 20px 36px -16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset;
+      transition: all 0.3s var(--ease-smooth);
     }
-    .search-hero:focus-within {
-      box-shadow: 0 0 0 2px rgba(255,94,58,0.4), 0 24px 44px -16px black;
+    .search-field:focus-within {
+      box-shadow: 0 0 0 2px rgba(255,94,58,0.5), 0 28px 48px -18px black, 0 0 0 1px rgba(255,255,255,0.06) inset;
+      transform: scale(1.01);
     }
-    .search-icon-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-secondary);
+    .search-icon-wrap {
+      font-size: 1.3rem;
+      opacity: 0.7;
     }
     #search-input {
       flex: 1;
       background: transparent;
       border: none;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-primary);
       outline: none;
       font-weight: 500;
     }
-    #search-input::placeholder { color: var(--text-tertiary); }
-    .voice-icon {
-      font-size: 1.3rem;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    /* ----- filter pills horizontal scroll ----- */
-    .filter-scroll {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 4px;
-    }
-    .filter-scroll::-webkit-scrollbar { display: none; }
-    .filter-chip {
-      background: var(--surface-glass);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-glass);
-      padding: 10px 18px;
-      border-radius: 30px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      white-space: nowrap;
-      color: var(--text-secondary);
-      transition: all 0.2s;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .filter-chip.active {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-      font-weight: 600;
-      box-shadow: 0 6px 18px var(--accent-soft);
-    }
-    /* ----- product cards reinvented ----- */
-    .product-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .product-card {
-      background: var(--surface-elevated);
-      border-radius: 28px;
-      overflow: hidden;
-      border: 1px solid var(--border-glass);
-      transition: all 0.25s var(--ease-spring);
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 12px 30px -16px black;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-    }
-    .product-card:active { transform: scale(0.98); }
-    .card-image {
-      height: 220px;
-      background: #1a1a2a;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-      overflow: hidden;
-    }
-    .card-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s var(--ease-spring);
-    }
-    .product-card:hover .card-image img { transform: scale(1.04); }
-    .badge-top-left {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      background: rgba(10,10,18,0.8);
-      backdrop-filter: blur(14px);
-      padding: 5px 12px;
-      border-radius: 30px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    .favorite-btn {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      background: rgba(20,20,30,0.8);
-      backdrop-filter: blur(16px);
-      border: none;
-      width: 40px;
-      height: 40px;
+    #search-input::placeholder { color: var(--text-tertiary); font-weight: 400; }
+    .voice-dot {
+      width: 32px;
+      height: 32px;
+      background: var(--blue-soft);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
-      color: white;
-      cursor: pointer;
+      font-size: 1.1rem;
       transition: 0.2s;
-      z-index: 5;
+      cursor: pointer;
     }
-    .favorite-btn.saved { color: #ff5e3a; }
-    .card-content {
-      padding: 16px 18px 20px;
+    .voice-dot:active { background: var(--blue); }
+
+    /* ----- story ring navigation (categories reinvented) ----- */
+    .story-rings {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 8px 4px 12px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .story-rings::-webkit-scrollbar { display: none; }
+    .story-ring-item {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      gap: 8px;
+      min-width: 60px;
+      cursor: pointer;
+      transition: 0.25s var(--ease-spring);
+      scroll-snap-align: start;
     }
-    .price-tag {
-      font-size: 1.5rem;
-      font-weight: 750;
-      color: var(--accent);
+    .ring {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: var(--surface-elevated);
+      border: 2px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      transition: all 0.3s var(--ease-bounce);
+      position: relative;
+    }
+    .story-ring-item.active .ring {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-soft), 0 0 0 3px var(--accent-soft);
+      transform: scale(1.05);
+    }
+    .ring-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .story-ring-item.active .ring-label { color: var(--accent); }
+
+    /* ----- dynamic sections with unique layouts ----- */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+    .section-header h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
       letter-spacing: -0.02em;
     }
-    .title-line {
+    .section-header span {
+      font-size: 0.8rem;
+      color: var(--accent);
       font-weight: 600;
-      font-size: 1rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      cursor: pointer;
     }
-    .meta-row {
+
+    /* HORIZONTAL CARD STRIP (Trending / Flash Deals) */
+    .horizontal-strip {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 6px 2px 18px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .horizontal-strip::-webkit-scrollbar { display: none; }
+    .strip-card {
+      min-width: 260px;
+      max-width: 280px;
+      background: var(--surface-elevated);
+      border-radius: 26px;
+      overflow: hidden;
+      border: 1px solid var(--border-glass);
+      scroll-snap-align: start;
+      transition: 0.25s var(--ease-spring);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+    .strip-card:active { transform: scale(0.97); }
+    .strip-img {
+      height: 150px;
+      background: #1a1a2c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+    }
+    .strip-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .strip-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(12px);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .strip-content {
+      padding: 14px;
+    }
+    .strip-price {
+      font-weight: 750;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    /* MAGAZINE LAYOUT (New this hour / Hidden gems) */
+    .magazine-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .magazine-card {
+      background: var(--surface-elevated);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border-glass);
+      transition: 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .magazine-card:active { transform: scale(0.97); }
+    .magazine-img {
+      height: 120px;
+      background: #1e1e30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+    }
+    .magazine-img img { width:100%; height:100%; object-fit:cover; }
+    .magazine-content { padding: 12px; }
+    .magazine-price { font-weight: 700; color: var(--accent); }
+
+    /* IMMERSIVE BANNER (Free items / Services) */
+    .immersive-banner {
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+      border-radius: 28px;
+      padding: 20px;
+      border: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: 0.25s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .immersive-banner:active { transform: scale(0.98); }
+    .banner-emoji {
+      font-size: 2.8rem;
+      background: rgba(255,255,255,0.05);
+      width: 70px;
+      height: 70px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* STACKED CARDS (Hostels / Tutors) */
+    .stacked-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .stacked-item {
+      background: var(--surface-glass);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .stacked-avatar {
+      width: 48px;
+      height: 48px;
+      background: #222;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+    }
+
+    /* NEARBY PULSE */
+    .nearby-pulse {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-    .verified-pill {
       background: var(--green-soft);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.75rem;
       color: var(--green);
-      padding: 4px 10px;
-      border-radius: 20px;
       font-weight: 600;
     }
-    /* skeleton */
-    .skeleton-card {
-      background: var(--surface-elevated);
-      border-radius: 28px;
-      height: 320px;
-      animation: shimmer 1.8s infinite;
+    .pulse-dot {
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 1.4s infinite;
     }
-    @keyframes shimmer { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
-    .empty-state { text-align: center; padding: 50px 20px; color: var(--text-tertiary); }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(46,204,113,0.7)} 70%{box-shadow:0 0 0 8px rgba(46,204,113,0)} 100%{box-shadow:0 0 0 0 rgba(46,204,113,0)} }
+
     .login-btn {
       background: var(--accent);
       color: white;
       border: none;
-      padding: 12px 24px;
+      padding: 10px 20px;
       border-radius: 30px;
       font-weight: 600;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
     }
-    @media (max-width: 400px) {
-      .card-image { height: 180px; }
-    }
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--text-tertiary); }
   </style>
 </head>
 <body>
   <div class="app-container" id="app-container">
-    <!-- dynamic greeting & search -->
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <div style="font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em;">👋 Hey</div>
-        <div style="color: var(--text-secondary); font-size: 0.9rem;">Find campus deals</div>
+    <!-- dynamic greeting block -->
+    <div class="greeting-block">
+      <div class="greeting-text">
+        <h1 id="greeting-name">👋 Good morning</h1>
+        <div class="sub">What's happening around campus today</div>
       </div>
-      <div id="profile-area"></div>
+      <div id="profile-area" class="profile-pill"></div>
     </div>
 
-    <div class="search-hero" id="search-hero">
-      <span class="search-icon-wrapper">🔍</span>
-      <input type="text" id="search-input" placeholder="Search textbooks, gadgets..." autocomplete="off" />
-      <span class="voice-icon">🎤</span>
+    <!-- magnetic search -->
+    <div class="search-magnetic">
+      <div class="search-field">
+        <span class="search-icon-wrap">🔍</span>
+        <input type="text" id="search-input" placeholder="Search anything on campus..." autocomplete="off" />
+        <div class="voice-dot">🎤</div>
+      </div>
     </div>
 
-    <div class="filter-scroll" id="category-scroll">
-      <span class="filter-chip active" data-category="">🔥 All</span>
-      <span class="filter-chip" data-category="Electronics">📱 Tech</span>
-      <span class="filter-chip" data-category="Fashion">👕 Fashion</span>
-      <span class="filter-chip" data-category="Books">📚 Books</span>
-      <span class="filter-chip" data-category="Food">🍔 Food</span>
-      <span class="filter-chip" data-category="Services">🛠️ Services</span>
+    <!-- story rings categories -->
+    <div class="story-rings" id="category-rings">
+      <div class="story-ring-item active" data-category=""><div class="ring">🔥</div><span class="ring-label">All</span></div>
+      <div class="story-ring-item" data-category="Electronics"><div class="ring">📱</div><span class="ring-label">Tech</span></div>
+      <div class="story-ring-item" data-category="Fashion"><div class="ring">👕</div><span class="ring-label">Fashion</span></div>
+      <div class="story-ring-item" data-category="Books"><div class="ring">📚</div><span class="ring-label">Books</span></div>
+      <div class="story-ring-item" data-category="Food"><div class="ring">🍔</div><span class="ring-label">Food</span></div>
+      <div class="story-ring-item" data-category="Services"><div class="ring">🛠️</div><span class="ring-label">Services</span></div>
     </div>
 
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-      <select id="campus-filter" style="background:var(--surface-glass); border:1px solid var(--border-glass); color:white; padding:10px 16px; border-radius:30px;">
+    <!-- filters compact -->
+    <div style="display: flex; gap: 8px;">
+      <select id="campus-filter" style="background:var(--surface-glass); border:1px solid var(--border-glass); color:white; padding:8px 14px; border-radius:30px; font-size:0.8rem;">
         <option value="">🏛️ All campuses</option>
         <option value="LASU">LASU</option>
         <option value="UNILAG">UNILAG</option>
         <option value="OAU">OAU</option>
       </select>
-      <select id="condition-filter" style="background:var(--surface-glass); border:1px solid var(--border-glass); color:white; padding:10px 16px; border-radius:30px;">
+      <select id="condition-filter" style="background:var(--surface-glass); border:1px solid var(--border-glass); color:white; padding:8px 14px; border-radius:30px; font-size:0.8rem;">
         <option value="">📦 Condition</option>
         <option value="New">New</option>
         <option value="Used">Used</option>
       </select>
     </div>
 
-    <div id="results-banner" style="font-size:0.8rem; color:var(--text-tertiary);"></div>
-
-    <div class="product-grid" id="listing-grid"></div>
-    <div id="skeleton-container" class="product-grid"></div>
+    <!-- DYNAMIC SECTIONS WILL BE INJECTED HERE -->
+    <div id="dynamic-sections"></div>
   </div>
 
+  <!-- FIXED: Bottom nav now uses <a> tags with real routes -->
   <div class="bottom-nav">
-    <button class="nav-item active"><span class="nav-icon">🏠</span><span>Home</span></button>
-    <button class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></button>
-    <button class="floating-sell-btn" onclick="alert('Sell feature')">+</button>
-    <button class="nav-item"><span class="nav-icon">❤️</span><span>Saved</span></button>
-    <button class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></button>
+    <a href="/marketplace" class="nav-item active"><span class="nav-icon">🏠</span><span>Home</span></a>
+    <a href="/chat" class="nav-item"><span class="nav-icon">💬</span><span>Chat</span></a>
+    <a href="/listings/new" class="floating-sell-btn">+</a>
+    <a href="/saved" class="nav-item"><span class="nav-icon">❤️</span><span>Saved</span></a>
+    <a href="/profile/me" class="nav-item" id="profile-nav-link"><span class="nav-icon">👤</span><span>Profile</span></a>
   </div>
 
   <script>
@@ -405,18 +561,13 @@
     function clearToken() { localStorage.removeItem('vendly_token'); }
     function logout() { clearToken(); window.location.href = '/login'; }
 
-    const listingGrid = document.getElementById('listing-grid');
-    const skeletonContainer = document.getElementById('skeleton-container');
+    const dynamicSections = document.getElementById('dynamic-sections');
     let currentCategory = '';
 
-    function showSkeleton() {
-      skeletonContainer.innerHTML = Array(3).fill(`<div class="skeleton-card"></div>`).join('');
-      listingGrid.innerHTML = '';
-    }
-    function hideSkeleton() { skeletonContainer.innerHTML = ''; }
+    function escapeHTML(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-    async function fetchListings() {
-      showSkeleton();
+    async function fetchListingsAndRender() {
+      dynamicSections.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-tertiary);">✨ Loading campus vibe...</div>';
       const params = new URLSearchParams();
       const search = document.getElementById('search-input').value.trim();
       if (search) params.append('search', search);
@@ -430,73 +581,164 @@
       try {
         const res = await fetch(`${API_BASE}/api/listings?${params.toString()}`);
         const listings = await res.json();
-        hideSkeleton();
         if (!listings || listings.length === 0) {
-          listingGrid.innerHTML = `<div class="empty-state">📭<br>No listings yet</div>`;
-          document.getElementById('results-banner').innerText = '';
+          dynamicSections.innerHTML = `<div class="empty-state">📭<br>No listings found.<br>Try a different filter.</div>`;
           return;
         }
-        document.getElementById('results-banner').innerText = `${listings.length} item${listings.length>1?'s':''}`;
-        listingGrid.innerHTML = listings.map(l => {
+        renderSections(listings);
+      } catch (err) {
+        dynamicSections.innerHTML = `<div class="empty-state">⚠️ Couldn't load campus feed</div>`;
+      }
+    }
+
+    function renderSections(listings) {
+      const trending = listings.slice(0, 4);
+      const newThisHour = listings.slice(2, 6);
+      const freeItems = listings.filter(l => l.price === 0 || l.price < 500);
+      const services = listings.filter(l => l.category === 'Services');
+      const hostels = listings.filter(l => l.title?.toLowerCase().includes('hostel') || l.title?.toLowerCase().includes('apartment'));
+
+      let html = '';
+
+      // SECTION 1: Trending around you (horizontal strip)
+      if (trending.length) {
+        html += `<div class="section-header"><h2>🔥 Trending around you</h2><span>See all</span></div>`;
+        html += `<div class="horizontal-strip">`;
+        trending.forEach(l => {
           const emoji = { Electronics:'📱', Fashion:'👕', Books:'📚', Food:'🍔', Services:'🛠️' }[l.category] || '📦';
-          const verifiedHtml = l.seller?.verified_badge ? '<span class="verified-pill">✓ Verified</span>' : '';
-          return `
-            <a href="/listing/${l.id}" class="product-card">
-              <div class="card-image">
-                ${l.images?.[0] ? `<img src="${l.images[0]}" alt="${l.title}" onerror="this.style.display='none'" />` : `<span>${emoji}</span>`}
-                <span class="badge-top-left">${l.condition||'Used'}</span>
-                <button class="favorite-btn" onclick="event.preventDefault();event.stopPropagation();toggleSave(${l.id},this)">♡</button>
+          html += `
+            <a href="/listing/${l.id}" class="strip-card">
+              <div class="strip-img">${l.images?.[0] ? `<img src="${l.images[0]}" alt="${l.title}" onerror="this.style.display='none'"/>` : `<span>${emoji}</span>`}
+                <span class="strip-badge">${l.condition||'Used'}</span>
               </div>
-              <div class="card-content">
-                <div class="price-tag">₦${l.price?.toLocaleString()}</div>
-                <div class="title-line">${escapeHTML(l.title)}</div>
-                <div class="meta-row">
-                  ${verifiedHtml}
-                  <span>📍 ${escapeHTML(l.campus||'Campus')}</span>
-                </div>
+              <div class="strip-content">
+                <div class="strip-price">₦${l.price?.toLocaleString()}</div>
+                <div style="font-weight:600;font-size:0.9rem;">${escapeHTML(l.title)}</div>
+                <div style="font-size:0.7rem;color:var(--text-secondary);">📍 ${escapeHTML(l.campus||'Campus')}</div>
               </div>
             </a>`;
-        }).join('');
-      } catch (err) {
-        hideSkeleton();
-        listingGrid.innerHTML = `<div class="empty-state">⚠️ Couldn't load</div>`;
+        });
+        html += `</div>`;
       }
+
+      // SECTION 2: Flash deals ending soon (magazine layout)
+      if (listings.length > 2) {
+        html += `<div class="section-header"><h2>⚡ Flash deals ending soon</h2><span>View all</span></div>`;
+        html += `<div class="magazine-grid">`;
+        listings.slice(4, 8).forEach(l => {
+          html += `
+            <a href="/listing/${l.id}" class="magazine-card">
+              <div class="magazine-img">${l.images?.[0] ? `<img src="${l.images[0]}" alt="${l.title}"/>` : '📦'}</div>
+              <div class="magazine-content">
+                <div class="magazine-price">₦${l.price?.toLocaleString()}</div>
+                <div style="font-size:0.8rem;font-weight:600;">${escapeHTML(l.title)}</div>
+              </div>
+            </a>`;
+        });
+        html += `</div>`;
+      }
+
+      // SECTION 3: Free items / Hidden gems (immersive banner)
+      if (freeItems.length) {
+        html += `<div class="section-header"><h2>🎁 Free items near you</h2></div>`;
+        freeItems.slice(0, 2).forEach(l => {
+          html += `
+            <a href="/listing/${l.id}" class="immersive-banner">
+              <div class="banner-emoji">🎁</div>
+              <div style="flex:1;"><strong>${escapeHTML(l.title)}</strong><div style="color:var(--text-secondary);font-size:0.8rem;">${escapeHTML(l.campus||'Campus')}</div></div>
+              <div style="color:var(--green);font-weight:700;">FREE</div>
+            </a>`;
+        });
+      }
+
+      // SECTION 4: Services (stacked)
+      if (services.length) {
+        html += `<div class="section-header"><h2>🛠️ Services & Tutors</h2></div><div class="stacked-list">`;
+        services.slice(0,3).forEach(l => {
+          html += `
+            <a href="/listing/${l.id}" class="stacked-item">
+              <div class="stacked-avatar">📚</div>
+              <div style="flex:1;"><strong>${escapeHTML(l.title)}</strong><div style="font-size:0.7rem;color:var(--text-secondary);">${escapeHTML(l.campus||'Campus')}</div></div>
+              <div style="font-weight:700;">₦${l.price?.toLocaleString()}</div>
+            </a>`;
+        });
+        html += `</div>`;
+      }
+
+      // SECTION 5: Hostels
+      if (hostels.length) {
+        html += `<div class="section-header"><h2>🏠 Hostels & Rentals</h2></div><div class="stacked-list">`;
+        hostels.slice(0,3).forEach(l => {
+          html += `
+            <a href="/listing/${l.id}" class="stacked-item">
+              <div class="stacked-avatar">🏠</div>
+              <div style="flex:1;"><strong>${escapeHTML(l.title)}</strong><div style="font-size:0.7rem;color:var(--text-secondary);">${escapeHTML(l.campus||'Campus')}</div></div>
+              <div style="font-weight:700;">₦${l.price?.toLocaleString()}</div>
+            </a>`;
+        });
+        html += `</div>`;
+      }
+
+      // SECTION 6: Nearby sellers with pulse
+      html += `<div class="section-header"><h2>📍 Nearby sellers</h2><div class="nearby-pulse"><span class="pulse-dot"></span> Live</div></div>`;
+      html += `<div class="horizontal-strip">`;
+      listings.slice(6,10).forEach(l => {
+        html += `
+          <a href="/listing/${l.id}" class="strip-card">
+            <div class="strip-img">${l.images?.[0] ? `<img src="${l.images[0]}" alt="${l.title}"/>` : '📍'}</div>
+            <div class="strip-content">
+              <div style="font-weight:600;">${escapeHTML(l.title)}</div>
+              <div style="color:var(--accent);">₦${l.price?.toLocaleString()}</div>
+            </div>
+          </a>`;
+      });
+      html += `</div>`;
+
+      dynamicSections.innerHTML = html;
     }
 
-    function escapeHTML(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-    async function toggleSave(listingId, el) {
-      const token = getToken();
-      if (!token) {
-        sessionStorage.setItem('vendly_return_url', window.location.href);
-        window.location.href = '/login';
-        return;
-      }
-      if (el.classList.contains('saved')) {
-        await fetch(`${API_BASE}/api/saved/${listingId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-        el.classList.remove('saved'); el.textContent = '♡';
-      } else {
-        await fetch(`${API_BASE}/api/saved/${listingId}`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
-        el.classList.add('saved'); el.textContent = '♥';
-      }
-    }
-
-    document.querySelectorAll('.filter-chip').forEach(chip => {
-      chip.addEventListener('click', function() {
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    // Category ring interaction
+    document.querySelectorAll('.story-ring-item').forEach(ring => {
+      ring.addEventListener('click', function() {
+        document.querySelectorAll('.story-ring-item').forEach(r => r.classList.remove('active'));
         this.classList.add('active');
         currentCategory = this.dataset.category;
-        fetchListings();
+        fetchListingsAndRender();
       });
     });
 
-    document.getElementById('campus-filter').addEventListener('change', fetchListings);
-    document.getElementById('condition-filter').addEventListener('change', fetchListings);
+    document.getElementById('campus-filter').addEventListener('change', fetchListingsAndRender);
+    document.getElementById('condition-filter').addEventListener('change', fetchListingsAndRender);
     let searchTimeout;
     document.getElementById('search-input').addEventListener('input', () => {
       clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(fetchListings, 350);
+      searchTimeout = setTimeout(fetchListingsAndRender, 400);
     });
+
+    // Greeting logic
+    (function setGreeting() {
+      const hour = new Date().getHours();
+      let timeStr = 'Good morning';
+      if (hour >= 12 && hour < 17) timeStr = 'Good afternoon';
+      else if (hour >= 17) timeStr = 'Good evening';
+      const token = getToken();
+      if (token) {
+        fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } })
+          .then(res => res.json())
+          .then(data => {
+            const name = data.user?.full_name?.split(' ')[0] || data.user?.email?.split('@')[0] || 'friend';
+            document.getElementById('greeting-name').innerHTML = `👋 ${timeStr}, <span style="color:var(--accent);">${escapeHTML(name)}</span>`;
+            // FIXED: Update profile nav link with actual user ID
+            if (data.user?.id) {
+              document.getElementById('profile-nav-link').href = `/profile/${data.user.id}`;
+            }
+          }).catch(() => {
+            document.getElementById('greeting-name').textContent = `👋 ${timeStr}`;
+          });
+      } else {
+        document.getElementById('greeting-name').textContent = `👋 ${timeStr}`;
+      }
+    })();
 
     (async function loadProfile() {
       const token = getToken();
@@ -505,8 +747,7 @@
         try {
           const res = await fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
           if (res.ok) {
-            const user = (await res.json()).user;
-            area.innerHTML = `<button onclick="logout()" style="background:transparent; border:1px solid #444; color:white; padding:8px 16px; border-radius:30px;">Logout</button>`;
+            area.innerHTML = `<button onclick="logout()" style="background:transparent; border:1px solid #444; color:white; padding:6px 14px; border-radius:30px; cursor:pointer;">Logout</button>`;
             return;
           }
         } catch(e) {}
@@ -514,7 +755,7 @@
       area.innerHTML = `<a href="/login"><button class="login-btn">Login</button></a>`;
     })();
 
-    fetchListings();
+    fetchListingsAndRender();
   </script>
 </body>
 </html>
