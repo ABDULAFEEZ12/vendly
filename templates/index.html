@@ -2,349 +2,859 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Vendly — LASU's Student Marketplace</title>
-    <!-- CHANGE: Added display=swap to prevent flash of invisible text while font loads -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
+    <title>Vendly — Student Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --navy: #0D1B2A;
-            --navy-light: #152639;
-            --orange: #FF6B35;
-            --orange-glow: rgba(255,107,53,0.15);
-            --white: #ffffff;
-            --gray-50: #f8f9fb;
-            --gray-100: #f0f2f5;
-            --gray-200: #e2e6ea;
-            --text-muted: #6b7b8d;
-            --text-dark: #0a121c;
-            --border: #e8ecf0;
-            --radius: 16px;
-            --radius-sm: 12px;
-            /* CHANGE: safe-area insets for iPhone notch/home indicator */
+            --bg-deep: #050508;
+            --bg-base: #0a0a10;
+            --surface-elevated: #12121c;
+            --surface-glass: rgba(14, 14, 24, 0.75);
+            --surface-glass-heavy: rgba(10, 10, 18, 0.88);
+            --text-primary: #f2f2f7;
+            --text-secondary: #9a9ab0;
+            --text-tertiary: #5a5a70;
+            --accent: #ff5e3a;
+            --accent-soft: rgba(255, 94, 58, 0.15);
+            --accent-glow: rgba(255, 94, 58, 0.4);
+            --green: #2ecc71;
+            --green-soft: rgba(46, 204, 113, 0.15);
+            --blue: #5e9eff;
+            --blue-soft: rgba(94, 158, 255, 0.12);
+            --purple: #b98eff;
+            --purple-soft: rgba(185, 142, 255, 0.12);
+            --amber: #ffb43c;
+            --amber-soft: rgba(255, 180, 60, 0.12);
+            --red: #ff4757;
+            --border-glass: rgba(255, 255, 255, 0.07);
+            --border-active: rgba(255, 255, 255, 0.14);
+            --radius-sm: 14px;
+            --radius-md: 22px;
+            --radius-lg: 32px;
+            --radius-full: 999px;
+            --shadow-float: 0 20px 40px -20px rgba(0,0,0,0.7);
+            --shadow-glow: 0 0 30px rgba(255,94,58,0.25);
+            --ease-spring: cubic-bezier(0.22, 0.61, 0.36, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
             --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* CHANGE: Global tap highlight removal and momentum scrolling */
         html {
             -webkit-tap-highlight-color: transparent;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: contain;
+            overscroll-behavior: none;
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--gray-50);
-            color: var(--navy);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: contain;
-            padding-top: var(--safe-top);
-            padding-bottom: var(--safe-bottom);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            isolation: isolate;
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 5%, rgba(255,94,58,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 20%, rgba(94,158,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 60%, rgba(185,142,255,0.06) 0%, transparent 60%),
+                radial-gradient(circle at 30% 85%, rgba(255,94,58,0.08) 0%, transparent 45%);
+            background-attachment: fixed;
         }
 
         /* ---------- NAVBAR ---------- */
         .navbar {
-            background: var(--navy);
-            /* CHANGE: safe-area top padding so navbar clears iPhone notch */
-            padding: calc(1rem + var(--safe-top)) 2rem 1rem;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border-bottom: 1px solid var(--border-glass);
+            padding: calc(16px + var(--safe-top)) 24px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.5);
         }
         .logo {
-            font-size: 1.5rem; font-weight: 900; color: var(--orange);
-            letter-spacing: -0.5px; text-decoration: none;
-            display: flex; align-items: center; gap: 2px;
-            /* CHANGE: minimum 44px tap target */
-            min-height: 44px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
-        .logo span { color: white; font-weight: 700; }
-        .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+        .logo .accent {
+            color: var(--accent);
+            font-weight: 800;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .nav-links a {
-            color: rgba(255,255,255,0.75); text-decoration: none;
-            font-size: 0.85rem; font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px;
-            /* CHANGE: GPU-accelerated, 44px minimum */
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 44px; min-height: 44px;
-            display: flex; align-items: center; justify-content: center;
-            touch-action: manipulation; will-change: transform, opacity;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 550;
+            padding: 10px 18px;
+            border-radius: 30px;
+            transition: all 0.25s var(--ease-smooth);
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            will-change: transform;
         }
-        .nav-links a:active { transform: scale(0.96); opacity: 0.8; background: rgba(255,255,255,0.12); }
-        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+        .nav-links a:hover {
+            color: var(--text-primary);
+            background: var(--surface-glass);
+        }
+        .nav-links a:active {
+            transform: scale(0.95);
+            background: var(--accent-soft);
+        }
         .btn-nav {
-            background: var(--orange); color: white !important; font-weight: 600;
-            border-radius: 8px; padding: 0.6rem 1.3rem;
+            background: var(--accent) !important;
+            color: white !important;
+            font-weight: 650 !important;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            padding: 10px 22px !important;
         }
-        .btn-nav:active { transform: scale(0.96); opacity: 0.85; }
+        .btn-nav:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 8px 28px rgba(255,94,58,0.5) !important;
+            background: #ff6b4a !important;
+        }
+        .btn-nav:active {
+            transform: scale(0.94) !important;
+        }
 
         /* ---------- HERO ---------- */
         .hero {
-            background: radial-gradient(circle at 50% 0%, #1a3048, var(--navy) 70%);
-            /* CHANGE: responsive padding */
-            padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem) clamp(2.5rem, 5vw, 5rem);
-            text-align: center; position: relative; overflow: hidden;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            padding: clamp(60px, 10vw, 100px) clamp(16px, 4vw, 40px) clamp(50px, 8vw, 80px);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255,94,58,0.18) 0%, transparent 60%);
+            pointer-events: none;
+            animation: heroGlow 8s ease-in-out infinite;
+        }
+        @keyframes heroGlow {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.15); }
         }
         .hero::after {
-            content: ''; position: absolute; top: -50px; left: 50%;
-            transform: translateX(-50%); width: 700px; height: 700px;
-            background: radial-gradient(circle, rgba(255,107,53,0.08) 0%, transparent 70%);
-            pointer-events: none;
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
         }
         .hero-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.25);
-            color: var(--orange); font-size: 0.75rem; font-weight: 600;
-            padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 1.5rem;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            position: relative; z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(255,94,58,0.3);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 30px;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s var(--ease-spring);
         }
         .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900;
-            color: white; line-height: 1.1; margin-bottom: 1.25rem;
-            letter-spacing: -1.5px; position: relative; z-index: 1;
+            font-size: clamp(2.2rem, 6vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.08;
+            margin-bottom: 20px;
+            letter-spacing: -0.05em;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.7s var(--ease-spring);
         }
-        .hero h1 span { color: var(--orange); position: relative; }
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--accent) 0%, #ff9a76 50%, #ff5e3a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
         .hero p {
-            color: rgba(255,255,255,0.6); font-size: 1.05rem;
-            max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.7;
-            position: relative; z-index: 1;
+            color: var(--text-secondary);
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            max-width: 520px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s var(--ease-spring);
         }
-        .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.9s var(--ease-spring);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* CHANGE: Buttons — 44px minimum, GPU-accelerated */
         .btn-primary, .btn-outline, .btn-white {
-            padding: 0.9rem 2.2rem; border-radius: 14px;
-            font-weight: 700; font-size: 0.95rem; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 6px;
-            min-height: 52px; touch-action: manipulation;
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform, opacity;
+            padding: 15px 32px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 54px;
+            touch-action: manipulation;
+            transition: all 0.25s var(--ease-bounce);
+            will-change: transform;
+            letter-spacing: -0.01em;
         }
-        .btn-primary:active, .btn-outline:active, .btn-white:active { transform: scale(0.96); opacity: 0.85; }
-        .btn-primary { background: var(--orange); color: white; box-shadow: 0 4px 16px rgba(255,107,53,0.25); }
-        .btn-primary:hover { background: #e8551f; }
-        .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-outline:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.35); }
-        .btn-white { background: white; color: var(--orange); }
-        .btn-white:hover { background: #f5f5f5; }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 8px 32px var(--accent-glow), 0 0 0 4px rgba(255,94,58,0.1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(255,94,58,0.5), 0 0 0 6px rgba(255,94,58,0.15);
+        }
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-active);
+            backdrop-filter: blur(20px);
+        }
+        .btn-outline:hover {
+            background: var(--surface-glass);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .btn-outline:active {
+            transform: scale(0.95);
+        }
+        .btn-white {
+            background: white;
+            color: var(--accent);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+        }
+        .btn-white:active {
+            transform: scale(0.95);
+        }
 
         .campus-tag {
-            margin-top: 3rem; display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.8); padding: 0.5rem 1.4rem; border-radius: 100px;
-            font-size: 0.85rem; font-weight: 500; position: relative; z-index: 1;
+            margin-top: 48px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 550;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s var(--ease-spring);
+        }
+        .campus-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(46,204,113,0.6);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 6px rgba(46,204,113,0.5); }
+            50% { box-shadow: 0 0 16px rgba(46,204,113,0.8); }
         }
 
-        /* ---------- TRENDING ---------- */
-        .trending { background: white; padding: clamp(3rem, 6vw, 5rem) 2rem; }
-        .section-header { text-align: center; margin-bottom: 3rem; }
+        /* ---------- TRENDING SECTION ---------- */
+        .section {
+            padding: clamp(50px, 8vw, 80px) 20px;
+            position: relative;
+        }
+        .section-alt {
+            background: var(--bg-base);
+            border-top: 1px solid var(--border-glass);
+            border-bottom: 1px solid var(--border-glass);
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
         .section-tag {
-            font-size: 0.7rem; font-weight: 700; color: var(--orange);
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
         }
         .section-header h2 {
-            font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800;
-            color: var(--navy); letter-spacing: -0.5px; margin-bottom: 0.5rem;
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #ffffff 0%, #d0d0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .section-header p { color: var(--text-muted); font-size: 0.95rem; }
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 8px;
+            font-weight: 500;
+        }
 
         .listing-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.25rem; max-width: 1000px; margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
+        @media (max-width: 550px) {
+            .listing-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+
         .listing-card {
-            background: var(--gray-50); border: 1px solid var(--border);
-            border-radius: var(--radius); overflow: hidden; cursor: pointer;
-            text-decoration: none; color: inherit; display: block;
-            /* CHANGE: GPU-accelerated tap feedback */
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: manipulation; will-change: transform;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s var(--ease-spring);
+            box-shadow: 0 4px 20px -8px rgba(0,0,0,0.3);
+            touch-action: manipulation;
+            will-change: transform;
         }
-        .listing-card:active { transform: scale(0.97); opacity: 0.9; }
-        .listing-card:hover { border-color: var(--orange); }
+        .listing-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.6), 0 0 30px rgba(255,94,58,0.08);
+        }
+        .listing-card:active {
+            transform: scale(0.96);
+        }
 
         .listing-img {
-            height: clamp(110px, 20vw, 140px); display: flex;
-            align-items: center; justify-content: center; font-size: 2.5rem;
-            background: #eef1f5; position: relative; overflow: hidden;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: var(--surface-elevated);
+            position: relative;
+            overflow: hidden;
         }
-        .listing-img img { width: 100%; height: 100%; object-fit: cover; }
+        .listing-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s var(--ease-smooth);
+        }
+        .listing-card:hover .listing-img img {
+            transform: scale(1.06);
+        }
         .condition-badge {
-            position: absolute; top: 10px; left: 10px;
-            background: var(--navy); color: white; font-size: 0.65rem;
-            font-weight: 700; padding: 3px 10px; border-radius: 20px;
-            text-transform: uppercase; letter-spacing: 0.3px;
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(16px);
+            color: var(--text-primary);
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: 1px solid var(--border-glass);
+            z-index: 2;
         }
-        .condition-badge.used { background: #5c6b7a; }
-        .listing-body { padding: 1rem; }
-        .listing-title { font-size: 0.9rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem; line-height: 1.3; }
-        .listing-price { font-size: 1.1rem; font-weight: 800; color: var(--orange); margin-bottom: 0.5rem; }
-        .listing-meta { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text-muted); }
+        .condition-badge.used {
+            color: var(--text-secondary);
+        }
+        .listing-body {
+            padding: 16px;
+        }
+        .listing-title {
+            font-size: 0.9rem;
+            font-weight: 650;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+        .listing-price {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: -0.03em;
+        }
+        .listing-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            flex-wrap: wrap;
+        }
         .verified-pill {
-            display: inline-flex; align-items: center; gap: 3px;
-            background: #e8f5e9; color: #2e7d32; font-size: 0.65rem;
-            font-weight: 600; padding: 2px 8px; border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--green-soft);
+            color: var(--green);
+            font-size: 0.65rem;
+            font-weight: 650;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(46,204,113,0.2);
         }
-        .verified-dot { width: 6px; height: 6px; background: #2e7d32; border-radius: 50%; }
+        .verified-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(46,204,113,0.5);
+        }
 
-        /* ---------- FEATURES ---------- */
-        .features { background: var(--gray-50); padding: clamp(3rem, 6vw, 5rem) 2rem; }
+        /* ---------- FEATURES SECTION ---------- */
         .features-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.25rem; max-width: 1000px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            max-width: 1050px;
+            margin: 0 auto;
         }
         .feature-card {
-            background: white; border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 1.8rem;
-            /* CHANGE: GPU-accelerated */
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: manipulation; will-change: transform;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 28px 24px;
+            transition: all 0.3s var(--ease-spring);
+            touch-action: manipulation;
+            will-change: transform;
+            cursor: default;
         }
-        .feature-card:active { transform: scale(0.98); }
-        .feature-card:hover { border-color: var(--orange); }
+        .feature-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 36px -12px rgba(0,0,0,0.5), 0 0 20px rgba(255,94,58,0.06);
+            transform: translateY(-3px);
+        }
+        .feature-card:active {
+            transform: scale(0.98);
+        }
         .feature-icon {
-            width: 48px; height: 48px; background: rgba(255,107,53,0.08);
-            border-radius: var(--radius-sm); display: flex;
-            align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem;
+            width: 52px;
+            height: 52px;
+            background: var(--accent-soft);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255,94,58,0.2);
         }
-        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
-        .feature-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+        .feature-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
 
         /* ---------- HOW IT WORKS ---------- */
-        .how { background: var(--navy); padding: clamp(3rem, 6vw, 5rem) 2rem; text-align: center; }
-        .how h2 { font-size: 2rem; font-weight: 800; color: white; margin-bottom: 2.5rem; letter-spacing: -0.5px; }
-        .steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; max-width: 900px; margin: 0 auto; }
-        .step {
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: var(--radius); padding: 2rem; flex: 1 1 200px; text-align: left;
-            transition: background 0.2s; touch-action: manipulation;
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 950px;
+            margin: 0 auto;
         }
-        .step:active { background: rgba(255,255,255,0.08); }
-        .step:hover { background: rgba(255,255,255,0.08); }
-        .step-num { font-size: 2.5rem; font-weight: 900; color: var(--orange); opacity: 0.3; line-height: 1; margin-bottom: 1rem; }
-        .step h3 { color: white; font-size: 1rem; margin-bottom: 0.5rem; }
-        .step p { color: rgba(255,255,255,0.5); font-size: 0.85rem; line-height: 1.6; }
+        .step {
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 32px 28px;
+            flex: 1 1 220px;
+            text-align: left;
+            transition: all 0.3s var(--ease-spring);
+            touch-action: manipulation;
+            cursor: default;
+        }
+        .step:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 36px -12px rgba(0,0,0,0.5);
+            transform: translateY(-3px);
+        }
+        .step:active {
+            transform: scale(0.98);
+        }
+        .step-num {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent);
+            opacity: 0.2;
+            line-height: 1;
+            margin-bottom: 16px;
+            letter-spacing: -0.04em;
+        }
+        .step h3 {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        .step p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
 
         /* ---------- CTA ---------- */
-        .cta { background: var(--orange); padding: clamp(3rem, 6vw, 4rem) 2rem; text-align: center; }
-        .cta h2 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 900; color: white; margin-bottom: 0.8rem; }
-        .cta p { color: rgba(255,255,255,0.85); font-size: 1rem; margin-bottom: 2rem; }
+        .cta {
+            text-align: center;
+            padding: clamp(60px, 10vw, 90px) 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,94,58,0.2) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .cta h2 {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+        .cta p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+        .cta .btn-white {
+            position: relative;
+            z-index: 1;
+        }
 
         /* ---------- FOOTER ---------- */
         footer {
-            background: var(--navy); color: rgba(255,255,255,0.4);
+            background: var(--bg-base);
+            color: var(--text-tertiary);
             text-align: center;
-            /* CHANGE: safe-area bottom padding for iPhone home indicator */
-            padding: 1rem 2rem calc(1rem + var(--safe-bottom));
-            font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 24px 20px calc(24px + var(--safe-bottom));
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-glass);
+            letter-spacing: 0.01em;
         }
-        footer span { color: var(--orange); font-weight: 600; }
+        footer span {
+            color: var(--accent);
+            font-weight: 700;
+        }
 
+        /* ---------- RESPONSIVE ---------- */
         @media (max-width: 600px) {
-            .navbar { padding-left: 1rem; padding-right: 1rem; }
-            .hero { padding: 4rem 1.5rem 3rem; }
-            .hero h1 { font-size: 2rem; }
-            .listing-grid { grid-template-columns: repeat(2, 1fr); }
+            .navbar {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+            .hero {
+                padding: 50px 16px 40px;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 0.78rem;
+            }
+            .listing-img {
+                height: 120px;
+                font-size: 2.2rem;
+            }
+            .listing-body {
+                padding: 12px;
+            }
+            .listing-title {
+                font-size: 0.8rem;
+            }
+            .listing-price {
+                font-size: 0.95rem;
+            }
+            .btn-primary, .btn-outline {
+                padding: 13px 24px;
+                font-size: 0.85rem;
+            }
+            .step {
+                padding: 24px 20px;
+            }
+            .step-num {
+                font-size: 2.2rem;
+            }
+        }
+        @media (max-width: 380px) {
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+            .nav-links a.hide-mobile {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- NAVBAR -->
     <nav class="navbar">
-        <a href="/" class="logo">VEND<span>LY</span></a>
+        <a href="/" class="logo">VEND<span class="accent">LY</span></a>
         <div class="nav-links">
-            <a href="/marketplace">Marketplace</a>
+            <a href="/marketplace" class="hide-mobile">🏠 Browse</a>
             <a href="/login">Login</a>
             <a href="/register" class="btn-nav">Get Started</a>
         </div>
     </nav>
 
+    <!-- HERO -->
     <section class="hero">
-        <div class="hero-badge">🎓 LASU's Student Marketplace</div>
-        <h1>Buy & sell with<br><span>verified LASU students</span></h1>
+        <div class="hero-badge">🎓 Student Marketplace</div>
+        <h1>Buy & sell with<br><span class="gradient-text">verified students</span></h1>
         <p>The safest way to trade on campus. Chat, negotiate, and close deals — all within your school community.</p>
         <div class="hero-actions">
-            <a href="/listings/new" class="btn-primary">Start Selling →</a>
-            <a href="/marketplace" class="btn-outline">Browse Deals</a>
+            <a href="/listings/new" class="btn-primary">🚀 Start Selling</a>
+            <a href="/marketplace" class="btn-outline">🔍 Browse Deals</a>
         </div>
-        <div class="campus-tag">📍 Lagos State University · LASU</div>
+        <div class="campus-tag">
+            <span class="campus-dot"></span> Lagos State University · LASU
+        </div>
     </section>
 
-    <section class="trending">
+    <!-- TRENDING -->
+    <section class="section section-alt">
         <div class="section-header">
             <div class="section-tag">🔥 Hot on Campus</div>
-            <h2>Trending right now at LASU</h2>
+            <h2>Trending right now</h2>
             <p>Real items from verified students</p>
         </div>
         <div class="listing-grid">
             <a href="/listing/1" class="listing-card">
-                <div class="listing-img" style="background:#e8f0fe;">📱<span class="condition-badge">New</span></div>
-                <div class="listing-body"><div class="listing-title">Tecno Spark 10 Pro</div><div class="listing-price">₦65,000</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
+                <div class="listing-img" style="background:rgba(94,158,255,0.12);">
+                    <span style="font-size:2.5rem;opacity:0.4;">📱</span>
+                    <span class="condition-badge">New</span>
+                </div>
+                <div class="listing-body">
+                    <div class="listing-title">Tecno Spark 10 Pro 128GB</div>
+                    <div class="listing-price">₦65,000</div>
+                    <div class="listing-meta">
+                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span>
+                        <span>· LASU</span>
+                    </div>
+                </div>
             </a>
             <a href="/listing/2" class="listing-card">
-                <div class="listing-img" style="background:#fef2e7;">📚<span class="condition-badge used">Used</span></div>
-                <div class="listing-body"><div class="listing-title">MTH 101 Textbooks (set)</div><div class="listing-price">₦3,500</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
+                <div class="listing-img" style="background:rgba(255,180,60,0.12);">
+                    <span style="font-size:2.5rem;opacity:0.4;">📚</span>
+                    <span class="condition-badge used">Used</span>
+                </div>
+                <div class="listing-body">
+                    <div class="listing-title">MTH 101 Textbooks (Set)</div>
+                    <div class="listing-price">₦3,500</div>
+                    <div class="listing-meta">
+                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span>
+                        <span>· LASU</span>
+                    </div>
+                </div>
             </a>
             <a href="/listing/3" class="listing-card">
-                <div class="listing-img" style="background:#f0f7f0;">👟<span class="condition-badge">New</span></div>
-                <div class="listing-body"><div class="listing-title">Air Force 1 (Size 42)</div><div class="listing-price">₦28,000</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
+                <div class="listing-img" style="background:rgba(185,142,255,0.12);">
+                    <span style="font-size:2.5rem;opacity:0.4;">👟</span>
+                    <span class="condition-badge">New</span>
+                </div>
+                <div class="listing-body">
+                    <div class="listing-title">Air Force 1 (Size 42)</div>
+                    <div class="listing-price">₦28,000</div>
+                    <div class="listing-meta">
+                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span>
+                        <span>· LASU</span>
+                    </div>
+                </div>
             </a>
             <a href="/listing/4" class="listing-card">
-                <div class="listing-img" style="background:#f7edf8;">💻<span class="condition-badge used">Used</span></div>
-                <div class="listing-body"><div class="listing-title">HP Laptop i5 8GB RAM</div><div class="listing-price">₦120,000</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
+                <div class="listing-img" style="background:rgba(46,204,113,0.12);">
+                    <span style="font-size:2.5rem;opacity:0.4;">💻</span>
+                    <span class="condition-badge used">Used</span>
+                </div>
+                <div class="listing-body">
+                    <div class="listing-title">HP Laptop i5 8GB RAM</div>
+                    <div class="listing-price">₦120,000</div>
+                    <div class="listing-meta">
+                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span>
+                        <span>· LASU</span>
+                    </div>
+                </div>
             </a>
         </div>
     </section>
 
-    <section class="features">
+    <!-- FEATURES -->
+    <section class="section">
         <div class="section-header">
             <div class="section-tag">Why Vendly</div>
-            <h2>Built for LASU life</h2>
-            <p>No generic marketplace – just what you need on campus</p>
+            <h2>Built for campus life</h2>
+            <p>No generic marketplace — just what you need on campus</p>
         </div>
         <div class="features-grid">
-            <div class="feature-card"><div class="feature-icon">💬</div><h3>Negotiate in real time</h3><p>Send offers, counter, accept or reject — all inside one chat. No more scattered WhatsApp messages.</p></div>
-            <div class="feature-card"><div class="feature-icon">✅</div><h3>Verified students only</h3><p>Every user must verify with LASU email or student ID. Trade with people you can trust.</p></div>
-            <div class="feature-card"><div class="feature-icon">🏫</div><h3>LASU‑only filter</h3><p>See items from your campus first. No need to travel across Lagos — your seller is a short walk away.</p></div>
-            <div class="feature-card"><div class="feature-icon">⭐</div><h3>Seller ratings</h3><p>Rate every transaction. Good sellers build reputation; bad ones get exposed.</p></div>
-            <div class="feature-card"><div class="feature-icon">🔖</div><h3>Save for later</h3><p>Bookmark that perfect find and come back when you're ready. No pressure.</p></div>
-            <div class="feature-card"><div class="feature-icon">🆓</div><h3>100% free to list</h3><p>Zero listing fees, zero commission. Every naira you earn stays yours.</p></div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Negotiate in real time</h3>
+                <p>Send offers, counter, accept or reject — all inside one chat. No more scattered WhatsApp messages.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3>Verified students only</h3>
+                <p>Every user must verify with school email or student ID. Trade with people you can trust.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏫</div>
+                <h3>Campus-only filter</h3>
+                <p>See items from your campus first. No need to travel across town — your seller is a short walk away.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Seller ratings</h3>
+                <p>Rate every transaction. Good sellers build reputation; bad ones get exposed.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔖</div>
+                <h3>Save for later</h3>
+                <p>Bookmark that perfect find and come back when you're ready. No pressure.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🆓</div>
+                <h3>100% free to list</h3>
+                <p>Zero listing fees, zero commission. Every naira you earn stays yours.</p>
+            </div>
         </div>
     </section>
 
-    <section class="how">
-        <h2>How it works</h2>
+    <!-- HOW IT WORKS -->
+    <section class="section section-alt">
+        <div class="section-header">
+            <div class="section-tag">Getting Started</div>
+            <h2>How it works</h2>
+            <p>Three simple steps to start trading</p>
+        </div>
         <div class="steps">
-            <div class="step"><div class="step-num">01</div><h3>Create your account</h3><p>Sign up with your LASU email or upload your student ID. Verification is fast.</p></div>
-            <div class="step"><div class="step-num">02</div><h3>List or browse</h3><p>Upload your item in under a minute, or explore hundreds of campus deals.</p></div>
-            <div class="step"><div class="step-num">03</div><h3>Negotiate & meet</h3><p>Chat, agree on a price, then meet at a safe spot on campus. Easy.</p></div>
+            <div class="step">
+                <div class="step-num">01</div>
+                <h3>Create your account</h3>
+                <p>Sign up with your school email or upload your student ID. Verification is fast and simple.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">02</div>
+                <h3>List or browse</h3>
+                <p>Upload your item in under a minute, or explore hundreds of campus deals from verified students.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">03</div>
+                <h3>Negotiate & meet</h3>
+                <p>Chat, agree on a price, then meet at a safe spot on campus. Easy and secure.</p>
+            </div>
         </div>
     </section>
 
+    <!-- CTA -->
     <section class="cta">
-        <h2>Your LASU marketplace is here</h2>
+        <h2>Your campus marketplace is here</h2>
         <p>Join the smartest way to buy and sell on campus.</p>
-        <a href="/register" class="btn-white">Get Started Free</a>
+        <a href="/register" class="btn-white">✨ Get Started Free</a>
     </section>
 
-    <footer>Made with 🔥 for LASU students · <span>VENDLY</span> © 2026</footer>
+    <!-- FOOTER -->
+    <footer>Made with ❤️ for students · <span>VENDLY</span> © 2026</footer>
 </body>
 </html>
