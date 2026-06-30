@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timezone
+from datetime import datetime
 import enum
 
 db = SQLAlchemy()
@@ -36,14 +36,19 @@ class OfferStatusEnum(str, enum.Enum):
     REJECTED = 'rejected'
     COUNTERED = 'countered'
 
-def now():
-    return datetime.now(timezone.utc)
+class NotificationTypeEnum(str, enum.Enum):
+    NEW_MESSAGE = 'new_message'
+    NEW_OFFER = 'new_offer'
+    OFFER_ACCEPTED = 'offer_accepted'
+    OFFER_REJECTED = 'offer_rejected'
+    COUNTER_OFFER = 'counter_offer'
+    NEW_REVIEW = 'new_review'
 
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
     school = db.Column(db.String(100))
     department = db.Column(db.String(100))
@@ -53,12 +58,12 @@ class User(db.Model):
     verification_method = db.Column(db.String(20))
     student_id_url = db.Column(db.String(255))
     verified_badge = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=now)
-    last_active = db.Column(db.DateTime, default=now)
-
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_active = db.Column(db.DateTime, default=datetime.utcnow)
     listings = db.relationship('Listing', backref='seller', lazy=True)
     reviews_received = db.relationship('Review', foreign_keys='Review.reviewed_user_id', backref='reviewed_user', lazy=True)
     reviews_written = db.relationship('Review', foreign_keys='Review.reviewer_id', backref='reviewer', lazy=True)
+    notifications = db.relationship('Notification', backref='user', lazy=True)
 
 class Listing(db.Model):
     __tablename__ = 'listings'
@@ -73,7 +78,7 @@ class Listing(db.Model):
     campus = db.Column(db.Enum(CampusEnum), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     is_sold = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class SavedListing(db.Model):
     __tablename__ = 'saved_listings'
@@ -89,7 +94,7 @@ class ChatRoom(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'), nullable=False)
     buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     seller_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     listing = db.relationship('Listing', backref='chat_rooms')
     buyer = db.relationship('User', foreign_keys=[buyer_id])
     seller = db.relationship('User', foreign_keys=[seller_id])
@@ -101,7 +106,7 @@ class Message(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     type = db.Column(db.Enum(MessageTypeEnum), default=MessageTypeEnum.TEXT)
     content = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     room = db.relationship('ChatRoom', backref='messages')
     sender = db.relationship('User')
 
@@ -113,7 +118,7 @@ class Offer(db.Model):
     buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.Enum(OfferStatusEnum), default=OfferStatusEnum.PENDING)
-    created_at = db.Column(db.DateTime, default=now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     room = db.relationship('ChatRoom', backref='offers')
     buyer = db.relationship('User')
 
@@ -125,7 +130,7 @@ class Review(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Report(db.Model):
     __tablename__ = 'reports'
@@ -133,5 +138,16 @@ class Report(db.Model):
     reporter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'), nullable=False)
     reason = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     reporter = db.relationship('User', backref='reports')
+
+class Notification(db.Model):
+    __tablename__ = 'notifications'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    type = db.Column(db.Enum(NotificationTypeEnum), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text)
+    link = db.Column(db.String(500))
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
