@@ -364,14 +364,14 @@
             const token = getToken();
             if (!token) return;
             try {
-                const notifRes = await fetch(`${API_BASE}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const [notifRes, msgRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch(`${API_BASE}/api/chat/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } })
+                ]);
                 const notifData = await notifRes.json();
+                const msgData = await msgRes.json();
                 showBadge(document.getElementById('notif-badge'), notifData.count);
-            } catch (e) {}
-            try {
-                const chatRes = await fetch(`${API_BASE}/api/chat/rooms`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const rooms = await chatRes.json();
-                showBadge(document.getElementById('msg-badge'), rooms ? rooms.length : 0);
+                showBadge(document.getElementById('msg-badge'), msgData.count);
             } catch (e) {}
         }
 
