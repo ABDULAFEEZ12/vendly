@@ -159,14 +159,14 @@ def forgot_password():
     
     user = User.query.filter_by(email=email).first()
     
-    # Always return success to prevent email enumeration
     if not user:
         return jsonify({'msg': 'If that email exists, a reset link has been sent.'}), 200
     
     try:
         serializer = get_serializer()
         token = serializer.dumps(user.email, salt='password-reset')
-        reset_url = url_for('auth.reset_password_form', token=token, _external=True)
+        # ✅ FIXED: Use the app-level route name, not auth blueprint
+        reset_url = url_for('reset_password_page', token=token, _external=True)
         
         msg = Message('Vendly - Reset Your Password', recipients=[user.email])
         msg.body = f'''Hello {user.full_name},
