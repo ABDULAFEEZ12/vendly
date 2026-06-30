@@ -2,248 +2,720 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
     <title>Listing — Vendly</title>
-    <!-- CHANGE: Added display=swap to prevent flash of invisible text while font loads -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --navy: #0D1B2A;
-            --orange: #FF6B35;
-            --white: #ffffff;
-            --gray-50: #f8f9fb;
-            --text-muted: #6b7b8d;
-            --border: #e8ecf0;
-            --radius: 16px;
-            --radius-sm: 12px;
-            /* CHANGE: safe-area insets for iPhone notch/home indicator */
+            --bg-deep: #050508;
+            --bg-base: #0a0a10;
+            --surface-elevated: #12121c;
+            --surface-glass: rgba(14, 14, 24, 0.75);
+            --surface-glass-heavy: rgba(10, 10, 18, 0.88);
+            --text-primary: #f2f2f7;
+            --text-secondary: #9a9ab0;
+            --text-tertiary: #5a5a70;
+            --accent: #ff5e3a;
+            --accent-soft: rgba(255, 94, 58, 0.15);
+            --accent-glow: rgba(255, 94, 58, 0.4);
+            --green: #2ecc71;
+            --green-soft: rgba(46, 204, 113, 0.15);
+            --blue: #5e9eff;
+            --blue-soft: rgba(94, 158, 255, 0.12);
+            --purple: #b98eff;
+            --purple-soft: rgba(185, 142, 255, 0.12);
+            --red: #ff4757;
+            --red-soft: rgba(255, 71, 87, 0.15);
+            --amber: #ffb43c;
+            --amber-soft: rgba(255, 180, 60, 0.12);
+            --border-glass: rgba(255, 255, 255, 0.07);
+            --border-active: rgba(255, 255, 255, 0.14);
+            --radius-sm: 14px;
+            --radius-md: 22px;
+            --radius-lg: 32px;
+            --radius-full: 999px;
+            --shadow-float: 0 20px 40px -20px rgba(0,0,0,0.7);
+            --shadow-glow: 0 0 30px rgba(255,94,58,0.25);
+            --ease-spring: cubic-bezier(0.22, 0.61, 0.36, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
             --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* CHANGE: Global tap highlight removal and momentum scrolling */
         html {
             -webkit-tap-highlight-color: transparent;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: contain;
+            overscroll-behavior: none;
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--navy);
+            background: var(--bg-deep);
+            color: var(--text-primary);
             min-height: 100vh;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: contain;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             padding-top: var(--safe-top);
-            padding-bottom: var(--safe-bottom);
+            padding-bottom: calc(90px + var(--safe-bottom));
+            position: relative;
+            isolation: isolate;
+            letter-spacing: -0.01em;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 5%, rgba(255,94,58,0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(94,158,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(185,142,255,0.04) 0%, transparent 60%);
+            background-attachment: fixed;
         }
 
-        /* ---------- NAVBAR ---------- */
-        .navbar {
-            background: var(--navy);
-            /* CHANGE: safe-area top padding so navbar clears iPhone notch */
-            padding: calc(1rem + var(--safe-top)) 2rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* ---------- HEADER ---------- */
+        .app-header {
             position: sticky;
             top: 0;
             z-index: 100;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border-bottom: 1px solid var(--border-glass);
+            padding: calc(16px + var(--safe-top)) 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.5);
         }
-        .logo {
-            font-size: 1.4rem; font-weight: 900; color: var(--orange); text-decoration: none;
-            /* CHANGE: minimum 44px tap target */
-            min-height: 44px; display: flex; align-items: center;
+        .header-logo {
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
-        .logo span { color: white; font-weight: 700; }
-        .nav-links { display: flex; gap: 0.5rem; align-items: center; }
-        .nav-links a, .nav-links button {
-            color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.85rem;
-            font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px;
-            /* CHANGE: GPU-accelerated, 44px minimum */
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 44px; min-height: 44px;
-            display: flex; align-items: center; justify-content: center;
-            touch-action: manipulation; will-change: transform, opacity;
-            background: transparent; border: none; cursor: pointer;
+        .header-logo .accent {
+            color: var(--accent);
+            font-weight: 800;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .header-btn {
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.25s var(--ease-smooth);
             font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        .nav-links a:active, .nav-links button:active {
-            transform: scale(0.96); opacity: 0.8; background: rgba(255,255,255,0.12);
+        .header-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-active);
         }
-        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+        .header-btn:active {
+            transform: scale(0.95);
+        }
+        .btn-logout {
+            background: transparent;
+            color: var(--text-tertiary);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.25s var(--ease-smooth);
+            white-space: nowrap;
+        }
+        .btn-logout:hover {
+            color: var(--red);
+            border-color: rgba(255,71,87,0.3);
+        }
+        .btn-logout:active {
+            transform: scale(0.95);
+        }
+        .btn-login {
+            background: var(--accent);
+            color: white !important;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 650;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.25s var(--ease-bounce);
+            box-shadow: 0 4px 16px var(--accent-glow);
+            white-space: nowrap;
+        }
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(255,94,58,0.5);
+        }
+        .btn-login:active {
+            transform: scale(0.95);
+        }
 
         /* ---------- CONTAINER ---------- */
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            /* CHANGE: responsive padding */
-            padding: 0 clamp(1rem, 3vw, 1.5rem);
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 2;
+            padding: 24px 18px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 900px;
+                padding: 36px 28px 0;
+                gap: 32px;
+            }
         }
 
         /* ---------- LISTING DETAIL ---------- */
         .listing-detail {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            /* CHANGE: responsive padding, softer shadow */
-            padding: clamp(1rem, 3vw, 2rem);
-            box-shadow: 0 2px 16px rgba(13,27,42,0.04);
+            background: var(--surface-glass);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 20px 40px -16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset;
+            overflow: hidden;
         }
         .listing-layout {
             display: flex;
-            gap: clamp(1rem, 3vw, 2rem);
+            gap: 24px;
             flex-wrap: wrap;
         }
-        .listing-images { flex: 1; min-width: 280px; }
+        .listing-images {
+            flex: 1;
+            min-width: 280px;
+            max-width: 500px;
+        }
+        .listing-info {
+            flex: 1;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
+        /* ---------- MAIN IMAGE ---------- */
         .main-image {
             width: 100%;
-            /* CHANGE: responsive height */
-            height: clamp(200px, 40vw, 350px);
-            border-radius: var(--radius);
+            height: 350px;
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(3rem, 6vw, 5rem);
+            font-size: 5rem;
             overflow: hidden;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-glass);
+            position: relative;
         }
-        /* CHANGE: Smooth fade-in for main image */
         .main-image img {
-            width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius);
-            opacity: 0; transition: opacity 0.3s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
-        .main-image img.loaded { opacity: 1; }
+        .main-image img.loaded {
+            opacity: 1;
+        }
+        .main-image .placeholder-emoji {
+            font-size: 5rem;
+            opacity: 0.5;
+        }
 
+        /* ---------- STATUS BADGE ---------- */
+        .status-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            backdrop-filter: blur(16px);
+            letter-spacing: 0.02em;
+            z-index: 2;
+        }
+        .status-available {
+            background: var(--green-soft);
+            color: var(--green);
+            border: 1px solid rgba(46,204,113,0.3);
+        }
+        .status-sold {
+            background: var(--red-soft);
+            color: var(--red);
+            border: 1px solid rgba(255,71,87,0.3);
+        }
+
+        /* ---------- THUMBNAILS ---------- */
         .thumbnails {
-            display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap;
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
         }
-        /* CHANGE: Thumbnail — 44px minimum, GPU-accelerated */
         .thumb {
-            width: 60px; height: 60px; border-radius: 10px;
-            cursor: pointer; border: 2px solid transparent;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; overflow: hidden;
-            min-width: 44px; min-height: 44px;
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            cursor: pointer;
+            border: 2px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            overflow: hidden;
+            min-width: 44px;
+            min-height: 44px;
             touch-action: manipulation;
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s var(--ease-bounce);
             will-change: transform;
+            background: var(--surface-elevated);
         }
-        .thumb:active { transform: scale(0.94); }
-        .thumb.active { border-color: var(--orange); }
-        .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .thumb:hover {
+            border-color: var(--border-active);
+            transform: translateY(-2px);
+        }
+        .thumb:active {
+            transform: scale(0.92);
+        }
+        .thumb.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 16px var(--accent-soft), 0 0 0 3px var(--accent-soft);
+        }
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
 
-        .listing-info { flex: 1; min-width: 250px; }
-        .listing-info h1 { font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 800; margin-bottom: 0.5rem; }
+        /* ---------- LISTING INFO ---------- */
+        .listing-info h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
         .listing-price {
-            font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 900;
-            color: var(--orange); margin-bottom: 0.75rem;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -0.04em;
         }
         .listing-meta {
-            display: flex; gap: 1rem; flex-wrap: wrap;
-            font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
-        .listing-description { line-height: 1.7; color: var(--navy); margin-bottom: 1.5rem; }
+        .listing-meta span {
+            background: var(--surface-glass);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .listing-description {
+            line-height: 1.7;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
 
+        /* ---------- SELLER CARD ---------- */
         .seller-card {
-            display: flex; align-items: center; gap: 0.75rem;
-            padding: 1rem; background: var(--gray-50);
-            border-radius: var(--radius-sm); margin-bottom: 1.5rem;
-            /* CHANGE: smooth tap feedback */
-            cursor: pointer; touch-action: manipulation;
-            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.25s var(--ease-spring);
             will-change: transform;
         }
-        .seller-card:active { transform: scale(0.98); opacity: 0.9; }
+        .seller-card:hover {
+            border-color: var(--border-active);
+            box-shadow: 0 8px 24px -8px rgba(0,0,0,0.4);
+        }
+        .seller-card:active {
+            transform: scale(0.97);
+            border-color: var(--accent);
+        }
         .seller-avatar {
-            width: 48px; height: 48px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 1.2rem; flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            border: 2px solid var(--border-glass);
         }
-        .seller-name { font-weight: 600; }
-        .verified-badge { color: #22c55e; font-size: 0.8rem; }
+        .seller-name {
+            font-weight: 650;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .verified-badge {
+            color: var(--green);
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--green-soft);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .seller-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+            margin-top: 3px;
+        }
 
-        .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-
-        /* CHANGE: Buttons — 44px minimum, GPU-accelerated */
-        .btn-primary, .btn-outline {
-            padding: 0.8rem 1.5rem; border-radius: var(--radius-sm);
-            font-family: 'Inter', sans-serif; font-weight: 700; cursor: pointer;
-            font-size: 0.9rem; text-decoration: none;
-            min-height: 52px; display: inline-flex; align-items: center; justify-content: center;
+        /* ---------- BUTTONS ---------- */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-primary, .btn-outline, .btn-save {
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            min-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             touch-action: manipulation;
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s var(--ease-bounce);
             will-change: transform, opacity;
+            border: none;
+            letter-spacing: -0.01em;
         }
-        .btn-primary:active, .btn-outline:active { transform: scale(0.96); opacity: 0.85; }
-        .btn-primary { background: var(--orange); color: white; border: none; }
-        .btn-primary:hover { background: #e8551f; }
-        .btn-outline { background: white; color: var(--navy); border: 1px solid var(--border); }
-        .btn-outline:hover { border-color: var(--orange); }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 8px 28px var(--accent-glow), 0 0 0 3px rgba(255,94,58,0.15);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 36px rgba(255,94,58,0.5), 0 0 0 5px rgba(255,94,58,0.1);
+        }
+        .btn-primary:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+        .btn-outline {
+            background: var(--surface-glass);
+            color: var(--text-primary);
+            border: 1px solid var(--border-active);
+            backdrop-filter: blur(16px);
+        }
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .btn-outline:active {
+            transform: scale(0.95);
+        }
+        .btn-save {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-glass);
+        }
+        .btn-save:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .btn-save.saved {
+            color: var(--red);
+            border-color: rgba(255,71,87,0.4);
+            background: var(--red-soft);
+        }
 
-        .loading { text-align: center; padding: 4rem; color: var(--text-muted); }
+        /* ---------- SKELETON LOADER ---------- */
+        .skeleton-block {
+            background: linear-gradient(90deg, #1a1a2e 25%, #222240 50%, #1a1a2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 8px;
+        }
+        .skeleton-img {
+            width: 100%;
+            height: 300px;
+            border-radius: var(--radius-md);
+        }
+        .skeleton-line {
+            height: 18px;
+            margin-bottom: 14px;
+            border-radius: 9px;
+        }
+        .skeleton-line.short {
+            width: 45%;
+        }
+        .skeleton-line.medium {
+            width: 70%;
+        }
+        .skeleton-line.large {
+            height: 32px;
+            width: 35%;
+            margin-bottom: 16px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
 
-        /* CHANGE: Skeleton loader for listing detail */
-        .skeleton-block { background: linear-gradient(90deg, #eef1f5 25%, #e2e6ea 50%, #eef1f5 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 8px; }
-        .skeleton-img { width: 100%; height: 300px; }
-        .skeleton-line { height: 16px; margin-bottom: 12px; }
-        .skeleton-line.short { width: 40%; }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-
-        /* ---------- FOOTER ---------- */
-        footer {
+        /* ---------- LOADING / ERROR ---------- */
+        .loading-state {
             text-align: center;
-            /* CHANGE: safe-area bottom padding for iPhone home indicator */
-            padding: 1rem 2rem calc(1rem + var(--safe-bottom));
-            font-size: 0.75rem; color: var(--text-muted);
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+        .loading-state .icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+            animation: float 2.5s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+        .error-state .icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 12px;
         }
 
-        @media (max-width: 600px) {
-            .main-image { height: 250px; font-size: 3rem; }
-            .thumb { width: 50px; height: 50px; }
+        /* ---------- BOTTOM NAV ---------- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 420px;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-radius: 40px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 120;
+            box-shadow: 0 20px 44px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04) inset;
+            gap: 4px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            color: var(--text-tertiary);
+            font-size: 0.7rem;
+            font-weight: 550;
+            transition: all 0.25s var(--ease-smooth);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 30px;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+            position: relative;
+        }
+        .nav-item.active {
+            color: var(--accent);
+            font-weight: 650;
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .nav-icon {
+            font-size: 1.4rem;
+            transition: transform 0.25s var(--ease-bounce);
+        }
+        .nav-item.active .nav-icon {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 6px 10px var(--accent-glow));
+        }
+        .floating-sell-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            box-shadow: 0 12px 30px var(--accent-glow), 0 0 0 4px rgba(255,94,58,0.2);
+            transition: all 0.25s var(--ease-bounce);
+            margin-top: -28px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .floating-sell-btn:active {
+            transform: scale(0.88);
+            box-shadow: 0 6px 16px var(--accent-glow);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .listing-layout {
+                flex-direction: column;
+            }
+            .listing-images {
+                max-width: 100%;
+            }
+            .main-image {
+                height: 280px;
+                font-size: 3.5rem;
+            }
+            .listing-info h1 {
+                font-size: 1.3rem;
+            }
+            .listing-price {
+                font-size: 1.6rem;
+            }
+        }
+        @media (max-width: 380px) {
+            .main-image {
+                height: 220px;
+            }
+            .thumb {
+                width: 50px;
+                height: 50px;
+            }
+            .btn-primary, .btn-outline, .btn-save {
+                padding: 12px 16px;
+                font-size: 0.82rem;
+            }
+            .header-btn.hide-mobile {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/" class="logo">VEND<span>LY</span></a>
-        <div class="nav-links">
-            <a href="/marketplace">Marketplace</a>
-            <a href="/dashboard">Dashboard</a>
+    <!-- HEADER -->
+    <header class="app-header">
+        <a href="/" class="header-logo">VEND<span class="accent">LY</span></a>
+        <div class="header-actions">
+            <a href="/marketplace" class="header-btn">🏠 Home</a>
+            <a href="/dashboard" class="header-btn hide-mobile">📊 Dashboard</a>
             <span id="auth-action"></span>
         </div>
-    </nav>
+    </header>
 
-    <div class="container">
+    <!-- MAIN CONTAINER -->
+    <div class="app-container">
+        <!-- LISTING DETAIL -->
         <div class="listing-detail" id="listing-content">
-            <!-- CHANGE: Skeleton loader instead of text-only -->
+            <!-- SKELETON LOADER -->
             <div class="listing-layout">
                 <div class="listing-images">
                     <div class="skeleton-block skeleton-img"></div>
                     <div class="thumbnails">
-                        <div class="skeleton-block" style="width:60px;height:60px;"></div>
-                        <div class="skeleton-block" style="width:60px;height:60px;"></div>
+                        <div class="skeleton-block" style="width:60px;height:60px;border-radius:14px;"></div>
+                        <div class="skeleton-block" style="width:60px;height:60px;border-radius:14px;"></div>
+                        <div class="skeleton-block" style="width:60px;height:60px;border-radius:14px;"></div>
                     </div>
                 </div>
                 <div class="listing-info">
                     <div class="skeleton-block skeleton-line"></div>
-                    <div class="skeleton-block skeleton-line" style="width:30%;height:28px;margin-bottom:16px;"></div>
+                    <div class="skeleton-block skeleton-line large"></div>
                     <div class="skeleton-block skeleton-line short"></div>
                     <div class="skeleton-block skeleton-line short"></div>
+                    <div class="skeleton-block skeleton-line medium"></div>
+                    <div class="skeleton-block skeleton-line medium"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <a href="/marketplace" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="/chat" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Chat</span>
+        </a>
+        <a href="/listings/new" class="floating-sell-btn">+</a>
+        <a href="/saved" class="nav-item">
+            <span class="nav-icon">❤️</span>
+            <span>Saved</span>
+        </a>
+        <a href="/profile/me" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </a>
+    </div>
 
     <script>
         const API_BASE = '';
@@ -251,104 +723,337 @@
 
         function getToken() { return localStorage.getItem('vendly_token'); }
 
+        // Auth action in header
         (function() {
             const token = getToken();
             const authEl = document.getElementById('auth-action');
             if (token) {
-                authEl.innerHTML = '<button onclick="localStorage.removeItem(\'vendly_token\');window.location.reload();">Logout</button>';
+                authEl.innerHTML = '<button class="btn-logout" onclick="localStorage.removeItem(\'vendly_token\');window.location.reload();">🚪 Logout</button>';
             } else {
-                authEl.innerHTML = '<a href="/login" class="btn-primary" style="color:white;">Login</a>';
+                authEl.innerHTML = '<a href="/login" class="btn-login">Login</a>';
             }
         })();
 
-        const categoryEmojis = { 'Electronics':'📱','Fashion':'👟','Books':'📚','Food':'🍕','Services':'🔧','Other':'📦' };
-        const categoryColors = { 'Electronics':'#e8f0fe','Fashion':'#f0f7f0','Books':'#fef2e7','Food':'#fff3e0','Services':'#f3e5f5','Other':'#eceff1' };
+        const categoryEmojis = {
+            'Electronics': '📱',
+            'Fashion': '👟',
+            'Books': '📚',
+            'Food': '🍕',
+            'Services': '🔧',
+            'Other': '📦'
+        };
+
+        const categoryColors = {
+            'Electronics': 'rgba(94,158,255,0.2)',
+            'Fashion': 'rgba(185,142,255,0.2)',
+            'Books': 'rgba(255,180,60,0.2)',
+            'Food': 'rgba(255,94,58,0.2)',
+            'Services': 'rgba(46,204,113,0.2)',
+            'Other': 'rgba(154,154,176,0.15)'
+        };
+
+        const categoryAvatarColors = {
+            'Electronics': '#5e9eff',
+            'Fashion': '#b98eff',
+            'Books': '#ffb43c',
+            'Food': '#ff5e3a',
+            'Services': '#2ecc71',
+            'Other': '#9a9ab0'
+        };
+
+        let currentListing = null;
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
 
         async function loadListing() {
             try {
                 const res = await fetch(`${API_BASE}/api/listings/${listingId}`);
                 if (!res.ok) throw new Error('Listing not found');
-                const l = await res.json();
-                const seller = l.seller || {};
 
-                const mainImg = l.images && l.images[0]
-                    ? `<img src="${l.images[0]}" alt="${l.title}" onload="this.classList.add('loaded')">`
-                    : categoryEmojis[l.category] || '📦';
+                const l = await res.json();
+                currentListing = l;
+                const seller = l.seller || {};
+                const catColor = categoryColors[l.category] || categoryColors['Other'];
+                const avatarColor = categoryAvatarColors[l.category] || categoryAvatarColors['Other'];
+
+                const mainImgHTML = l.images && l.images[0]
+                    ? `<img src="${escapeHTML(l.images[0])}" alt="${escapeHTML(l.title)}" onload="this.classList.add('loaded')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                       <span class="placeholder-emoji" style="display:none;">${categoryEmojis[l.category] || '📦'}</span>`
+                    : `<span class="placeholder-emoji">${categoryEmojis[l.category] || '📦'}</span>`;
+
+                const statusBadge = l.is_sold
+                    ? '<span class="status-badge status-sold">🔴 Sold</span>'
+                    : '<span class="status-badge status-available">🟢 Available</span>';
 
                 const thumbs = (l.images || []).map((img, i) => `
-                    <div class="thumb ${i===0?'active':''}" onclick="document.getElementById('main-img').innerHTML='<img src=\\'${img}\\' alt=\\'${l.title}\\' class=\\'loaded\\'>';document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));this.classList.add('active');">
-                        <img src="${img}" alt="Thumb ${i+1}">
-                    </div>`).join('');
+                    <div class="thumb ${i === 0 ? 'active' : ''}" 
+                         onclick="switchMainImage('${escapeHTML(img)}', this)" 
+                         role="button" 
+                         tabindex="0" 
+                         aria-label="View image ${i + 1}">
+                        <img src="${escapeHTML(img)}" alt="Thumbnail ${i + 1}" loading="lazy" onerror="this.style.display='none';">
+                    </div>
+                `).join('');
+
+                const sellerInitials = (seller.full_name || '?')
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2);
 
                 document.getElementById('listing-content').innerHTML = `
                     <div class="listing-layout">
                         <div class="listing-images">
-                            <div class="main-image" id="main-img" style="background:${categoryColors[l.category]||'#eef1f5'};">${mainImg}</div>
-                            <div class="thumbnails">${thumbs}</div>
+                            <div class="main-image" id="main-image-container" style="background:${catColor};">
+                                ${mainImgHTML}
+                                ${statusBadge}
+                            </div>
+                            ${l.images && l.images.length > 1 ? `<div class="thumbnails">${thumbs}</div>` : ''}
                         </div>
                         <div class="listing-info">
-                            <h1>${l.title}</h1>
+                            <h1>${escapeHTML(l.title)}</h1>
                             <div class="listing-price">₦${l.price.toLocaleString()}</div>
                             <div class="listing-meta">
-                                <span>📦 ${l.condition}</span><span>📍 ${l.campus}</span><span>📂 ${l.category}</span>
-                                ${l.is_sold?'<span style="color:#e74c3c;font-weight:600;">🔴 Sold</span>':'<span style="color:#22c55e;font-weight:600;">🟢 Available</span>'}
+                                <span>📦 ${escapeHTML(l.condition || 'N/A')}</span>
+                                <span>📍 ${escapeHTML(l.campus || 'N/A')}</span>
+                                <span>📂 ${escapeHTML(l.category || 'Other')}</span>
                             </div>
-                            <p class="listing-description">${l.description||'No description provided.'}</p>
-                            <div class="seller-card" onclick="window.location.href='/profile/${seller.id||''}'">
-                                <div class="seller-avatar" style="background:${categoryColors[l.category]||'#eef1f5'};">${(seller.full_name||'?')[0]}</div>
+                            <p class="listing-description">${escapeHTML(l.description) || 'No description provided.'}</p>
+                            
+                            <div class="seller-card" onclick="window.location.href='/profile/${seller.id || '#'}'" role="button" tabindex="0">
+                                <div class="seller-avatar" style="background:${catColor};color:${avatarColor};">
+                                    ${sellerInitials}
+                                </div>
                                 <div>
-                                    <div class="seller-name">${seller.full_name||'Unknown'} ${seller.verified_badge?'<span class="verified-badge">✓ Verified</span>':''}</div>
-                                    <div style="font-size:0.8rem;color:var(--text-muted);">${seller.school||''} · ${seller.department||''}</div>
+                                    <div class="seller-name">
+                                        ${escapeHTML(seller.full_name || 'Unknown Seller')}
+                                        ${seller.verified_badge ? '<span class="verified-badge">✓ Verified</span>' : ''}
+                                    </div>
+                                    <div class="seller-subtitle">
+                                        ${escapeHTML(seller.school || '')}${seller.department ? ' · ' + escapeHTML(seller.department) : ''}
+                                    </div>
                                 </div>
                             </div>
+
                             <div class="btn-row">
-                                ${!l.is_sold?`<button class="btn-primary" onclick="startChat()">💬 Message Seller</button>
-                                <button class="btn-outline" onclick="makeOffer()">💰 Make Offer</button>`:''}
-                                <button class="btn-outline" onclick="toggleSave()" id="save-btn">❤️ Save</button>
+                                ${!l.is_sold ? `
+                                    <button class="btn-primary" onclick="startChat()">💬 Message Seller</button>
+                                    <button class="btn-outline" onclick="makeOffer()">💰 Make Offer</button>
+                                ` : `
+                                    <button class="btn-outline" disabled style="opacity:0.5;cursor:not-allowed;">🔴 Item Sold</button>
+                                `}
+                                <button class="btn-save" onclick="toggleSave()" id="save-btn">🤍 Save</button>
                             </div>
                         </div>
                     </div>`;
+
+                // Check if saved
+                checkSavedStatus();
+
             } catch (err) {
-                document.getElementById('listing-content').innerHTML = '<div class="loading">❌ Listing not found</div>';
+                console.error('Load listing error:', err);
+                document.getElementById('listing-content').innerHTML = `
+                    <div class="error-state">
+                        <span class="icon">❌</span>
+                        <h2 style="color:var(--text-primary);margin-bottom:8px;">Listing Not Found</h2>
+                        <p style="color:var(--text-secondary);margin-bottom:20px;">This listing may have been removed or the link is incorrect.</p>
+                        <a href="/marketplace" class="btn-primary" style="display:inline-flex;">🏠 Browse Marketplace</a>
+                    </div>`;
+            }
+        }
+
+        function switchMainImage(imgSrc, thumbElement) {
+            const container = document.getElementById('main-image-container');
+            const existingImg = container.querySelector('img');
+            const placeholder = container.querySelector('.placeholder-emoji');
+            const statusBadge = container.querySelector('.status-badge');
+
+            // Remove old image
+            if (existingImg) existingImg.remove();
+            if (placeholder) placeholder.style.display = 'none';
+
+            // Create new image
+            const newImg = document.createElement('img');
+            newImg.src = imgSrc;
+            newImg.alt = currentListing?.title || 'Listing image';
+            newImg.className = 'loaded';
+            newImg.onerror = function() {
+                this.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'flex';
+            };
+
+            // Insert before status badge if it exists
+            if (statusBadge) {
+                container.insertBefore(newImg, statusBadge);
+            } else {
+                container.appendChild(newImg);
+            }
+
+            // Update active thumbnail
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            if (thumbElement) thumbElement.classList.add('active');
+        }
+
+        async function checkSavedStatus() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/saved`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const saved = await res.json();
+                    const isSaved = saved.some(s => s.listing_id == listingId || s.id == listingId);
+                    const btn = document.getElementById('save-btn');
+                    if (btn && isSaved) {
+                        btn.textContent = '❤️ Saved';
+                        btn.classList.add('saved');
+                    }
+                }
+            } catch (e) {
+                // Silently fail — save status is non-critical
             }
         }
 
         async function startChat() {
             const token = getToken();
-            if (!token) { window.location.href='/login'; return; }
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
             try {
+                const btn = document.querySelector('.btn-primary');
+                if (btn) {
+                    btn.textContent = '⏳ Starting chat...';
+                    btn.disabled = true;
+                }
+
                 const res = await fetch(`${API_BASE}/api/chat/start`, {
-                    method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-                    body:JSON.stringify({listing_id:listingId})
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ listing_id: listingId })
                 });
-                window.location.href = `/chat/${(await res.json()).room_id}`;
-            } catch(e) { alert('Could not start chat'); }
+
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await res.json();
+                window.location.href = `/chat/${data.room_id}`;
+
+            } catch (e) {
+                console.error('Start chat error:', e);
+                alert('Could not start chat. Please try again.');
+                const btn = document.querySelector('.btn-primary');
+                if (btn) {
+                    btn.textContent = '💬 Message Seller';
+                    btn.disabled = false;
+                }
+            }
         }
 
         function makeOffer() {
             const token = getToken();
-            if (!token) { window.location.href='/login'; return; }
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
             const amount = prompt('Enter your offer amount (₦):');
-            if (!amount) return;
-            startChat();
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                if (amount !== null) alert('Please enter a valid amount.');
+                return;
+            }
+
+            // Start chat with offer parameter
+            const url = `/chat/start?listing_id=${listingId}&offer=${parseFloat(amount)}`;
+            startChatWithOffer(parseFloat(amount));
+        }
+
+        async function startChatWithOffer(amount) {
+            const token = getToken();
+            try {
+                const res = await fetch(`${API_BASE}/api/chat/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        listing_id: listingId,
+                        initial_offer: amount
+                    })
+                });
+
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await res.json();
+                window.location.href = `/chat/${data.room_id}?offer=${amount}`;
+
+            } catch (e) {
+                console.error('Start chat with offer error:', e);
+                // Fallback to regular chat start
+                startChat();
+            }
         }
 
         async function toggleSave() {
             const token = getToken();
-            if (!token) { window.location.href='/login'; return; }
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
             const btn = document.getElementById('save-btn');
+            const isSaved = btn.classList.contains('saved');
+
             try {
-                await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
-                btn.textContent = '❤️ Saved!'; btn.style.color = '#e74c3c';
-                btn.style.transform = 'scale(1.1)'; setTimeout(() => btn.style.transform = '', 150);
-            } catch(e) {
-                try {
-                    await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} });
-                    btn.textContent = '🤍 Save'; btn.style.color = '';
-                } catch(e2) {}
+                if (isSaved) {
+                    // Unsave
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    btn.textContent = '🤍 Save';
+                    btn.classList.remove('saved');
+                } else {
+                    // Save
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    btn.textContent = '❤️ Saved';
+                    btn.classList.add('saved');
+                    // Brief scale animation
+                    btn.style.transform = 'scale(1.08)';
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                    }, 200);
+                }
+            } catch (e) {
+                console.error('Toggle save error:', e);
+                alert('Could not update saved status. Please try again.');
             }
         }
 
+        // Initialize
         loadListing();
     </script>
 </body>
