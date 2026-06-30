@@ -57,7 +57,7 @@
             justify-content: center;
             align-items: flex-start;
             padding-top: var(--safe-top);
-            padding-bottom: 40px;
+            padding-bottom: calc(90px + var(--safe-bottom));
             position: relative;
             isolation: isolate;
             letter-spacing: -0.01em;
@@ -334,6 +334,91 @@
             box-shadow: 0 4px 12px var(--accent-glow);
         }
 
+        /* ---------- BOTTOM NAV ---------- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 420px;
+            background: var(--surface-glass-heavy);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-radius: 40px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 120;
+            box-shadow: 0 20px 44px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04) inset;
+            gap: 4px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            color: var(--text-tertiary);
+            font-size: 0.7rem;
+            font-weight: 550;
+            transition: all 0.25s var(--ease-smooth);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 30px;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+            position: relative;
+        }
+        .nav-item.active {
+            color: var(--accent);
+            font-weight: 650;
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .nav-icon {
+            font-size: 1.4rem;
+            transition: transform 0.25s var(--ease-bounce);
+        }
+        .nav-item.active .nav-icon {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 6px 10px var(--accent-glow));
+        }
+        .floating-sell-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            box-shadow: 0 12px 30px var(--accent-glow), 0 0 0 4px rgba(255,94,58,0.2);
+            transition: all 0.25s var(--ease-bounce);
+            margin-top: -28px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .floating-sell-btn:active {
+            transform: scale(0.88);
+            box-shadow: 0 6px 16px var(--accent-glow);
+        }
+
         /* ---------- RESPONSIVE ---------- */
         @media (max-width: 500px) {
             .chat-info .preview {
@@ -386,6 +471,27 @@
             <p>Start browsing listings and message a seller to begin your campus trading journey.</p>
             <a href="/marketplace" class="btn-primary">🔍 Browse Marketplace</a>
         </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <a href="/marketplace" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="/chat" class="nav-item active">
+            <span class="nav-icon">💬</span>
+            <span>Chat</span>
+        </a>
+        <a href="/listings/new" class="floating-sell-btn">+</a>
+        <a href="/saved" class="nav-item">
+            <span class="nav-icon">❤️</span>
+            <span>Saved</span>
+        </a>
+        <a href="/profile/me" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </a>
     </div>
 
     <script>
