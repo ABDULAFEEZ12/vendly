@@ -14,15 +14,15 @@
             --gray-100: #f0f2f5;
             --text-muted: #6b7b8d;
             --border: #e8ecf0;
-            --radius: 14px;
-            --radius-sm: 10px;
+            --radius: 16px;
+            --radius-sm: 12px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
+            background: #f0f2f5;
             color: var(--navy);
             min-height: 100vh;
         }
@@ -36,323 +36,140 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
         }
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: var(--orange);
-            text-decoration: none;
-        }
+        .logo { font-size: 1.4rem; font-weight: 900; color: var(--orange); text-decoration: none; }
         .logo span { color: white; font-weight: 700; }
         .nav-links { display: flex; gap: 0.5rem; align-items: center; }
         .nav-links a {
-            color: rgba(255,255,255,0.75);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            padding: 0.5rem 0.8rem;
-            border-radius: 8px;
-            transition: all 0.2s;
+            color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.85rem;
+            font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px; transition: all 0.2s;
+            position: relative;
         }
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
-        .btn-nav {
-            background: var(--orange);
-            color: white !important;
-            font-weight: 600;
-            border-radius: 8px;
-            padding: 0.6rem 1.3rem !important;
-        }
+        .btn-nav { background: var(--orange); color: white !important; font-weight: 600; border-radius: 8px; padding: 0.6rem 1.3rem !important; }
         .btn-nav:hover { background: #e8551f !important; }
 
-        /* Profile avatar in navbar */
-        .nav-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            text-decoration: none;
-            padding: 0.3rem;
-            border-radius: 50px;
-            transition: all 0.2s;
-        }
-        .nav-profile:hover {
-            background: rgba(255,255,255,0.08);
-        }
-        .nav-avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: var(--orange);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 0.95rem;
-            flex-shrink: 0;
-        }
-        .nav-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .nav-profile-name {
-            color: white;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: none;
-        }
-        @media (min-width: 600px) {
-            .nav-profile-name { display: block; }
+        .nav-badge {
+            position: absolute; top: -4px; right: -8px; background: var(--orange); color: white;
+            font-size: 0.6rem; min-width: 18px; height: 18px; border-radius: 50%;
+            display: none; align-items: center; justify-content: center; font-weight: 700; padding: 0 4px;
         }
 
+        .nav-profile { display: flex; align-items: center; gap: 0.4rem; text-decoration: none; padding: 0.3rem; border-radius: 50px; transition: all 0.2s; }
+        .nav-profile:hover { background: rgba(255,255,255,0.08); }
+        .nav-avatar {
+            width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: var(--orange);
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.95rem; flex-shrink: 0;
+        }
+        .nav-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .nav-profile-name { color: white; font-size: 0.8rem; font-weight: 500; display: none; }
+        @media (min-width: 600px) { .nav-profile-name { display: block; } }
+
         .btn-logout {
-            background: transparent;
-            color: rgba(255,255,255,0.6);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.5rem 0.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif;
+            font-size: 0.78rem; font-weight: 500; transition: all 0.2s;
         }
         .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
 
-        /* Search & Filters */
-        .search-bar {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-        .search-input-wrapper {
-            flex: 2;
-            min-width: 200px;
-            position: relative;
-        }
-        .search-input-wrapper input {
-            width: 100%;
-            padding: 0.8rem 1rem 0.8rem 2.5rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            background: white;
-            outline: none;
-            transition: all 0.2s;
-        }
-        .search-input-wrapper input:focus {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
-        }
-        .search-icon {
-            position: absolute;
-            left: 0.9rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1rem;
-            color: var(--text-muted);
-            pointer-events: none;
-        }
-        .filter-select {
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            background: white;
-            color: var(--navy);
-            cursor: pointer;
-            outline: none;
-            min-width: 120px;
-            flex: 1;
-        }
-        .filter-select:focus {
-            border-color: var(--orange);
-        }
-
-        /* Category Pills */
-        .category-pills {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+        .marketplace-hero {
+            background: linear-gradient(135deg, #0a1628, #1a3048);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
             margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .pill {
-            padding: 0.45rem 1rem;
-            border-radius: 100px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            background: white;
-            color: var(--navy);
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .pill:hover {
-            border-color: var(--orange);
-            color: var(--orange);
-        }
-        .pill.active {
-            background: var(--orange);
-            color: white;
-            border-color: var(--orange);
-        }
+        .marketplace-hero h1 { color: white; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .marketplace-hero p { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
 
-        /* Results Info */
-        .results-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.2rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+        .search-bar {
+            display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
+            background: white; padding: 0.8rem; border-radius: var(--radius); box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         }
+        .search-input-wrapper { flex: 2; min-width: 200px; position: relative; }
+        .search-input-wrapper input {
+            width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 0.95rem;
+            background: var(--gray-50); outline: none; transition: all 0.2s;
+        }
+        .search-input-wrapper input:focus { border-color: var(--orange); background: white; box-shadow: 0 0 0 3px rgba(255,107,53,0.1); }
+        .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; }
+        .filter-select {
+            padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif; font-size: 0.85rem; background: var(--gray-50); color: var(--navy);
+            cursor: pointer; outline: none; min-width: 130px; flex: 1;
+        }
+        .filter-select:focus { border-color: var(--orange); }
+
+        .category-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .pill {
+            padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; border: 1px solid var(--border); background: white; color: var(--navy);
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .pill:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-1px); }
+        .pill.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+
+        .results-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 0.85rem; color: var(--text-muted); }
         .results-count { font-weight: 500; }
         .results-count strong { color: var(--navy); }
 
-        /* Listing Grid */
-        .listing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1rem;
-        }
+        .listing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
         .listing-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.2s;
-            display: block;
+            background: white; border: 1px solid var(--border); border-radius: var(--radius);
+            overflow: hidden; cursor: pointer; text-decoration: none; color: inherit;
+            transition: all 0.25s; display: block;
         }
-        .listing-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(13,27,42,0.06);
-            border-color: var(--orange);
-        }
+        .listing-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(13,27,42,0.1); border-color: var(--orange); }
         .listing-img {
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            position: relative;
+            height: 180px; display: flex; align-items: center; justify-content: center;
+            font-size: 3.5rem; position: relative;
         }
-        .listing-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .listing-img img { width: 100%; height: 100%; object-fit: cover; }
         .condition-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--navy);
-            color: white;
-            font-size: 0.62rem;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            position: absolute; top: 12px; left: 12px; background: var(--navy); color: white;
+            font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+            text-transform: uppercase; letter-spacing: 0.3px;
         }
         .condition-badge.used { background: #5c6b7a; }
         .save-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: white;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            z-index: 2;
+            position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
+            border-radius: 50%; background: white; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+            cursor: pointer; transition: all 0.2s; z-index: 2; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-        .save-btn:hover { border-color: #e74c3c; }
-        .save-btn.saved { color: #e74c3c; }
-        .listing-body { padding: 1rem; }
+        .save-btn:hover { border-color: #e74c3c; transform: scale(1.1); }
+        .save-btn.saved { color: #e74c3c; border-color: #e74c3c; }
+        .listing-body { padding: 1.1rem; }
         .listing-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.3;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-        .listing-price {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--orange);
-            margin-bottom: 0.4rem;
-        }
-        .listing-meta {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-        }
-        .verified-dot {
-            width: 6px;
-            height: 6px;
-            background: #22c55e;
-            border-radius: 50%;
-        }
+        .listing-price { font-size: 1.2rem; font-weight: 800; color: var(--orange); margin-bottom: 0.5rem; }
+        .listing-meta { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--text-muted); flex-wrap: wrap; }
+        .verified-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block; }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 1rem;
-            grid-column: 1 / -1;
-        }
-        .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
-        .empty-state h2 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .empty-state p { color: var(--text-muted); font-size: 0.9rem; }
+        .empty-state { text-align: center; padding: 5rem 1rem; grid-column: 1 / -1; }
+        .empty-state .icon { font-size: 4rem; margin-bottom: 1rem; }
+        .empty-state h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+        .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* Loader */
-        .loader {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-        }
+        .loader { grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted); font-size: 1rem; }
 
-        footer {
-            text-align: center;
-            padding: 2rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 2rem;
-        }
+        footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: var(--text-muted); margin-top: 2rem; }
 
         @media (max-width: 500px) {
-            .listing-grid { grid-template-columns: repeat(2, 1fr); }
-            .listing-img { height: 120px; font-size: 2rem; }
-            .listing-title { font-size: 0.8rem; }
-            .listing-price { font-size: 0.95rem; }
+            .listing-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .listing-img { height: 130px; font-size: 2.5rem; }
+            .listing-title { font-size: 0.82rem; }
+            .listing-price { font-size: 1rem; }
+            .marketplace-hero { padding: 1.5rem; }
+            .marketplace-hero h1 { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -361,19 +178,30 @@
         <a href="/" class="logo">VEND<span>LY</span></a>
         <div class="nav-links">
             <a href="/marketplace" class="active">Marketplace</a>
-            <a href="/chat">Messages</a>
+            <a href="/chat">
+                Messages
+                <span class="nav-badge" id="msg-badge"></span>
+            </a>
             <a href="/saved">Saved</a>
             <a href="/dashboard">Dashboard</a>
+            <a href="/notifications">
+                🔔
+                <span class="nav-badge" id="notif-badge"></span>
+            </a>
             <span id="auth-area"></span>
         </div>
     </nav>
 
     <div class="container">
-        <!-- Search & Filters -->
+        <div class="marketplace-hero">
+            <h1>🔥 LASU Marketplace</h1>
+            <p>Find the best deals from verified students on campus</p>
+        </div>
+
         <div class="search-bar">
             <div class="search-input-wrapper">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="search-input" placeholder="Search items, textbooks, electronics...">
+                <input type="text" id="search-input" placeholder="Search for anything...">
             </div>
             <select id="campus-filter" class="filter-select">
                 <option value="">📍 All Campuses</option>
@@ -384,20 +212,19 @@
                 <option value="Other">Other</option>
             </select>
             <select id="condition-filter" class="filter-select">
-                <option value="">📦 All Conditions</option>
+                <option value="">📦 Condition</option>
                 <option value="New">New</option>
                 <option value="Used">Used</option>
             </select>
             <select id="sort-filter" class="filter-select">
                 <option value="newest">🕐 Newest</option>
-                <option value="price_low">💰 Price: Low → High</option>
-                <option value="price_high">💰 Price: High → Low</option>
+                <option value="price_low">💰 Price: Low→High</option>
+                <option value="price_high">💰 Price: High→Low</option>
             </select>
         </div>
 
-        <!-- Category Pills -->
         <div class="category-pills">
-            <span class="pill active" data-category="">All</span>
+            <span class="pill active" data-category="">🏷️ All</span>
             <span class="pill" data-category="Electronics">📱 Electronics</span>
             <span class="pill" data-category="Fashion">👟 Fashion</span>
             <span class="pill" data-category="Books">📚 Books</span>
@@ -406,14 +233,12 @@
             <span class="pill" data-category="Other">📦 Other</span>
         </div>
 
-        <!-- Results Info -->
         <div class="results-info">
             <span class="results-count" id="results-count">Loading...</span>
         </div>
 
-        <!-- Listings Grid -->
         <div class="listing-grid" id="listing-grid">
-            <div class="loader">⏳ Loading listings...</div>
+            <div class="loader">⏳ Finding the best deals for you...</div>
         </div>
     </div>
 
@@ -421,57 +246,56 @@
 
     <script>
         const API_BASE = '';
+        function getToken() { return localStorage.getItem('vendly_token'); }
+        function clearToken() { localStorage.removeItem('vendly_token'); }
+        function logout() { clearToken(); window.location.href = '/login'; }
 
-        function getToken() {
-            return localStorage.getItem('vendly_token');
-        }
-        function clearToken() {
-            localStorage.removeItem('vendly_token');
-        }
-        function logout() {
-            clearToken();
-            window.location.href = '/login';
+        function showBadge(el, count) {
+            if (count > 0) { el.textContent = count > 99 ? '99+' : count; el.style.display = 'flex'; }
+            else { el.style.display = 'none'; }
         }
 
-        // Auth-aware nav with profile avatar
+        async function loadBadges() {
+            const token = getToken();
+            if (!token) return;
+            try {
+                const notifRes = await fetch(`${API_BASE}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } });
+                showBadge(document.getElementById('notif-badge'), (await notifRes.json()).count);
+            } catch (e) {}
+            try {
+                const chatRes = await fetch(`${API_BASE}/api/chat/rooms`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const rooms = await chatRes.json();
+                showBadge(document.getElementById('msg-badge'), rooms ? rooms.length : 0);
+            } catch (e) {}
+        }
+
         (async function updateNav() {
             const authEl = document.getElementById('auth-area');
             const token = getToken();
-
             if (token) {
                 try {
-                    const res = await fetch(`${API_BASE}/api/auth/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const res = await fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
                     if (res.ok) {
-                        const data = await res.json();
-                        const user = data.user;
+                        const user = (await res.json()).user;
                         authEl.innerHTML = `
                             <a href="/profile/${user.id}" class="nav-profile" title="View Profile">
-                                <div class="nav-avatar">
-                                    ${user.profile_picture
-                                        ? `<img src="${user.profile_picture}" alt="${user.full_name}">`
-                                        : (user.full_name || '?')[0].toUpperCase()}
-                                </div>
+                                <div class="nav-avatar">${user.profile_picture ? `<img src="${user.profile_picture}" alt="${user.full_name}">` : (user.full_name || '?')[0].toUpperCase()}</div>
                                 <span class="nav-profile-name">${(user.full_name || '').split(' ')[0]}</span>
                             </a>
-                            <button class="btn-logout" onclick="logout()">Logout</button>
-                        `;
+                            <button class="btn-logout" onclick="logout()">Logout</button>`;
+                        loadBadges();
+                        setInterval(loadBadges, 30000);
                         return;
                     }
                 } catch (e) {}
             }
-
-            // Not logged in
             authEl.innerHTML = '<a href="/login" class="btn-nav">Login</a>';
         })();
 
-        // State
         let currentCategory = '';
         const listingGrid = document.getElementById('listing-grid');
         const resultsCount = document.getElementById('results-count');
 
-        // Category pills
         document.querySelectorAll('.pill').forEach(pill => {
             pill.addEventListener('click', () => {
                 document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
@@ -481,133 +305,74 @@
             });
         });
 
-        // Filters
         document.getElementById('campus-filter').addEventListener('change', fetchListings);
         document.getElementById('condition-filter').addEventListener('change', fetchListings);
         document.getElementById('sort-filter').addEventListener('change', fetchListings);
 
-        // Search with debounce
         let searchTimeout;
         document.getElementById('search-input').addEventListener('input', () => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(fetchListings, 350);
         });
 
-        const categoryEmojis = {
-            'Electronics': '📱',
-            'Fashion': '👟',
-            'Books': '📚',
-            'Food': '🍕',
-            'Services': '🔧',
-            'Other': '📦'
-        };
-
-        const categoryColors = {
-            'Electronics': '#e8f0fe',
-            'Fashion': '#f0f7f0',
-            'Books': '#fef2e7',
-            'Food': '#fff3e0',
-            'Services': '#f3e5f5',
-            'Other': '#eceff1'
-        };
+        const categoryEmojis = { 'Electronics':'📱', 'Fashion':'👟', 'Books':'📚', 'Food':'🍕', 'Services':'🔧', 'Other':'📦' };
+        const categoryColors = { 'Electronics':'#e8f0fe', 'Fashion':'#f0f7f0', 'Books':'#fef2e7', 'Food':'#fff3e0', 'Services':'#f3e5f5', 'Other':'#eceff1' };
 
         async function fetchListings() {
-            listingGrid.innerHTML = '<div class="loader">⏳ Loading...</div>';
-
+            listingGrid.innerHTML = '<div class="loader">⏳ Finding the best deals...</div>';
             const params = new URLSearchParams();
             const search = document.getElementById('search-input').value.trim();
-            const campus = document.getElementById('campus-filter').value;
-            const condition = document.getElementById('condition-filter').value;
-            const sort = document.getElementById('sort-filter').value;
-
             if (search) params.append('search', search);
             if (currentCategory) params.append('category', currentCategory);
+            const campus = document.getElementById('campus-filter').value;
             if (campus) params.append('campus', campus);
+            const condition = document.getElementById('condition-filter').value;
             if (condition) params.append('condition', condition);
-            if (sort) params.append('sort', sort);
+            params.append('sort', document.getElementById('sort-filter').value);
 
             try {
                 const res = await fetch(`${API_BASE}/api/listings?${params.toString()}`);
                 const listings = await res.json();
-
                 if (!listings || listings.length === 0) {
-                    listingGrid.innerHTML = `
-                        <div class="empty-state">
-                            <div class="icon">🔍</div>
-                            <h2>No listings found</h2>
-                            <p>Try a different search or filter</p>
-                        </div>`;
-                    resultsCount.innerHTML = '<strong>0</strong> items found';
+                    listingGrid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h2>No listings found</h2><p>Try a different search or category</p></div>';
+                    resultsCount.innerHTML = '<strong>0</strong> items';
                     return;
                 }
-
                 resultsCount.innerHTML = `<strong>${listings.length}</strong> item${listings.length > 1 ? 's' : ''} found`;
-
                 listingGrid.innerHTML = listings.map(l => `
                     <a href="/listing/${l.id}" class="listing-card">
                         <div class="listing-img" style="background:${categoryColors[l.category] || '#eef1f5'};">
-                            ${l.images && l.images[0]
-                                ? `<img src="${l.images[0]}" alt="${l.title}" loading="lazy">`
-                                : categoryEmojis[l.category] || '📦'}
-                            <span class="condition-badge${l.condition === 'Used' ? ' used' : ''}">${l.condition}</span>
+                            ${l.images && l.images[0] ? `<img src="${l.images[0]}" alt="${l.title}" loading="lazy">` : categoryEmojis[l.category] || '📦'}
+                            <span class="condition-badge${l.condition==='Used'?' used':''}">${l.condition}</span>
                             <span class="save-btn" onclick="event.preventDefault();event.stopPropagation();toggleSave(${l.id},this)" title="Save">♡</span>
                         </div>
                         <div class="listing-body">
                             <div class="listing-title">${escapeHTML(l.title)}</div>
                             <div class="listing-price">₦${l.price.toLocaleString()}</div>
-                            <div class="listing-meta">
-                                ${l.seller && l.seller.verified_badge ? '<span class="verified-dot"></span> Verified ·' : ''}
-                                ${l.campus}
-                            </div>
+                            <div class="listing-meta">${l.seller&&l.seller.verified_badge?'<span class="verified-dot"></span> Verified ·':''}${l.campus}</div>
                         </div>
-                    </a>
-                `).join('');
-
+                    </a>`).join('');
             } catch (err) {
-                listingGrid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">⚠️</div>
-                        <h2>Couldn't load listings</h2>
-                        <p>Check your connection and try again</p>
-                    </div>`;
+                listingGrid.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h2>Couldn\'t load listings</h2><p>Check your connection</p></div>';
             }
         }
 
-        function escapeHTML(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
+        function escapeHTML(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
         async function toggleSave(listingId, el) {
             const token = getToken();
-            if (!token) {
-                sessionStorage.setItem('vendly_return_url', window.location.href);
-                window.location.href = '/login?message=' + encodeURIComponent('Please log in to save items.');
-                return;
-            }
+            if (!token) { sessionStorage.setItem('vendly_return_url', window.location.href); window.location.href = '/login?message=' + encodeURIComponent('Please log in to save items.'); return; }
             try {
                 if (el.classList.contains('saved')) {
-                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    el.classList.remove('saved');
-                    el.textContent = '♡';
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} });
+                    el.classList.remove('saved'); el.textContent = '♡';
                 } else {
-                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    el.classList.add('saved');
-                    el.textContent = '♥';
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+                    el.classList.add('saved'); el.textContent = '♥';
                 }
-            } catch (err) {
-                console.error('Save failed:', err);
-            }
+            } catch (err) { console.error('Save failed:', err); }
         }
 
-        // Initial load
         fetchListings();
     </script>
 </body>
