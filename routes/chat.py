@@ -1,185 +1,417 @@
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, ChatRoom, Message, Offer, Listing, MessageTypeEnum, OfferStatusEnum, Notification, NotificationTypeEnum
-from routes.auth import user_to_dict
-
-chat_bp = Blueprint('chat', __name__)
-
-def create_notification(user_id, notif_type, title, message, link):
-    try:
-        notif = Notification(
-            user_id=user_id, type=notif_type, title=title,
-            message=message, link=link
-        )
-        db.session.add(notif)
-        db.session.commit()
-    except Exception as e:
-        print(f"Notification error: {e}")
-
-@chat_bp.route('/start', methods=['POST'])
-@jwt_required()
-def start_chat():
-    user_id = int(get_jwt_identity())
-    data = request.get_json()
-    listing_id = data.get('listing_id')
-    listing = Listing.query.get(listing_id)
-    if not listing:
-        return jsonify({'msg': 'Listing not found'}), 404
-    room = ChatRoom.query.filter_by(listing_id=listing_id, buyer_id=user_id).first()
-    if room:
-        return jsonify({'room_id': room.id})
-    room = ChatRoom(listing_id=listing_id, buyer_id=user_id, seller_id=listing.seller_id)
-    db.session.add(room)
-    db.session.commit()
-    return jsonify({'room_id': room.id}), 201
-
-@chat_bp.route('/rooms', methods=['GET'])
-@jwt_required()
-def get_rooms():
-    user_id = int(get_jwt_identity())
-    rooms = ChatRoom.query.filter(
-        (ChatRoom.buyer_id == user_id) | (ChatRoom.seller_id == user_id)
-    ).order_by(ChatRoom.created_at.desc()).all()
-    result = []
-    for room in rooms:
-        other_user = room.seller if room.buyer_id == user_id else room.buyer
-        last_msg = Message.query.filter_by(room_id=room.id).order_by(Message.created_at.desc()).first()
-        result.append({
-            'room_id': room.id,
-            'listing': {
-                'id': room.listing.id,
-                'title': room.listing.title,
-                'price': room.listing.price,
-                'image': room.listing.images[0] if room.listing.images else None
-            },
-            'other_user': user_to_dict(other_user),
-            'last_message': {
-                'content': last_msg.content,
-                'type': last_msg.type.value,
-                'created_at': last_msg.created_at.isoformat()
-            } if last_msg else None
-        })
-    return jsonify(result)
-
-@chat_bp.route('/rooms/<int:room_id>/messages', methods=['GET'])
-@jwt_required()
-def get_messages(room_id):
-    room = ChatRoom.query.get(room_id)
-    if not room:
-        return jsonify({'msg': 'Room not found'}), 404
-    messages = Message.query.filter_by(room_id=room_id).order_by(Message.created_at.asc()).all()
-    result = []
-    for m in messages:
-        msg_dict = {
-            'id': m.id,
-            'sender_id': m.sender_id,
-            'type': m.type.value,
-            'content': m.content,
-            'created_at': m.created_at.isoformat()
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat — Vendly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0D1B2A;
+            --orange: #FF6B35;
+            --white: #ffffff;
+            --gray-50: #f8f9fb;
+            --text-muted: #6b7b8d;
+            --border: #e8ecf0;
+            --radius: 14px;
+            --radius-sm: 10px;
         }
-        if m.type in [MessageTypeEnum.OFFER, MessageTypeEnum.COUNTER_OFFER]:
-            offer = Offer.query.filter_by(room_id=room_id).order_by(Offer.created_at.desc()).first()
-            if offer:
-                msg_dict['offer'] = offer_to_dict(offer)
-        result.append(msg_dict)
-    return jsonify(result)
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--navy);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background: var(--navy);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 100;
+        }
+        .back-btn { color: white; text-decoration: none; font-size: 1.2rem; }
+        .chat-header-info { flex: 1; }
+        .chat-header-info .name { color: white; font-weight: 600; font-size: 0.9rem; }
+        .chat-header-info .item { color: rgba(255,255,255,0.6); font-size: 0.75rem; }
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .message {
+            max-width: 75%;
+            padding: 0.7rem 1rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .message-sent {
+            align-self: flex-end;
+            background: var(--navy);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message-received {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+        .message-time { font-size: 0.65rem; opacity: 0.6; margin-top: 4px; text-align: right; }
+        .system-message {
+            align-self: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: #f0f2f5;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+        }
+        .offer-card {
+            align-self: center;
+            background: #fff8f0;
+            border: 1px solid var(--orange);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            width: 90%;
+            max-width: 350px;
+        }
+        .offer-card .offer-amount { font-size: 1.3rem; font-weight: 800; color: var(--orange); }
+        .offer-card .offer-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .offer-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .btn-accept {
+            background: #22c55e; color: white; border: none;
+            padding: 0.5rem 1rem; border-radius: 20px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer;
+        }
+        .btn-reject {
+            background: #ef4444; color: white; border: none;
+            padding: 0.5rem 1rem; border-radius: 20px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer;
+        }
+        .btn-counter {
+            background: white; color: var(--navy); border: 1px solid var(--border);
+            padding: 0.5rem 1rem; border-radius: 20px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer;
+        }
+        .offer-status { text-align: center; font-size: 0.8rem; font-weight: 600; margin-top: 0.5rem; }
+        .offer-accepted { color: #22c55e; }
+        .offer-rejected { color: #ef4444; }
+        .chat-input-area {
+            display: flex; gap: 0.5rem; padding: 0.75rem 1rem;
+            background: white; border-top: 1px solid var(--border);
+        }
+        .chat-input-area input {
+            flex: 1; padding: 0.7rem 1rem; border: 1px solid var(--border);
+            border-radius: 24px; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none;
+        }
+        .chat-input-area input:focus { border-color: var(--orange); }
+        .btn-send {
+            background: var(--orange); color: white; border: none;
+            padding: 0.7rem 1.2rem; border-radius: 24px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+        }
+        .btn-offer {
+            background: white; color: var(--orange); border: 1px solid var(--orange);
+            padding: 0.7rem 1rem; border-radius: 24px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+        }
+        .empty-chat { text-align: center; padding: 3rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/chat" class="back-btn">←</a>
+        <div class="chat-header-info">
+            <div class="name" id="chat-name">Loading...</div>
+            <div class="item" id="chat-item">...</div>
+        </div>
+    </nav>
 
-@chat_bp.route('/rooms/<int:room_id>/send', methods=['POST'])
-@jwt_required()
-def send_message(room_id):
-    user_id = int(get_jwt_identity())
-    data = request.get_json()
-    content = data.get('content', '').strip()
-    if not content:
-        return jsonify({'msg': 'Message cannot be empty'}), 400
-    room = ChatRoom.query.get(room_id)
-    if not room:
-        return jsonify({'msg': 'Room not found'}), 404
-    if user_id not in [room.buyer_id, room.seller_id]:
-        return jsonify({'msg': 'Unauthorized'}), 403
-    msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.TEXT, content=content)
-    db.session.add(msg)
-    db.session.commit()
-    other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
-    create_notification(other_user_id, NotificationTypeEnum.NEW_MESSAGE,
-        'New message', f'New message about {room.listing.title}', f'/chat/{room_id}')
-    return jsonify(message_to_dict(msg)), 201
+    <div class="messages-container" id="messages">
+        <div class="empty-chat" id="chat-loader">💬<br><span style="font-size:0.85rem;">Loading conversation...</span></div>
+    </div>
 
-@chat_bp.route('/rooms/<int:room_id>/offer', methods=['POST'])
-@jwt_required()
-def make_offer(room_id):
-    user_id = int(get_jwt_identity())
-    data = request.get_json()
-    amount = data.get('amount')
-    if not amount:
-        return jsonify({'msg': 'Amount required'}), 400
-    room = ChatRoom.query.get(room_id)
-    if not room:
-        return jsonify({'msg': 'Room not found'}), 404
-    if user_id not in [room.buyer_id, room.seller_id]:
-        return jsonify({'msg': 'Unauthorized'}), 403
-    offer = Offer(room_id=room_id, listing_id=room.listing_id, buyer_id=user_id, amount=float(amount))
-    db.session.add(offer)
-    db.session.flush()
-    msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.OFFER, content=f"💰 Offer: ₦{float(amount):,.2f}")
-    db.session.add(msg)
-    db.session.commit()
-    other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
-    create_notification(other_user_id, NotificationTypeEnum.NEW_OFFER,
-        'New offer', f'Offer of ₦{float(amount):,.2f} on {room.listing.title}', f'/chat/{room_id}')
-    return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 201
+    <div class="chat-input-area">
+        <input type="text" id="message-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendMessage()">
+        <button class="btn-offer" onclick="makeOffer()">💰</button>
+        <button class="btn-send" onclick="sendMessage()">Send</button>
+    </div>
 
-@chat_bp.route('/rooms/<int:room_id>/offer/<int:offer_id>', methods=['PUT'])
-@jwt_required()
-def respond_offer(room_id, offer_id):
-    user_id = int(get_jwt_identity())
-    data = request.get_json()
-    action = data.get('action')
-    offer = Offer.query.get(offer_id)
-    if not offer or offer.room_id != room_id:
-        return jsonify({'msg': 'Invalid offer'}), 404
-    room = ChatRoom.query.get(room_id)
-    if user_id not in [room.buyer_id, room.seller_id]:
-        return jsonify({'msg': 'Unauthorized'}), 403
+    <script>
+        const API_BASE = '';
+        const roomId = window.location.pathname.split('/')[2];
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefillOffer = urlParams.get('offer');
 
-    other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
+        function getToken() { return localStorage.getItem('vendly_token'); }
+        if (!getToken()) { window.location.href = '/login'; }
 
-    if action == 'accept':
-        offer.status = OfferStatusEnum.ACCEPTED
-        msg_type = MessageTypeEnum.ACCEPT
-        content = f"✅ Offer accepted at ₦{offer.amount:,.2f}"
-        create_notification(other_user_id, NotificationTypeEnum.OFFER_ACCEPTED,
-            'Offer accepted!', f'Your offer of ₦{offer.amount:,.2f} was accepted!', f'/chat/{room_id}')
-    elif action == 'reject':
-        offer.status = OfferStatusEnum.REJECTED
-        msg_type = MessageTypeEnum.REJECT
-        content = "❌ Offer rejected"
-        create_notification(other_user_id, NotificationTypeEnum.OFFER_REJECTED,
-            'Offer rejected', f'Your offer of ₦{offer.amount:,.2f} was rejected', f'/chat/{room_id}')
-    elif action == 'counter':
-        new_amount = data.get('amount')
-        if not new_amount:
-            return jsonify({'msg': 'Counter amount required'}), 400
-        offer.status = OfferStatusEnum.COUNTERED
-        new_offer = Offer(room_id=room_id, listing_id=room.listing_id, buyer_id=user_id, amount=float(new_amount))
-        db.session.add(new_offer)
-        db.session.flush()
-        msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.COUNTER_OFFER, content=f"🔄 Counter offer: ₦{float(new_amount):,.2f}")
-        db.session.add(msg)
-        db.session.commit()
-        create_notification(other_user_id, NotificationTypeEnum.COUNTER_OFFER,
-            'Counter offer', f'Counter offer of ₦{float(new_amount):,.2f}', f'/chat/{room_id}')
-        return jsonify({'offer': offer_to_dict(new_offer), 'message': message_to_dict(msg)}), 200
-    else:
-        return jsonify({'msg': 'Invalid action'}), 400
+        let currentUserId = null;
+        let listingId = null;
+        let lastMessageId = 0;
+        let pollingInterval = null;
+        let isLoading = false;
 
-    msg = Message(room_id=room_id, sender_id=user_id, type=msg_type, content=content)
-    db.session.add(msg)
-    db.session.commit()
-    return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 200
+        async function init() {
+            const token = getToken();
+            try {
+                // Run both requests in parallel for speed
+                const [meRes, roomsRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch(`${API_BASE}/api/chat/rooms`, { headers: { 'Authorization': `Bearer ${token}` } })
+                ]);
+                const meData = await meRes.json();
+                currentUserId = meData.user.id;
+                const rooms = await roomsRes.json();
+                const room = rooms.find(r => r.room_id == roomId);
+                if (room) {
+                    document.getElementById('chat-name').textContent = room.other_user.full_name;
+                    document.getElementById('chat-item').textContent = `${room.listing.title} · ₦${room.listing.price.toLocaleString()}`;
+                    listingId = room.listing.id;
+                }
+            } catch (e) {}
 
-def offer_to_dict(o):
-    return {'id': o.id, 'room_id': o.room_id, 'amount': o.amount, 'status': o.status.value, 'buyer_id': o.buyer_id, 'created_at': o.created_at.isoformat()}
+            await loadMessages();
+            pollingInterval = setInterval(loadMessages, 3000);
 
-def message_to_dict(m):
-    return {'id': m.id, 'sender_id': m.sender_id, 'type': m.type.value, 'content': m.content, 'created_at': m.created_at.isoformat()}
+            if (prefillOffer && listingId) {
+                setTimeout(() => sendOfferViaApi(prefillOffer), 800);
+                window.history.replaceState({}, document.title, `/chat/${roomId}`);
+            }
+        }
+
+        async function loadMessages() {
+            if (isLoading) return;
+            isLoading = true;
+            try {
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/messages`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const messages = await res.json();
+                const container = document.getElementById('messages');
+                const loader = document.getElementById('chat-loader');
+                const newMessages = messages.filter(m => m.id > lastMessageId);
+
+                if (messages.length > 0 && loader) {
+                    loader.style.display = 'none';
+                }
+
+                if (newMessages.length > 0) {
+                    newMessages.forEach(m => {
+                        appendMessage(m);
+                        lastMessageId = Math.max(lastMessageId, m.id);
+                    });
+                    scrollToBottom();
+                }
+            } catch (err) {
+                console.error('Polling error:', err);
+            }
+            isLoading = false;
+        }
+
+        function appendMessage(msg) {
+            const container = document.getElementById('messages');
+            if (document.getElementById(`msg-${msg.id}`)) return;
+
+            const isMine = msg.sender_id == currentUserId;
+            const div = document.createElement('div');
+            div.id = `msg-${msg.id}`;
+
+            if (msg.type === 'offer' || msg.type === 'counter_offer') {
+                div.className = 'offer-card';
+                const offerData = msg.offer || {};
+                const offerId = offerData.id;
+                const status = offerData.status || 'pending';
+
+                div.innerHTML = `
+                    <div class="offer-label">${msg.type === 'counter_offer' ? '🔄 Counter Offer' : '💰 New Offer'}</div>
+                    <div class="offer-amount">${msg.content}</div>
+                    ${status === 'pending' && !isMine ? `
+                        <div class="offer-actions" id="offer-actions-${offerId}">
+                            <button class="btn-accept" onclick="respondOffer(${offerId},'accept')">✓ Accept</button>
+                            <button class="btn-reject" onclick="respondOffer(${offerId},'reject')">✕ Reject</button>
+                            <button class="btn-counter" onclick="counterOffer(${offerId})">↩ Counter</button>
+                        </div>
+                    ` : `
+                        <div class="offer-status ${status === 'accepted' ? 'offer-accepted' : status === 'rejected' ? 'offer-rejected' : ''}">
+                            ${status === 'accepted' ? '✅ Accepted' : status === 'rejected' ? '❌ Rejected' : status === 'countered' ? '🔄 Countered' : '⏳ Pending'}
+                        </div>
+                    `}
+                    <div class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                `;
+            } else if (msg.type === 'accept' || msg.type === 'reject') {
+                div.className = 'offer-card';
+                div.innerHTML = `
+                    <div class="offer-status ${msg.type === 'accept' ? 'offer-accepted' : 'offer-rejected'}">
+                        ${msg.content}
+                    </div>
+                    <div class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                `;
+            } else {
+                div.className = `message ${isMine ? 'message-sent' : 'message-received'}`;
+                div.innerHTML = `
+                    ${escapeHTML(msg.content)}
+                    <div class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                `;
+            }
+
+            container.appendChild(div);
+        }
+
+        function escapeHTML(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('messages');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const content = input.value.trim();
+            if (!content) return;
+
+            input.value = '';
+            input.disabled = true;
+
+            try {
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+                if (res.ok) {
+                    const msg = await res.json();
+                    // Instant display - add the message immediately
+                    appendMessage(msg);
+                    lastMessageId = Math.max(lastMessageId, msg.id);
+                    scrollToBottom();
+                }
+            } catch (err) {
+                console.error('Send failed:', err);
+            }
+
+            input.disabled = false;
+            input.focus();
+        }
+
+        function makeOffer() {
+            const amount = prompt('Enter your offer amount (₦):');
+            if (!amount || isNaN(amount)) return;
+            sendOfferViaApi(amount);
+        }
+
+        async function sendOfferViaApi(amount) {
+            try {
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/offer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ amount: parseFloat(amount) })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    // Instant display
+                    appendMessage(data.message);
+                    lastMessageId = Math.max(lastMessageId, data.message.id);
+                    scrollToBottom();
+                } else {
+                    const err = await res.json();
+                    alert(err.msg || 'Offer failed');
+                }
+            } catch (err) {
+                console.error('Offer failed:', err);
+            }
+        }
+
+        async function respondOffer(offerId, action) {
+            try {
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/offer/${offerId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ action })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    // Instant display
+                    appendMessage(data.message);
+                    lastMessageId = Math.max(lastMessageId, data.message.id);
+                    scrollToBottom();
+                    // Remove action buttons
+                    const actions = document.getElementById(`offer-actions-${offerId}`);
+                    if (actions) actions.style.display = 'none';
+                } else {
+                    alert(data.msg || 'Failed to respond');
+                }
+            } catch (err) {
+                console.error('Response failed:', err);
+            }
+        }
+
+        function counterOffer(offerId) {
+            const amount = prompt('Enter your counter amount (₦):');
+            if (!amount || isNaN(amount)) return;
+
+            (async () => {
+                try {
+                    const token = getToken();
+                    const res = await fetch(`${API_BASE}/api/chat/rooms/${roomId}/offer/${offerId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ action: 'counter', amount: parseFloat(amount) })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok) {
+                        appendMessage(data.message);
+                        lastMessageId = Math.max(lastMessageId, data.message.id);
+                        scrollToBottom();
+                        const actions = document.getElementById(`offer-actions-${offerId}`);
+                        if (actions) actions.style.display = 'none';
+                    } else {
+                        alert(data.msg || 'Counter failed');
+                    }
+                } catch (err) {
+                    console.error('Counter failed:', err);
+                }
+            })();
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) clearInterval(pollingInterval);
+        });
+
+        init();
+    </script>
+</body>
+</html>
