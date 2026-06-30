@@ -300,4 +300,105 @@
 
     <script>
         const API_BASE = '';
-        let current
+        let currentUserId = null;
+
+        function getToken() { return localStorage.getItem('vendly_token'); }
+        function clearToken() { localStorage.removeItem('vendly_token'); }
+        function logout() { clearToken(); window.location.href = '/login'; }
+
+        async function apiGet(url) {
+            const token = getToken();
+            const res = await fetch(API_BASE + url, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.status === 401) { logout(); return null; }
+            return res.json();
+        }
+
+        function updateNavProfile(user) {
+            currentUserId = user.id;
+            const avatarEl = document.getElementById('nav-avatar');
+            const nameEl = document.getElementById('nav-profile-name');
+            const linkEl = document.getElementById('nav-profile-link');
+            linkEl.href = `/profile/${user.id}`;
+            if (user.profile_picture) {
+                avatarEl.innerHTML = `<img src="${user.profile_picture}" alt="${user.full_name}">`;
+            } else {
+                avatarEl.innerHTML = '';
+                avatarEl.textContent = (user.full_name || '?')[0].toUpperCase();
+            }
+            nameEl.textContent = user.full_name.split(' ')[0];
+        }
+
+        async function loadNotifBadge() {
+            const token = getToken();
+            if (!token) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                const badge = document.getElementById('notif-badge');
+                if (data.count > 0) {
+                    badge.textContent = data.count > 99 ? '99+' : data.count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) {}
+        }
+
+        async function loadDashboard() {
+            if (!getToken()) { window.location.href = '/login'; return; }
+            const userRes = await apiGet('/api/auth/me');
+            if (!userRes) return;
+            const user = userRes.user;
+            updateNavProfile(user);
+
+            document.getElementById('greeting').textContent = `Welcome back, ${user.full_name.split(' ')[0]} 👋`;
+            document.getElementById('user-info').textContent = `${user.school || 'LASU'} · ${user.department || ''}`;
+
+            const listingsRes = await apiGet(`/api/listings/user/${user.id}`);
+            const listings = listingsRes || [];
+            const listingsEl = document.getElementById('my-listings');
+
+            if (listings.length === 0) {
+                listingsEl.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>You haven't listed anything yet.</p><a href="/listings/new" class="btn-primary" style="display:inline-block;margin-top:1rem;">+ Create Your First Listing</a></div>`;
+            } else {
+                listingsEl.innerHTML = listings.map(l => `
+                    <div class="listing-item">
+                        <div class="listing-item-img" style="background:#${l.category==='Electronics'?'e8f0fe':l.category==='Books'?'fef2e7':l.category==='Fashion'?'f0f7f0':'f7edf8'};">${l.category==='Electronics'?'📱':l.category==='Books'?'📚':l.category==='Fashion'?'👟':'📦'}</div>
+                        <div class="listing-item-info">
+                            <strong>${l.title}</strong>
+                            <span>${l.campus} · ${l.condition} · <span class="badge ${l.is_sold?'badge-sold':'badge-active'}">${l.is_sold?'Sold':'Active'}</span></span>
+                            <div style="margin-top:0.3rem;">
+                                <a href="/listing/${l.id}" style="font-size:0.75rem;color:var(--orange);margin-right:0.5rem;">View</a>
+                                <a href="/listings/${l.id}/edit" style="font-size:0.75rem;color:var(--navy);">Edit</a>
+                            </div>
+                        </div>
+                        <div class="listing-item-price">₦${l.price.toLocaleString()}</div>
+                    </div>
+                `).join('');
+            }
+
+            const chatsRes = await apiGet('/api/chat/rooms');
+            const chats = chatsRes || [];
+            const chatsEl = document.getElementById('recent-chats');
+
+            if (chats.length === 0) {
+                chatsEl.innerHTML = `<div class="empty-state"><div class="icon">💬</div><p>No conversations yet.</p><a href="/marketplace" style="font-size:0.85rem;color:var(--orange);">Browse items to start chatting</a></div>`;
+            } else {
+                chatsEl.innerHTML = chats.slice(0, 6).map(c => `
+                    <a href="/chat/${c.room_id}" class="chat-item">
+                        <div class="chat-avatar" style="background:#${c.other_user.full_name.charCodeAt(0)%2===0?'e8f0fe':'fef2e7'};color:var(--navy);">${c.other_user.full_name[0]}</div>
+                        <div class="chat-preview">
+                            <strong>${c.other_user.full_name}</strong>
+                            <span>${c.listing.title} · ${c.last_message?c.last_message.content:'No messages yet'}</span>
+                        </div>
+                    </a>
+                `).join('');
+            }
+        }
+
+        loadDashboard();
+        loadNotifBadge();
+        setInterval(loadNotifBadge, 30000);
+    </script>
+</body>
+</html>
