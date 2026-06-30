@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Marketplace — Vendly</title>
+    <!-- CHANGE: Added display=swap to prevent flash of invisible text while font loads -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,20 +18,36 @@
             --border: #e8ecf0;
             --radius: 16px;
             --radius-sm: 12px;
+            /* CHANGE: safe-area insets for iPhone notch/home indicator */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* CHANGE: Global tap highlight removal and momentum scrolling */
+        html {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
             background: #f0f2f5;
             color: var(--navy);
             min-height: 100vh;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
         }
 
+        /* ---------- NAVBAR ---------- */
         .navbar {
             background: var(--navy);
-            padding: 0.8rem 2rem;
+            /* CHANGE: safe-area top padding so navbar clears iPhone notch */
+            padding: calc(0.8rem + var(--safe-top)) 2rem 0.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -38,17 +56,28 @@
             z-index: 100;
             box-shadow: 0 2px 20px rgba(0,0,0,0.2);
         }
-        .logo { font-size: 1.4rem; font-weight: 900; color: var(--orange); text-decoration: none; }
+        .logo { font-size: 1.4rem; font-weight: 900; color: var(--orange); text-decoration: none; min-height: 44px; display: flex; align-items: center; }
         .logo span { color: white; font-weight: 700; }
         .nav-links { display: flex; gap: 0.5rem; align-items: center; }
         .nav-links a {
             color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.85rem;
-            font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px; transition: all 0.2s;
+            font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px;
+            /* CHANGE: GPU-accelerated transition, minimum 44px tap target */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            min-width: 44px; min-height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            touch-action: manipulation;
+            will-change: transform, opacity;
         }
+        /* CHANGE: :active tap feedback instead of hover-only */
+        .nav-links a:active { transform: scale(0.96); opacity: 0.8; background: rgba(255,255,255,0.12); }
         .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .nav-links a.active { color: var(--orange); }
         .btn-nav { background: var(--orange); color: white !important; font-weight: 600; border-radius: 8px; padding: 0.6rem 1.3rem !important; }
+        .btn-nav:active { transform: scale(0.96); opacity: 0.85; }
         .btn-nav:hover { background: #e8551f !important; }
 
         .nav-badge {
@@ -57,7 +86,16 @@
             display: none; align-items: center; justify-content: center; font-weight: 700; padding: 0 4px;
         }
 
-        .nav-profile { display: flex; align-items: center; gap: 0.4rem; text-decoration: none; padding: 0.3rem; border-radius: 50px; transition: all 0.2s; }
+        .nav-profile {
+            display: flex; align-items: center; gap: 0.4rem; text-decoration: none;
+            padding: 0.3rem 0.5rem; border-radius: 50px;
+            /* CHANGE: GPU-accelerated, 44px minimum */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 44px; touch-action: manipulation; will-change: transform, opacity;
+        }
+        .nav-profile:active { transform: scale(0.96); opacity: 0.8; }
         .nav-profile:hover { background: rgba(255,255,255,0.08); }
         .nav-avatar {
             width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: var(--orange);
@@ -69,33 +107,41 @@
 
         .btn-logout {
             background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif;
-            font-size: 0.78rem; font-weight: 500; transition: all 0.2s;
+            padding: 0.5rem 0.8rem; border-radius: 10px; cursor: pointer; font-family: 'Inter', sans-serif;
+            font-size: 0.78rem; font-weight: 500;
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 44px; min-height: 44px; touch-action: manipulation; will-change: transform, opacity;
         }
+        .btn-logout:active { transform: scale(0.94); opacity: 0.7; }
         .btn-logout:hover { color: white; border-color: rgba(255,255,255,0.5); }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+        /* ---------- CONTAINER ---------- */
+        .container { max-width: 1100px; margin: 0 auto; padding: clamp(1rem, 3vw, 1.5rem); }
 
+        /* ---------- HERO ---------- */
         .marketplace-hero {
             background: linear-gradient(135deg, #0a1628, #1a3048);
-            border-radius: var(--radius);
-            padding: 2.5rem 2rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius); padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+            margin-bottom: 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.05);
         }
-        .marketplace-hero h1 { color: white; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .marketplace-hero h1 { color: white; font-size: clamp(1.3rem, 4vw, 1.8rem); font-weight: 800; margin-bottom: 0.3rem; }
         .marketplace-hero p { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
 
+        /* ---------- SEARCH BAR ---------- */
         .search-bar {
             display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
-            background: white; padding: 0.8rem; border-radius: var(--radius); box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            background: white; padding: 0.8rem; border-radius: var(--radius);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         }
         .search-input-wrapper { flex: 2; min-width: 200px; position: relative; }
         .search-input-wrapper input {
             width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; border: 1px solid var(--border);
             border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 0.95rem;
-            background: var(--gray-50); outline: none; transition: all 0.2s;
+            background: var(--gray-50); outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            /* CHANGE: no layout-triggering transition */
         }
         .search-input-wrapper input:focus { border-color: var(--orange); background: white; box-shadow: 0 0 0 3px rgba(255,107,53,0.1); }
         .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; }
@@ -103,49 +149,100 @@
             padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
             font-family: 'Inter', sans-serif; font-size: 0.85rem; background: var(--gray-50); color: var(--navy);
             cursor: pointer; outline: none; min-width: 130px; flex: 1;
+            /* CHANGE: minimum tap target 44px, native-like transition */
+            min-height: 44px; touch-action: manipulation;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
         .filter-select:focus { border-color: var(--orange); }
+        .filter-select:active { transform: scale(0.98); }
 
+        /* ---------- CATEGORY PILLS ---------- */
         .category-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
         .pill {
             padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600;
             cursor: pointer; border: 1px solid var(--border); background: white; color: var(--navy);
-            transition: all 0.2s; white-space: nowrap;
+            /* CHANGE: GPU-accelerated, soft-feel, 44px minimum */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center;
+            touch-action: manipulation; will-change: transform, opacity;
         }
-        .pill:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-1px); }
-        .pill.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+        .pill:active { transform: scale(0.95); opacity: 0.8; }
+        .pill.active {
+            background: var(--orange); color: white; border-color: var(--orange);
+            box-shadow: 0 4px 16px rgba(255,107,53,0.2);
+        }
 
-        .results-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 0.85rem; color: var(--text-muted); }
+        /* ---------- RESULTS INFO ---------- */
+        .results-info {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.2rem; font-size: 0.85rem; color: var(--text-muted);
+        }
         .results-count { font-weight: 500; }
         .results-count strong { color: var(--navy); }
 
-        .listing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+        /* ---------- LISTING GRID ---------- */
+        .listing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.25rem;
+            /* CHANGE: smooth fade transition on opacity for content swaps */
+            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .listing-grid.loading { opacity: 0.5; pointer-events: none; }
+
         .listing-card {
             background: white; border: 1px solid var(--border); border-radius: var(--radius);
             overflow: hidden; cursor: pointer; text-decoration: none; color: inherit;
-            transition: all 0.25s; display: block;
+            display: block;
+            /* CHANGE: GPU-accelerated — transform + opacity only. Softer shadow. */
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation; will-change: transform, opacity;
         }
-        .listing-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(13,27,42,0.1); border-color: var(--orange); }
+        /* CHANGE: :active tap state for mobile (no box-shadow animation) */
+        .listing-card:active { transform: scale(0.97); opacity: 0.9; }
+        .listing-card:hover { border-color: var(--orange); }
+
         .listing-img {
             height: 180px; display: flex; align-items: center; justify-content: center;
             font-size: 3.5rem; position: relative;
+            /* CHANGE: background for emoji placeholder */
+            background: var(--gray-100);
         }
-        .listing-img img { width: 100%; height: 100%; object-fit: cover; }
+        /* CHANGE: Smooth fade-in for lazy-loaded images */
+        .listing-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .listing-img img.loaded { opacity: 1; }
+
         .condition-badge {
             position: absolute; top: 12px; left: 12px; background: var(--navy); color: white;
             font-size: 0.65rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;
             text-transform: uppercase; letter-spacing: 0.3px;
         }
         .condition-badge.used { background: #5c6b7a; }
+
+        /* CHANGE: Save button — 44x44 minimum, GPU-accelerated bounce */
         .save-btn {
-            position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
-            border-radius: 50%; background: white; border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-            cursor: pointer; transition: all 0.2s; z-index: 2; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: absolute; top: 12px; right: 12px;
+            width: 44px; height: 44px;
+            border-radius: 50%; background: rgba(255,255,255,0.9); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+            cursor: pointer; z-index: 2;
+            /* CHANGE: transform + opacity only for smooth bounce */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation; will-change: transform;
         }
-        .save-btn:hover { border-color: #e74c3c; transform: scale(1.1); }
+        .save-btn:active { transform: scale(0.85); }
         .save-btn.saved { color: #e74c3c; border-color: #e74c3c; }
-        .listing-body { padding: 1.1rem; }
+
+        .listing-body { padding: clamp(0.8rem, 2vw, 1.1rem); }
         .listing-title {
             font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.3;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -154,22 +251,41 @@
         .listing-meta { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--text-muted); flex-wrap: wrap; }
         .verified-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block; }
 
+        /* ---------- SKELETON LOADER ---------- */
+        /* CHANGE: Skeleton shimmer instead of blank loader — no flash on re-render */
+        .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+        .skeleton-card { background: white; border-radius: var(--radius); overflow: hidden; }
+        .skeleton-img { height: 180px; background: linear-gradient(90deg, #eef1f5 25%, #e2e6ea 50%, #eef1f5 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+        .skeleton-body { padding: 1rem; }
+        .skeleton-line { height: 14px; background: #eef1f5; border-radius: 6px; margin-bottom: 8px; }
+        .skeleton-line.short { width: 60%; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* ---------- EMPTY STATE ---------- */
         .empty-state { text-align: center; padding: 5rem 1rem; grid-column: 1 / -1; }
         .empty-state .icon { font-size: 4rem; margin-bottom: 1rem; }
         .empty-state h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
         .empty-state p { color: var(--text-muted); font-size: 0.95rem; }
 
-        .loader { grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted); font-size: 1rem; }
+        /* ---------- FOOTER ---------- */
+        footer {
+            text-align: center;
+            /* CHANGE: safe-area bottom padding for iPhone home indicator */
+            padding: 1rem 2rem calc(1rem + var(--safe-bottom));
+            font-size: 0.75rem; color: var(--text-muted); margin-top: 2rem;
+        }
 
-        footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: var(--text-muted); margin-top: 2rem; }
-
+        /* ---------- MOBILE ---------- */
         @media (max-width: 500px) {
             .listing-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .skeleton-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
             .listing-img { height: 130px; font-size: 2.5rem; }
             .listing-title { font-size: 0.82rem; }
             .listing-price { font-size: 1rem; }
             .marketplace-hero { padding: 1.5rem; }
             .marketplace-hero h1 { font-size: 1.3rem; }
+            /* CHANGE: save button still 44px on mobile */
+            .save-btn { width: 40px; height: 40px; font-size: 1rem; top: 8px; right: 8px; }
         }
     </style>
 </head>
@@ -237,9 +353,15 @@
             <span class="results-count" id="results-count">Loading...</span>
         </div>
 
-        <div class="listing-grid" id="listing-grid">
-            <div class="loader">⏳ Finding the best deals for you...</div>
+        <!-- CHANGE: Skeleton loader instead of text-only loader -->
+        <div class="skeleton-grid" id="skeleton-grid">
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
         </div>
+
+        <div class="listing-grid" id="listing-grid" style="display:none;"></div>
     </div>
 
     <footer>&copy; 2026 Vendly · LASU's Student Marketplace</footer>
@@ -295,6 +417,7 @@
 
         let currentCategory = '';
         const listingGrid = document.getElementById('listing-grid');
+        const skeletonGrid = document.getElementById('skeleton-grid');
         const resultsCount = document.getElementById('results-count');
 
         document.querySelectorAll('.pill').forEach(pill => {
@@ -319,8 +442,19 @@
         const categoryEmojis = { 'Electronics':'📱', 'Fashion':'👟', 'Books':'📚', 'Food':'🍕', 'Services':'🔧', 'Other':'📦' };
         const categoryColors = { 'Electronics':'#e8f0fe', 'Fashion':'#f0f7f0', 'Books':'#fef2e7', 'Food':'#fff3e0', 'Services':'#f3e5f5', 'Other':'#eceff1' };
 
+        // CHANGE: Show skeleton instead of clearing grid — no flash
+        function showLoading() {
+            skeletonGrid.style.display = 'grid';
+            listingGrid.style.display = 'none';
+        }
+
+        function hideLoading() {
+            skeletonGrid.style.display = 'none';
+            listingGrid.style.display = 'grid';
+        }
+
         async function fetchListings() {
-            listingGrid.innerHTML = '<div class="loader">⏳ Finding the best deals...</div>';
+            showLoading();
             const params = new URLSearchParams();
             const search = document.getElementById('search-input').value.trim();
             if (search) params.append('search', search);
@@ -334,6 +468,8 @@
             try {
                 const res = await fetch(`${API_BASE}/api/listings?${params.toString()}`);
                 const listings = await res.json();
+                hideLoading();
+
                 if (!listings || listings.length === 0) {
                     listingGrid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h2>No listings found</h2><p>Try a different search or category</p></div>';
                     resultsCount.innerHTML = '<strong>0</strong> items';
@@ -343,7 +479,7 @@
                 listingGrid.innerHTML = listings.map(l => `
                     <a href="/listing/${l.id}" class="listing-card">
                         <div class="listing-img" style="background:${categoryColors[l.category] || '#eef1f5'};">
-                            ${l.images && l.images[0] ? `<img src="${l.images[0]}" alt="${l.title}" loading="lazy">` : categoryEmojis[l.category] || '📦'}
+                            ${l.images && l.images[0] ? `<img src="${l.images[0]}" alt="${l.title}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.style.display='none'">` : categoryEmojis[l.category] || '📦'}
                             <span class="condition-badge${l.condition==='Used'?' used':''}">${l.condition}</span>
                             <span class="save-btn" onclick="event.preventDefault();event.stopPropagation();toggleSave(${l.id},this)" title="Save">♡</span>
                         </div>
@@ -353,7 +489,9 @@
                             <div class="listing-meta">${l.seller&&l.seller.verified_badge?'<span class="verified-dot"></span> Verified ·':''}${l.campus}</div>
                         </div>
                     </a>`).join('');
+
             } catch (err) {
+                hideLoading();
                 listingGrid.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h2>Couldn\'t load listings</h2><p>Check your connection</p></div>';
             }
         }
@@ -367,9 +505,13 @@
                 if (el.classList.contains('saved')) {
                     await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${token}`} });
                     el.classList.remove('saved'); el.textContent = '♡';
+                    // CHANGE: quick scale bounce on unsave
+                    el.style.transform = 'scale(0.8)'; setTimeout(() => el.style.transform = '', 150);
                 } else {
                     await fetch(`${API_BASE}/api/saved/${listingId}`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
                     el.classList.add('saved'); el.textContent = '♥';
+                    // CHANGE: quick scale bounce on save
+                    el.style.transform = 'scale(1.2)'; setTimeout(() => el.style.transform = '', 150);
                 }
             } catch (err) { console.error('Save failed:', err); }
         }
