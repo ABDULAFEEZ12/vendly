@@ -61,6 +61,20 @@ def get_rooms():
         })
     return jsonify(result)
 
+@chat_bp.route('/unread-count', methods=['GET'])
+@jwt_required()
+def unread_message_count():
+    user_id = int(get_jwt_identity())
+    rooms = ChatRoom.query.filter(
+        (ChatRoom.buyer_id == user_id) | (ChatRoom.seller_id == user_id)
+    ).all()
+    count = 0
+    for room in rooms:
+        last_msg = Message.query.filter_by(room_id=room.id).order_by(Message.created_at.desc()).first()
+        if last_msg and last_msg.sender_id != user_id:
+            count += 1
+    return jsonify({'count': count})
+
 @chat_bp.route('/rooms/<int:room_id>/messages', methods=['GET'])
 @jwt_required()
 def get_messages(room_id):
@@ -99,6 +113,7 @@ def send_message(room_id):
         return jsonify({'msg': 'Unauthorized'}), 403
     msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.TEXT, content=content)
     db.session.add(msg)
+    db.session.flush()
     db.session.commit()
     other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
     create_notification(other_user_id, NotificationTypeEnum.NEW_MESSAGE,
@@ -123,6 +138,7 @@ def make_offer(room_id):
     db.session.flush()
     msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.OFFER, content=f"💰 Offer: ₦{float(amount):,.2f}")
     db.session.add(msg)
+    db.session.flush()
     db.session.commit()
     other_user_id = room.seller_id if user_id == room.buyer_id else room.buyer_id
     create_notification(other_user_id, NotificationTypeEnum.NEW_OFFER,
@@ -166,6 +182,7 @@ def respond_offer(room_id, offer_id):
         db.session.flush()
         msg = Message(room_id=room_id, sender_id=user_id, type=MessageTypeEnum.COUNTER_OFFER, content=f"🔄 Counter offer: ₦{float(new_amount):,.2f}")
         db.session.add(msg)
+        db.session.flush()
         db.session.commit()
         create_notification(other_user_id, NotificationTypeEnum.COUNTER_OFFER,
             'Counter offer', f'Counter offer of ₦{float(new_amount):,.2f}', f'/chat/{room_id}')
@@ -175,6 +192,7 @@ def respond_offer(room_id, offer_id):
 
     msg = Message(room_id=room_id, sender_id=user_id, type=msg_type, content=content)
     db.session.add(msg)
+    db.session.flush()
     db.session.commit()
     return jsonify({'offer': offer_to_dict(offer), 'message': message_to_dict(msg)}), 200
 
