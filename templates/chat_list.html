@@ -37,7 +37,6 @@
             --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
             --safe-bottom: env(safe-area-inset-bottom, 20px);
             --safe-top: env(safe-area-inset-top, 0px);
-            --header-height: 80px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -58,7 +57,7 @@
             justify-content: center;
             align-items: flex-start;
             padding-top: var(--safe-top);
-            padding-bottom: calc(90px + var(--safe-bottom));
+            padding-bottom: 40px;
             position: relative;
             isolation: isolate;
             letter-spacing: -0.01em;
@@ -68,91 +67,6 @@
                 radial-gradient(circle at 85% 75%, rgba(94,158,255,0.08) 0%, transparent 50%),
                 radial-gradient(circle at 50% 50%, rgba(185,142,255,0.04) 0%, transparent 60%);
             background-attachment: fixed;
-        }
-
-        /* ---------- HEADER (replaces navbar) ---------- */
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--surface-glass-heavy);
-            backdrop-filter: blur(32px) saturate(180%);
-            -webkit-backdrop-filter: blur(32px) saturate(180%);
-            border-bottom: 1px solid var(--border-glass);
-            padding: calc(16px + var(--safe-top)) 20px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.5);
-        }
-        .header-logo {
-            font-size: 1.3rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            color: var(--text-primary);
-        }
-        .header-logo .accent {
-            color: var(--accent);
-            font-weight: 800;
-        }
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .header-btn {
-            background: var(--surface-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.25s var(--ease-smooth);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-family: 'Inter', sans-serif;
-            white-space: nowrap;
-        }
-        .header-btn:hover {
-            color: var(--text-primary);
-            border-color: var(--border-active);
-        }
-        .header-btn.active {
-            color: var(--accent);
-            background: var(--accent-soft);
-            border-color: rgba(255,94,58,0.3);
-        }
-        .header-btn:active {
-            transform: scale(0.95);
-        }
-        .btn-logout {
-            background: transparent;
-            color: var(--text-tertiary);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.25s var(--ease-smooth);
-            white-space: nowrap;
-        }
-        .btn-logout:hover {
-            color: #ff4444;
-            border-color: rgba(255,68,68,0.3);
-        }
-        .btn-logout:active {
-            transform: scale(0.95);
         }
 
         /* ---------- CONTAINER ---------- */
@@ -420,126 +334,15 @@
             box-shadow: 0 4px 12px var(--accent-glow);
         }
 
-        /* ---------- BOTTOM NAV ---------- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 420px;
-            background: var(--surface-glass-heavy);
-            backdrop-filter: blur(32px) saturate(180%);
-            -webkit-backdrop-filter: blur(32px) saturate(180%);
-            border: 1px solid var(--border-glass);
-            border-radius: 40px;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 120;
-            box-shadow: 0 20px 44px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04) inset;
-            gap: 4px;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1px;
-            color: var(--text-tertiary);
-            font-size: 0.7rem;
-            font-weight: 550;
-            transition: all 0.25s var(--ease-smooth);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 30px;
-            letter-spacing: -0.01em;
-            text-decoration: none;
-            position: relative;
-        }
-        .nav-item.active {
-            color: var(--accent);
-            font-weight: 650;
-        }
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 0 0 4px 4px;
-            box-shadow: 0 0 12px var(--accent-glow);
-        }
-        .nav-icon {
-            font-size: 1.4rem;
-            transition: transform 0.25s var(--ease-bounce);
-        }
-        .nav-item.active .nav-icon {
-            transform: translateY(-2px);
-            filter: drop-shadow(0 6px 10px var(--accent-glow));
-        }
-        .floating-sell-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.7rem;
-            box-shadow: 0 12px 30px var(--accent-glow), 0 0 0 4px rgba(255,94,58,0.2);
-            transition: all 0.25s var(--ease-bounce);
-            margin-top: -28px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .floating-sell-btn:active {
-            transform: scale(0.88);
-            box-shadow: 0 6px 16px var(--accent-glow);
-        }
-
         /* ---------- RESPONSIVE ---------- */
         @media (max-width: 500px) {
             .chat-info .preview {
                 max-width: 160px;
             }
-            .header-btn {
-                padding: 6px 10px;
-                font-size: 0.7rem;
-            }
-            .btn-logout {
-                padding: 6px 10px;
-                font-size: 0.7rem;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .header-btn.hide-mobile {
-                display: none;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- HEADER -->
-    <header class="app-header">
-        <a href="/" class="header-logo">VEND<span class="accent">LY</span></a>
-        <div class="header-actions">
-            <a href="/marketplace" class="header-btn">🏠 Home</a>
-            <a href="/chat" class="header-btn active">💬 Messages</a>
-            <a href="/saved" class="header-btn hide-mobile">❤️ Saved</a>
-            <a href="/dashboard" class="header-btn hide-mobile">📊 Dashboard</a>
-            <button class="btn-logout" onclick="logout()">🚪 Logout</button>
-        </div>
-    </header>
-
     <!-- MAIN CONTAINER -->
     <div class="app-container">
         <!-- PAGE HEADER -->
@@ -583,27 +386,6 @@
             <p>Start browsing listings and message a seller to begin your campus trading journey.</p>
             <a href="/marketplace" class="btn-primary">🔍 Browse Marketplace</a>
         </div>
-    </div>
-
-    <!-- BOTTOM NAVIGATION -->
-    <div class="bottom-nav">
-        <a href="/marketplace" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="/chat" class="nav-item active">
-            <span class="nav-icon">💬</span>
-            <span>Chat</span>
-        </a>
-        <a href="/listings/new" class="floating-sell-btn">+</a>
-        <a href="/saved" class="nav-item">
-            <span class="nav-icon">❤️</span>
-            <span>Saved</span>
-        </a>
-        <a href="/profile/me" class="nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Profile</span>
-        </a>
     </div>
 
     <script>
