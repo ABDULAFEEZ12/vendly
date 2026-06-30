@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
-    <title>New Listing — Vendly</title>
+    <title>Listing — Vendly</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -73,86 +73,6 @@
             background-attachment: fixed;
         }
 
-        /* ---------- HEADER ---------- */
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--surface-glass-heavy);
-            backdrop-filter: blur(32px) saturate(180%);
-            -webkit-backdrop-filter: blur(32px) saturate(180%);
-            border-bottom: 1px solid var(--border-glass);
-            padding: calc(16px + var(--safe-top)) 20px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 8px 32px -12px rgba(0,0,0,0.5);
-        }
-        .header-logo {
-            font-size: 1.3rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            text-decoration: none;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-        .header-logo .accent {
-            color: var(--accent);
-            font-weight: 800;
-        }
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .header-btn {
-            background: var(--surface-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.25s var(--ease-smooth);
-            font-family: 'Inter', sans-serif;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .header-btn:hover {
-            color: var(--text-primary);
-            border-color: var(--border-active);
-        }
-        .header-btn:active {
-            transform: scale(0.95);
-        }
-        .btn-logout {
-            background: transparent;
-            color: var(--text-tertiary);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.25s var(--ease-smooth);
-            white-space: nowrap;
-        }
-        .btn-logout:hover {
-            color: var(--red);
-            border-color: rgba(255,71,87,0.3);
-        }
-        .btn-logout:active {
-            transform: scale(0.95);
-        }
-
         /* ---------- CONTAINER ---------- */
         .app-container {
             width: 100%;
@@ -166,356 +86,356 @@
         }
         @media (min-width: 768px) {
             .app-container {
-                max-width: 700px;
+                max-width: 900px;
                 padding: 36px 28px 0;
                 gap: 32px;
             }
         }
 
-        /* ---------- PAGE HEADER ---------- */
-        .page-header {
-            margin-bottom: 4px;
-        }
-        .back-link {
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 12px;
-            padding: 8px 0;
-            transition: color 0.2s var(--ease-smooth);
-            font-weight: 500;
-        }
-        .back-link:hover {
-            color: var(--accent);
-        }
-        .back-link:active {
-            color: var(--accent);
-            transform: scale(0.97);
-        }
-        .page-header h1 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            line-height: 1.1;
-            background: linear-gradient(135deg, #ffffff 0%, #e0e0ff 80%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .page-header p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        /* ---------- CARD ---------- */
-        .card {
+        /* ---------- LISTING DETAIL ---------- */
+        .listing-detail {
             background: var(--surface-glass);
             backdrop-filter: blur(28px);
             -webkit-backdrop-filter: blur(28px);
             border: 1px solid var(--border-glass);
             border-radius: var(--radius-lg);
-            padding: 28px 24px;
+            padding: 24px;
             box-shadow: 0 20px 40px -16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset;
+            overflow: hidden;
         }
-        @media (max-width: 500px) {
-            .card {
-                padding: 20px 16px;
-                border-radius: var(--radius-md);
-            }
+        .listing-layout {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
         }
-
-        /* ---------- FORM ---------- */
-        .form-group {
-            margin-bottom: 1.5rem;
+        .listing-images {
+            flex: 1;
+            min-width: 280px;
+            max-width: 500px;
         }
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 650;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            letter-spacing: -0.01em;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-        .form-group label .optional {
-            font-weight: 400;
-            color: var(--text-tertiary);
-            font-size: 0.72rem;
-            text-transform: none;
-            letter-spacing: 0;
-        }
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.92rem;
-            color: var(--text-primary);
-            background: var(--surface-glass);
-            backdrop-filter: blur(16px);
-            outline: none;
-            transition: all 0.25s var(--ease-smooth);
-            min-height: 50px;
-            letter-spacing: -0.01em;
-        }
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: var(--text-tertiary);
-        }
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            border-color: var(--accent);
-            background: var(--surface-elevated);
-            box-shadow: 0 0 20px rgba(255,94,58,0.15), 0 0 0 4px var(--accent-soft);
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 110px;
-        }
-        .form-group select {
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239a9ab0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            padding-right: 44px;
-            touch-action: manipulation;
-        }
-        .form-group select option {
-            background: var(--surface-elevated);
-            color: var(--text-primary);
-        }
-        .form-group input[type="number"] {
-            -moz-appearance: textfield;
-        }
-        .form-group input[type="number"]::-webkit-inner-spin-button,
-        .form-group input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        @media (max-width: 500px) {
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-        }
-
-        /* ---------- PRICE INPUT ---------- */
-        .price-input-wrapper {
-            position: relative;
-        }
-        .price-input-wrapper .currency {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-weight: 700;
-            color: var(--accent);
-            font-size: 1rem;
-            pointer-events: none;
-            z-index: 1;
-        }
-        .price-input-wrapper input {
-            padding-left: 38px !important;
-        }
-
-        /* ---------- IMAGE UPLOAD ---------- */
-        .image-upload-area {
-            border: 2px dashed var(--border-glass);
-            border-radius: var(--radius-md);
-            padding: 32px 20px;
-            text-align: center;
-            cursor: pointer;
-            min-height: 120px;
+        .listing-info {
+            flex: 1;
+            min-width: 260px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s var(--ease-smooth);
-            touch-action: manipulation;
-            background: var(--surface-glass);
-            backdrop-filter: blur(16px);
-            gap: 6px;
-        }
-        .image-upload-area:hover {
-            border-color: var(--accent);
-            background: var(--accent-soft);
-            box-shadow: 0 0 24px rgba(255,94,58,0.1);
-        }
-        .image-upload-area:active {
-            border-color: var(--accent);
-            background: var(--accent-soft);
-            transform: scale(0.98);
-        }
-        .image-upload-area .upload-icon {
-            font-size: 2.8rem;
-            margin-bottom: 4px;
-        }
-        .image-upload-area p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        .image-upload-area p strong {
-            color: var(--accent);
-            font-weight: 650;
-        }
-        .image-upload-area input {
-            display: none;
+            gap: 14px;
         }
 
-        .image-previews {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-        .image-preview {
-            width: 90px;
-            height: 90px;
-            border-radius: var(--radius-sm);
-            object-fit: cover;
-            border: 2px solid var(--border-glass);
-            animation: fadeInScale 0.3s var(--ease-spring);
-        }
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .image-preview-wrapper {
-            position: relative;
-        }
-        .image-preview-remove {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            width: 28px;
-            height: 28px;
-            background: var(--red);
-            color: white;
-            border-radius: 50%;
-            border: 2px solid var(--bg-deep);
-            cursor: pointer;
-            font-size: 0.7rem;
+        /* ---------- MAIN IMAGE ---------- */
+        .main-image {
+            width: 100%;
+            height: 350px;
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 5rem;
+            overflow: hidden;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-glass);
+            position: relative;
+        }
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .main-image img.loaded {
+            opacity: 1;
+        }
+        .main-image .placeholder-emoji {
+            font-size: 5rem;
+            opacity: 0.5;
+        }
+
+        /* ---------- STATUS BADGE ---------- */
+        .status-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            backdrop-filter: blur(16px);
+            letter-spacing: 0.02em;
+            z-index: 2;
+        }
+        .status-available {
+            background: var(--green-soft);
+            color: var(--green);
+            border: 1px solid rgba(46,204,113,0.3);
+        }
+        .status-sold {
+            background: var(--red-soft);
+            color: var(--red);
+            border: 1px solid rgba(255,71,87,0.3);
+        }
+
+        /* ---------- THUMBNAILS ---------- */
+        .thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            cursor: pointer;
+            border: 2px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            overflow: hidden;
+            min-width: 44px;
+            min-height: 44px;
             touch-action: manipulation;
             transition: all 0.2s var(--ease-bounce);
             will-change: transform;
+            background: var(--surface-elevated);
         }
-        .image-preview-remove:hover {
-            transform: scale(1.15);
-            box-shadow: 0 0 12px rgba(255,71,87,0.5);
+        .thumb:hover {
+            border-color: var(--border-active);
+            transform: translateY(-2px);
         }
-        .image-preview-remove:active {
-            transform: scale(1.25);
+        .thumb:active {
+            transform: scale(0.92);
         }
-        .image-count {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            margin-top: 10px;
-            font-weight: 500;
+        .thumb.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 16px var(--accent-soft), 0 0 0 3px var(--accent-soft);
+        }
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
-        /* ---------- SUBMIT BUTTON ---------- */
-        .btn-submit {
-            width: 100%;
+        /* ---------- LISTING INFO ---------- */
+        .listing-info h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
+        .listing-price {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -0.04em;
+        }
+        .listing-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .listing-meta span {
+            background: var(--surface-glass);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .listing-description {
+            line-height: 1.7;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ---------- SELLER CARD ---------- */
+        .seller-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
             padding: 16px;
-            background: var(--accent);
-            color: white;
-            border: none;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.25s var(--ease-spring);
+            will-change: transform;
+        }
+        .seller-card:hover {
+            border-color: var(--border-active);
+            box-shadow: 0 8px 24px -8px rgba(0,0,0,0.4);
+        }
+        .seller-card:active {
+            transform: scale(0.97);
+            border-color: var(--accent);
+        }
+        .seller-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            border: 2px solid var(--border-glass);
+        }
+        .seller-name {
+            font-weight: 650;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .verified-badge {
+            color: var(--green);
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--green-soft);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .seller-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+            margin-top: 3px;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-primary, .btn-outline, .btn-save {
+            padding: 14px 22px;
             border-radius: var(--radius-md);
             font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
-            min-height: 54px;
-            transition: all 0.25s var(--ease-bounce);
-            box-shadow: 0 8px 28px var(--accent-glow), 0 0 0 3px rgba(255,94,58,0.15);
-            margin-top: 8px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            min-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             touch-action: manipulation;
+            transition: all 0.2s var(--ease-bounce);
             will-change: transform, opacity;
+            border: none;
             letter-spacing: -0.01em;
         }
-        .btn-submit:hover {
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 8px 28px var(--accent-glow), 0 0 0 3px rgba(255,94,58,0.15);
+        }
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 36px rgba(255,94,58,0.5), 0 0 0 5px rgba(255,94,58,0.1);
         }
-        .btn-submit:active {
-            transform: scale(0.96);
+        .btn-primary:active {
+            transform: scale(0.95);
             box-shadow: 0 4px 16px var(--accent-glow);
         }
-        .btn-submit:disabled {
+        .btn-outline {
             background: var(--surface-glass);
-            color: var(--text-tertiary);
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
+            color: var(--text-primary);
+            border: 1px solid var(--border-active);
+            backdrop-filter: blur(16px);
+        }
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .btn-outline:active {
+            transform: scale(0.95);
+        }
+        .btn-save {
+            background: transparent;
+            color: var(--text-secondary);
             border: 1px solid var(--border-glass);
         }
-
-        /* ---------- ALERT ---------- */
-        .alert {
-            padding: 14px 18px;
-            border-radius: var(--radius-md);
-            font-size: 0.84rem;
-            margin-bottom: 20px;
-            display: none;
-            animation: fadeInSlide 0.3s var(--ease-spring);
-            font-weight: 500;
-            letter-spacing: -0.01em;
+        .btn-save:hover {
+            border-color: var(--red);
+            color: var(--red);
         }
-        @keyframes fadeInSlide {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .alert.show {
-            display: block;
-        }
-        .alert-error {
+        .btn-save.saved {
+            color: var(--red);
+            border-color: rgba(255,71,87,0.4);
             background: var(--red-soft);
-            border: 1px solid rgba(255,71,87,0.3);
-            color: #ff6b7a;
         }
-        .alert-success {
-            background: var(--green-soft);
-            border: 1px solid rgba(46,204,113,0.3);
-            color: #5dffa0;
+
+        /* ---------- SKELETON LOADER ---------- */
+        .skeleton-block {
+            background: linear-gradient(90deg, #1a1a2e 25%, #222240 50%, #1a1a2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 8px;
         }
-        .alert-info {
-            background: var(--blue-soft);
-            border: 1px solid rgba(94,158,255,0.3);
-            color: #8ab4ff;
+        .skeleton-img {
+            width: 100%;
+            height: 300px;
+            border-radius: var(--radius-md);
+        }
+        .skeleton-line {
+            height: 18px;
+            margin-bottom: 14px;
+            border-radius: 9px;
+        }
+        .skeleton-line.short {
+            width: 45%;
+        }
+        .skeleton-line.medium {
+            width: 70%;
+        }
+        .skeleton-line.large {
+            height: 32px;
+            width: 35%;
+            margin-bottom: 16px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ---------- LOADING / ERROR ---------- */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+        .loading-state .icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+            animation: float 2.5s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+        .error-state .icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 12px;
         }
 
         /* ---------- BOTTOM NAV ---------- */
@@ -555,6 +475,7 @@
             border-radius: 30px;
             letter-spacing: -0.01em;
             text-decoration: none;
+            position: relative;
         }
         .nav-item.active {
             color: var(--accent);
@@ -603,112 +524,63 @@
         }
 
         /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .listing-layout {
+                flex-direction: column;
+            }
+            .listing-images {
+                max-width: 100%;
+            }
+            .main-image {
+                height: 280px;
+                font-size: 3.5rem;
+            }
+            .listing-info h1 {
+                font-size: 1.3rem;
+            }
+            .listing-price {
+                font-size: 1.6rem;
+            }
+        }
         @media (max-width: 380px) {
-            .header-btn.hide-mobile {
-                display: none;
+            .main-image {
+                height: 220px;
+            }
+            .thumb {
+                width: 50px;
+                height: 50px;
+            }
+            .btn-primary, .btn-outline, .btn-save {
+                padding: 12px 16px;
+                font-size: 0.82rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- HEADER -->
-    <header class="app-header">
-        <a href="/" class="header-logo">VEND<span class="accent">LY</span></a>
-        <div class="header-actions">
-            <a href="/marketplace" class="header-btn">🏠 Home</a>
-            <a href="/dashboard" class="header-btn hide-mobile">📊 Dashboard</a>
-            <button class="btn-logout" onclick="logout()">🚪 Logout</button>
-        </div>
-    </header>
-
     <!-- MAIN CONTAINER -->
     <div class="app-container">
-        <!-- PAGE HEADER -->
-        <div class="page-header">
-            <a href="/dashboard" class="back-link">← Back to Dashboard</a>
-            <h1>📦 Create New Listing</h1>
-            <p>Sell something to a fellow student on campus</p>
-        </div>
-
-        <!-- FORM CARD -->
-        <div class="card">
-            <div id="alert" class="alert"></div>
-
-            <form id="create-form">
-                <!-- Title -->
-                <div class="form-group">
-                    <label for="title">Title *</label>
-                    <input type="text" id="title" name="title" placeholder="e.g. Tecno Spark 10 Pro - 128GB" required maxlength="200">
-                </div>
-
-                <!-- Description -->
-                <div class="form-group">
-                    <label for="description">Description <span class="optional">(optional)</span></label>
-                    <textarea id="description" name="description" placeholder="Describe your item — condition, reason for selling, any extras included..." maxlength="2000"></textarea>
-                </div>
-
-                <!-- Price & Category -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="price">Price (₦) *</label>
-                        <div class="price-input-wrapper">
-                            <span class="currency">₦</span>
-                            <input type="number" id="price" name="price" placeholder="0" required min="100" step="100">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="category">Category *</label>
-                        <select id="category" name="category" required>
-                            <option value="">Select category</option>
-                            <option value="Electronics">📱 Electronics</option>
-                            <option value="Fashion">👟 Fashion</option>
-                            <option value="Books">📚 Books</option>
-                            <option value="Food">🍕 Food</option>
-                            <option value="Services">🔧 Services</option>
-                            <option value="Other">📦 Other</option>
-                        </select>
+        <!-- LISTING DETAIL -->
+        <div class="listing-detail" id="listing-content">
+            <!-- SKELETON LOADER -->
+            <div class="listing-layout">
+                <div class="listing-images">
+                    <div class="skeleton-block skeleton-img"></div>
+                    <div class="thumbnails">
+                        <div class="skeleton-block" style="width:60px;height:60px;border-radius:14px;"></div>
+                        <div class="skeleton-block" style="width:60px;height:60px;border-radius:14px;"></div>
+                        <div class="skeleton-block" style="width:60px;height:60px;border-radius:14px;"></div>
                     </div>
                 </div>
-
-                <!-- Condition & Campus -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="condition">Condition *</label>
-                        <select id="condition" name="condition" required>
-                            <option value="">Select condition</option>
-                            <option value="New">🆕 New</option>
-                            <option value="Used">♻️ Used</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="campus">Campus *</label>
-                        <select id="campus" name="campus" required>
-                            <option value="">Select campus</option>
-                            <option value="LASU">📍 LASU</option>
-                            <option value="UNILAG">📍 UNILAG</option>
-                            <option value="UI">📍 UI</option>
-                            <option value="OAU">📍 OAU</option>
-                            <option value="Other">📍 Other</option>
-                        </select>
-                    </div>
+                <div class="listing-info">
+                    <div class="skeleton-block skeleton-line"></div>
+                    <div class="skeleton-block skeleton-line large"></div>
+                    <div class="skeleton-block skeleton-line short"></div>
+                    <div class="skeleton-block skeleton-line short"></div>
+                    <div class="skeleton-block skeleton-line medium"></div>
+                    <div class="skeleton-block skeleton-line medium"></div>
                 </div>
-
-                <!-- Images -->
-                <div class="form-group">
-                    <label>Images <span class="optional">(up to 5)</span></label>
-                    <div class="image-upload-area" id="upload-area">
-                        <span class="upload-icon">📸</span>
-                        <p><strong>Click to upload</strong> or drag and drop</p>
-                        <p style="font-size:0.75rem;">JPG, PNG or WebP · Max 5 images</p>
-                        <input type="file" id="image-input" accept="image/*" multiple>
-                    </div>
-                    <div class="image-previews" id="image-previews"></div>
-                    <p class="image-count" id="image-count">0 / 5 images</p>
-                </div>
-
-                <!-- Submit -->
-                <button type="submit" class="btn-submit" id="submit-btn">📦 Post Listing</button>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -735,216 +607,325 @@
 
     <script>
         const API_BASE = '';
-        const cloudName = document.body.dataset.cloudName || '';
-        const uploadPreset = document.body.dataset.uploadPreset || 'vendly-unsigned';
+        const listingId = window.location.pathname.split('/')[2];
 
         function getToken() { return localStorage.getItem('vendly_token'); }
-        function clearToken() { localStorage.removeItem('vendly_token'); }
-        function logout() { clearToken(); window.location.href = '/login'; }
-        if (!getToken()) { window.location.href = '/login'; }
 
-        let imageUrls = [];
-        let uploadingCount = 0;
+        const categoryEmojis = {
+            'Electronics': '📱',
+            'Fashion': '👟',
+            'Books': '📚',
+            'Food': '🍕',
+            'Services': '🔧',
+            'Other': '📦'
+        };
 
-        const uploadArea = document.getElementById('upload-area');
-        const imageInput = document.getElementById('image-input');
-        const previewsContainer = document.getElementById('image-previews');
-        const imageCountEl = document.getElementById('image-count');
+        const categoryColors = {
+            'Electronics': 'rgba(94,158,255,0.2)',
+            'Fashion': 'rgba(185,142,255,0.2)',
+            'Books': 'rgba(255,180,60,0.2)',
+            'Food': 'rgba(255,94,58,0.2)',
+            'Services': 'rgba(46,204,113,0.2)',
+            'Other': 'rgba(154,154,176,0.15)'
+        };
 
-        // Upload area click
-        uploadArea.addEventListener('click', (e) => {
-            if (e.target !== imageInput) {
-                imageInput.click();
-            }
-        });
+        const categoryAvatarColors = {
+            'Electronics': '#5e9eff',
+            'Fashion': '#b98eff',
+            'Books': '#ffb43c',
+            'Food': '#ff5e3a',
+            'Services': '#2ecc71',
+            'Other': '#9a9ab0'
+        };
 
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = 'var(--accent)';
-            uploadArea.style.background = 'var(--accent-soft)';
-            uploadArea.style.boxShadow = '0 0 24px rgba(255,94,58,0.15)';
-        });
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.borderColor = 'var(--border-glass)';
-            uploadArea.style.background = 'var(--surface-glass)';
-            uploadArea.style.boxShadow = 'none';
-        });
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = 'var(--border-glass)';
-            uploadArea.style.background = 'var(--surface-glass)';
-            uploadArea.style.boxShadow = 'none';
-            handleFiles(e.dataTransfer.files);
-        });
-
-        // File input change
-        imageInput.addEventListener('change', () => {
-            handleFiles(imageInput.files);
-        });
-
-        function handleFiles(files) {
-            const remaining = 5 - imageUrls.length;
-            const filesToAdd = Array.from(files).slice(0, remaining);
-
-            if (filesToAdd.length === 0) {
-                showAlert('error', 'Maximum 5 images allowed. Remove some to add more.');
-                return;
-            }
-
-            if (filesToAdd.length < files.length) {
-                showAlert('info', `Only adding ${filesToAdd.length} image(s). Maximum 5 allowed.`);
-            }
-
-            showAlert('info', `Uploading ${filesToAdd.length} image(s)...`);
-            filesToAdd.forEach(file => {
-                uploadingCount++;
-                uploadToCloudinary(file);
-            });
-            imageInput.value = '';
-        }
-
-        async function uploadToCloudinary(file) {
-            // Validate file type
-            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!validTypes.includes(file.type)) {
-                showAlert('error', `${file.name} is not a supported format. Use JPG, PNG, or WebP.`);
-                uploadingCount--;
-                updateSubmitButton();
-                return;
-            }
-
-            // Validate file size (max 10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                showAlert('error', `${file.name} is too large. Maximum 10MB per image.`);
-                uploadingCount--;
-                updateSubmitButton();
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', uploadPreset);
-
-            try {
-                const res = await fetch(
-                    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                    { method: 'POST', body: formData }
-                );
-                const data = await res.json();
-
-                if (data.secure_url) {
-                    imageUrls.push(data.secure_url);
-                    renderPreviews();
-                    hideAlert();
-                } else {
-                    showAlert('error', `Failed to upload ${file.name}. Please try again.`);
-                }
-            } catch (err) {
-                console.error('Upload error:', err);
-                showAlert('error', 'Image upload failed. Check your connection and try again.');
-            } finally {
-                uploadingCount--;
-                updateSubmitButton();
-            }
-        }
-
-        function renderPreviews() {
-            previewsContainer.innerHTML = imageUrls.map((url, i) => `
-                <div class="image-preview-wrapper">
-                    <img src="${escapeHTML(url)}" class="image-preview" alt="Preview ${i + 1}" loading="lazy">
-                    <button class="image-preview-remove" onclick="removeImage(${i})" type="button" aria-label="Remove image ${i + 1}">✕</button>
-                </div>
-            `).join('');
-            imageCountEl.textContent = `${imageUrls.length} / 5 images`;
-        }
-
-        function removeImage(index) {
-            imageUrls.splice(index, 1);
-            renderPreviews();
-        }
+        let currentListing = null;
 
         function escapeHTML(str) {
+            if (!str) return '';
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
         }
 
-        const alertBox = document.getElementById('alert');
-        function showAlert(type, msg) {
-            alertBox.textContent = msg;
-            alertBox.className = `alert alert-${type} show`;
-        }
-        function hideAlert() {
-            alertBox.className = 'alert';
-        }
+        async function loadListing() {
+            try {
+                const res = await fetch(`${API_BASE}/api/listings/${listingId}`);
+                if (!res.ok) throw new Error('Listing not found');
 
-        function updateSubmitButton() {
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = uploadingCount > 0;
-            if (uploadingCount > 0) {
-                btn.textContent = `⏳ Uploading ${uploadingCount} image(s)...`;
-            } else {
-                btn.textContent = '📦 Post Listing';
+                const l = await res.json();
+                currentListing = l;
+                const seller = l.seller || {};
+                const catColor = categoryColors[l.category] || categoryColors['Other'];
+                const avatarColor = categoryAvatarColors[l.category] || categoryAvatarColors['Other'];
+
+                const mainImgHTML = l.images && l.images[0]
+                    ? `<img src="${escapeHTML(l.images[0])}" alt="${escapeHTML(l.title)}" onload="this.classList.add('loaded')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                       <span class="placeholder-emoji" style="display:none;">${categoryEmojis[l.category] || '📦'}</span>`
+                    : `<span class="placeholder-emoji">${categoryEmojis[l.category] || '📦'}</span>`;
+
+                const statusBadge = l.is_sold
+                    ? '<span class="status-badge status-sold">🔴 Sold</span>'
+                    : '<span class="status-badge status-available">🟢 Available</span>';
+
+                const thumbs = (l.images || []).map((img, i) => `
+                    <div class="thumb ${i === 0 ? 'active' : ''}" 
+                         onclick="switchMainImage('${escapeHTML(img)}', this)" 
+                         role="button" 
+                         tabindex="0" 
+                         aria-label="View image ${i + 1}">
+                        <img src="${escapeHTML(img)}" alt="Thumbnail ${i + 1}" loading="lazy" onerror="this.style.display='none';">
+                    </div>
+                `).join('');
+
+                const sellerInitials = (seller.full_name || '?')
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2);
+
+                document.getElementById('listing-content').innerHTML = `
+                    <div class="listing-layout">
+                        <div class="listing-images">
+                            <div class="main-image" id="main-image-container" style="background:${catColor};">
+                                ${mainImgHTML}
+                                ${statusBadge}
+                            </div>
+                            ${l.images && l.images.length > 1 ? `<div class="thumbnails">${thumbs}</div>` : ''}
+                        </div>
+                        <div class="listing-info">
+                            <h1>${escapeHTML(l.title)}</h1>
+                            <div class="listing-price">₦${l.price.toLocaleString()}</div>
+                            <div class="listing-meta">
+                                <span>📦 ${escapeHTML(l.condition || 'N/A')}</span>
+                                <span>📍 ${escapeHTML(l.campus || 'N/A')}</span>
+                                <span>📂 ${escapeHTML(l.category || 'Other')}</span>
+                            </div>
+                            <p class="listing-description">${escapeHTML(l.description) || 'No description provided.'}</p>
+                            
+                            <div class="seller-card" onclick="window.location.href='/profile/${seller.id || '#'}'" role="button" tabindex="0">
+                                <div class="seller-avatar" style="background:${catColor};color:${avatarColor};">
+                                    ${sellerInitials}
+                                </div>
+                                <div>
+                                    <div class="seller-name">
+                                        ${escapeHTML(seller.full_name || 'Unknown Seller')}
+                                        ${seller.verified_badge ? '<span class="verified-badge">✓ Verified</span>' : ''}
+                                    </div>
+                                    <div class="seller-subtitle">
+                                        ${escapeHTML(seller.school || '')}${seller.department ? ' · ' + escapeHTML(seller.department) : ''}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-row">
+                                ${!l.is_sold ? `
+                                    <button class="btn-primary" onclick="startChat()">💬 Message Seller</button>
+                                    <button class="btn-outline" onclick="makeOffer()">💰 Make Offer</button>
+                                ` : `
+                                    <button class="btn-outline" disabled style="opacity:0.5;cursor:not-allowed;">🔴 Item Sold</button>
+                                `}
+                                <button class="btn-save" onclick="toggleSave()" id="save-btn">🤍 Save</button>
+                            </div>
+                        </div>
+                    </div>`;
+
+                // Check if saved
+                checkSavedStatus();
+
+            } catch (err) {
+                console.error('Load listing error:', err);
+                document.getElementById('listing-content').innerHTML = `
+                    <div class="error-state">
+                        <span class="icon">❌</span>
+                        <h2 style="color:var(--text-primary);margin-bottom:8px;">Listing Not Found</h2>
+                        <p style="color:var(--text-secondary);margin-bottom:20px;">This listing may have been removed or the link is incorrect.</p>
+                        <a href="/marketplace" class="btn-primary" style="display:inline-flex;">🏠 Browse Marketplace</a>
+                    </div>`;
             }
         }
 
-        // Form submission
-        document.getElementById('create-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        function switchMainImage(imgSrc, thumbElement) {
+            const container = document.getElementById('main-image-container');
+            const existingImg = container.querySelector('img');
+            const placeholder = container.querySelector('.placeholder-emoji');
+            const statusBadge = container.querySelector('.status-badge');
 
-            if (uploadingCount > 0) {
-                showAlert('error', 'Please wait for all images to finish uploading.');
+            // Remove old image
+            if (existingImg) existingImg.remove();
+            if (placeholder) placeholder.style.display = 'none';
+
+            // Create new image
+            const newImg = document.createElement('img');
+            newImg.src = imgSrc;
+            newImg.alt = currentListing?.title || 'Listing image';
+            newImg.className = 'loaded';
+            newImg.onerror = function() {
+                this.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'flex';
+            };
+
+            // Insert before status badge if it exists
+            if (statusBadge) {
+                container.insertBefore(newImg, statusBadge);
+            } else {
+                container.appendChild(newImg);
+            }
+
+            // Update active thumbnail
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            if (thumbElement) thumbElement.classList.add('active');
+        }
+
+        async function checkSavedStatus() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/saved`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const saved = await res.json();
+                    const isSaved = saved.some(s => s.listing_id == listingId || s.id == listingId);
+                    const btn = document.getElementById('save-btn');
+                    if (btn && isSaved) {
+                        btn.textContent = '❤️ Saved';
+                        btn.classList.add('saved');
+                    }
+                }
+            } catch (e) {
+                // Silently fail — save status is non-critical
+            }
+        }
+
+        async function startChat() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/login';
                 return;
             }
 
-            const btn = document.getElementById('submit-btn');
-            const originalText = btn.textContent;
-            btn.textContent = '⏳ Posting...';
-            btn.disabled = true;
-
-            const formData = new FormData();
-            formData.append('title', document.getElementById('title').value.trim());
-            formData.append('description', document.getElementById('description').value.trim());
-            formData.append('price', document.getElementById('price').value);
-            formData.append('category', document.getElementById('category').value);
-            formData.append('condition', document.getElementById('condition').value);
-            formData.append('campus', document.getElementById('campus').value);
-            formData.append('image_urls', JSON.stringify(imageUrls));
-
             try {
-                const token = getToken();
-                const res = await fetch(API_BASE + '/api/listings', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.msg || 'Failed to create listing. Please try again.');
+                const btn = document.querySelector('.btn-primary');
+                if (btn) {
+                    btn.textContent = '⏳ Starting chat...';
+                    btn.disabled = true;
                 }
 
-                showAlert('success', '🎉 Listing created successfully! Redirecting...');
-                btn.textContent = '✅ Posted!';
+                const res = await fetch(`${API_BASE}/api/chat/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ listing_id: listingId })
+                });
 
-                setTimeout(() => {
-                    window.location.href = `/listing/${data.listing.id}`;
-                }, 1200);
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
 
-            } catch (err) {
-                console.error('Create listing error:', err);
-                showAlert('error', err.message || 'Something went wrong. Please try again.');
-                btn.textContent = originalText;
-                btn.disabled = false;
+                const data = await res.json();
+                window.location.href = `/chat/${data.room_id}`;
+
+            } catch (e) {
+                console.error('Start chat error:', e);
+                alert('Could not start chat. Please try again.');
+                const btn = document.querySelector('.btn-primary');
+                if (btn) {
+                    btn.textContent = '💬 Message Seller';
+                    btn.disabled = false;
+                }
             }
-        });
+        }
 
-        // Default campus
-        document.getElementById('campus').value = 'LASU';
+        function makeOffer() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const amount = prompt('Enter your offer amount (₦):');
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                if (amount !== null) alert('Please enter a valid amount.');
+                return;
+            }
+
+            startChatWithOffer(parseFloat(amount));
+        }
+
+        async function startChatWithOffer(amount) {
+            const token = getToken();
+            try {
+                const res = await fetch(`${API_BASE}/api/chat/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        listing_id: listingId,
+                        initial_offer: amount
+                    })
+                });
+
+                if (res.status === 401) {
+                    localStorage.removeItem('vendly_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await res.json();
+                window.location.href = `/chat/${data.room_id}?offer=${amount}`;
+
+            } catch (e) {
+                console.error('Start chat with offer error:', e);
+                startChat();
+            }
+        }
+
+        async function toggleSave() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const btn = document.getElementById('save-btn');
+            const isSaved = btn.classList.contains('saved');
+
+            try {
+                if (isSaved) {
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    btn.textContent = '🤍 Save';
+                    btn.classList.remove('saved');
+                } else {
+                    await fetch(`${API_BASE}/api/saved/${listingId}`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    btn.textContent = '❤️ Saved';
+                    btn.classList.add('saved');
+                    btn.style.transform = 'scale(1.08)';
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                    }, 200);
+                }
+            } catch (e) {
+                console.error('Toggle save error:', e);
+                alert('Could not update saved status. Please try again.');
+            }
+        }
+
+        // Initialize
+        loadListing();
     </script>
 </body>
 </html>
