@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from config import Config
 from models import db
 import os
@@ -75,6 +75,17 @@ def create_app():
     def reset_password_page():
         token = request.args.get('token', '')
         return render_template('reset_password.html', token=token)
+
+    @app.route('/test-email')
+    def test_email():
+        try:
+            mail = Mail(app)
+            msg = Message('Test from Vendly', recipients=['tellaafeezadewale@gmail.com'])
+            msg.body = 'This is a test email from Vendly!'
+            mail.send(msg)
+            return '✅ Email sent! Check your inbox.'
+        except Exception as e:
+            return f'❌ Email failed: {str(e)}'
 
     @app.route('/marketplace')
     def marketplace_page():
