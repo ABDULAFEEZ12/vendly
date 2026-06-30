@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendly — LASU’s Student Marketplace</title>
+    <!-- CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Vendly — LASU's Student Marketplace</title>
+    <!-- CHANGE: Added display=swap to prevent flash of invisible text while font loads -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,13 +21,19 @@
             --text-dark: #0a121c;
             --border: #e8ecf0;
             --radius: 16px;
-            --radius-sm: 10px;
+            --radius-sm: 12px;
+            /* CHANGE: safe-area insets for iPhone notch/home indicator */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* CHANGE: Global tap highlight removal and momentum scrolling */
+        html {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
         }
 
         body {
@@ -34,12 +42,17 @@
             color: var(--navy);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
         }
 
         /* ---------- NAVBAR ---------- */
         .navbar {
             background: var(--navy);
-            padding: 1rem 2rem;
+            /* CHANGE: safe-area top padding so navbar clears iPhone notch */
+            padding: calc(1rem + var(--safe-top)) 2rem 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -50,435 +63,204 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--orange);
-            letter-spacing: -0.5px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 2px;
+            font-size: 1.5rem; font-weight: 900; color: var(--orange);
+            letter-spacing: -0.5px; text-decoration: none;
+            display: flex; align-items: center; gap: 2px;
+            /* CHANGE: minimum 44px tap target */
+            min-height: 44px;
         }
-        .logo span {
-            color: white;
-            font-weight: 700;
-        }
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+        .logo span { color: white; font-weight: 700; }
+        .nav-links { display: flex; align-items: center; gap: 0.5rem; }
         .nav-links a {
-            color: rgba(255,255,255,0.75);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            color: rgba(255,255,255,0.75); text-decoration: none;
+            font-size: 0.85rem; font-weight: 500; padding: 0.5rem 0.8rem; border-radius: 8px;
+            /* CHANGE: GPU-accelerated, 44px minimum */
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 44px; min-height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            touch-action: manipulation; will-change: transform, opacity;
         }
-        .nav-links a:hover {
-            color: white;
-            background: rgba(255,255,255,0.08);
-        }
+        .nav-links a:active { transform: scale(0.96); opacity: 0.8; background: rgba(255,255,255,0.12); }
+        .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
         .btn-nav {
-            background: var(--orange);
-            color: white !important;
-            font-weight: 600;
-            border-radius: 8px;
-            padding: 0.6rem 1.3rem;
+            background: var(--orange); color: white !important; font-weight: 600;
+            border-radius: 8px; padding: 0.6rem 1.3rem;
         }
-        .btn-nav:hover {
-            background: #e8551f;
-            transform: translateY(-1px);
-        }
+        .btn-nav:active { transform: scale(0.96); opacity: 0.85; }
 
         /* ---------- HERO ---------- */
         .hero {
             background: radial-gradient(circle at 50% 0%, #1a3048, var(--navy) 70%);
-            padding: 6rem 2rem 5rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            /* CHANGE: responsive padding */
+            padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem) clamp(2.5rem, 5vw, 5rem);
+            text-align: center; position: relative; overflow: hidden;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .hero::after {
-            content: '';
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 700px;
-            height: 700px;
+            content: ''; position: absolute; top: -50px; left: 50%;
+            transform: translateX(-50%); width: 700px; height: 700px;
             background: radial-gradient(circle, rgba(255,107,53,0.08) 0%, transparent 70%);
             pointer-events: none;
         }
         .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,107,53,0.12);
-            border: 1px solid rgba(255,107,53,0.25);
-            color: var(--orange);
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.4rem 1rem;
-            border-radius: 100px;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-            z-index: 1;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.25);
+            color: var(--orange); font-size: 0.75rem; font-weight: 600;
+            padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 1.5rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            position: relative; z-index: 1;
         }
         .hero h1 {
-            font-size: clamp(2.2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            color: white;
-            line-height: 1.1;
-            margin-bottom: 1.25rem;
-            letter-spacing: -1.5px;
-            position: relative;
-            z-index: 1;
+            font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900;
+            color: white; line-height: 1.1; margin-bottom: 1.25rem;
+            letter-spacing: -1.5px; position: relative; z-index: 1;
         }
-        .hero h1 span {
-            color: var(--orange);
-            position: relative;
-        }
+        .hero h1 span { color: var(--orange); position: relative; }
         .hero p {
-            color: rgba(255,255,255,0.6);
-            font-size: 1.05rem;
-            max-width: 500px;
-            margin: 0 auto 2.5rem;
-            line-height: 1.7;
-            position: relative;
-            z-index: 1;
+            color: rgba(255,255,255,0.6); font-size: 1.05rem;
+            max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.7;
+            position: relative; z-index: 1;
         }
-        .hero-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
+        .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+
+        /* CHANGE: Buttons — 44px minimum, GPU-accelerated */
+        .btn-primary, .btn-outline, .btn-white {
+            padding: 0.9rem 2.2rem; border-radius: 14px;
+            font-weight: 700; font-size: 0.95rem; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px;
+            min-height: 52px; touch-action: manipulation;
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
         }
-        .btn-primary {
-            background: var(--orange);
-            color: white;
-            padding: 0.9rem 2.2rem;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 14px rgba(255,107,53,0.3);
-        }
-        .btn-primary:hover {
-            background: #e8551f;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255,107,53,0.4);
-        }
-        .btn-outline {
-            background: transparent;
-            color: white;
-            padding: 0.9rem 2.2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-decoration: none;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.2s;
-        }
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,255,255,0.35);
-        }
+        .btn-primary:active, .btn-outline:active, .btn-white:active { transform: scale(0.96); opacity: 0.85; }
+        .btn-primary { background: var(--orange); color: white; box-shadow: 0 4px 16px rgba(255,107,53,0.25); }
+        .btn-primary:hover { background: #e8551f; }
+        .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-outline:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.35); }
+        .btn-white { background: white; color: var(--orange); }
+        .btn-white:hover { background: #f5f5f5; }
+
         .campus-tag {
-            margin-top: 3rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.8);
-            padding: 0.5rem 1.4rem;
-            border-radius: 100px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            position: relative;
-            z-index: 1;
+            margin-top: 3rem; display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8); padding: 0.5rem 1.4rem; border-radius: 100px;
+            font-size: 0.85rem; font-weight: 500; position: relative; z-index: 1;
         }
 
-        /* ---------- TRENDING LISTINGS ---------- */
-        .trending {
-            background: white;
-            padding: 5rem 2rem;
-        }
-        .section-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
+        /* ---------- TRENDING ---------- */
+        .trending { background: white; padding: clamp(3rem, 6vw, 5rem) 2rem; }
+        .section-header { text-align: center; margin-bottom: 3rem; }
         .section-tag {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--orange);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 0.5rem;
+            font-size: 0.7rem; font-weight: 700; color: var(--orange);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem;
         }
         .section-header h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--navy);
-            letter-spacing: -0.5px;
-            margin-bottom: 0.5rem;
+            font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800;
+            color: var(--navy); letter-spacing: -0.5px; margin-bottom: 0.5rem;
         }
-        .section-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
+        .section-header p { color: var(--text-muted); font-size: 0.95rem; }
+
         .listing-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.25rem;
-            max-width: 1000px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.25rem; max-width: 1000px; margin: 0 auto;
         }
         .listing-card {
-            background: var(--gray-50);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.25s;
-            text-decoration: none;
-            color: inherit;
-            display: block;
+            background: var(--gray-50); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden; cursor: pointer;
+            text-decoration: none; color: inherit; display: block;
+            /* CHANGE: GPU-accelerated tap feedback */
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation; will-change: transform;
         }
-        .listing-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(13,27,42,0.08);
-            border-color: var(--orange);
-        }
+        .listing-card:active { transform: scale(0.97); opacity: 0.9; }
+        .listing-card:hover { border-color: var(--orange); }
+
         .listing-img {
-            height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.8rem;
-            background: #eef1f5;
-            position: relative;
+            height: clamp(110px, 20vw, 140px); display: flex;
+            align-items: center; justify-content: center; font-size: 2.5rem;
+            background: #eef1f5; position: relative; overflow: hidden;
         }
-        .listing-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .listing-img img { width: 100%; height: 100%; object-fit: cover; }
         .condition-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--navy);
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            position: absolute; top: 10px; left: 10px;
+            background: var(--navy); color: white; font-size: 0.65rem;
+            font-weight: 700; padding: 3px 10px; border-radius: 20px;
+            text-transform: uppercase; letter-spacing: 0.3px;
         }
-        .condition-badge.used {
-            background: #5c6b7a;
-        }
-        .listing-body {
-            padding: 1rem;
-        }
-        .listing-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--navy);
-            margin-bottom: 0.4rem;
-            line-height: 1.3;
-        }
-        .listing-price {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--orange);
-            margin-bottom: 0.5rem;
-        }
-        .listing-meta {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
+        .condition-badge.used { background: #5c6b7a; }
+        .listing-body { padding: 1rem; }
+        .listing-title { font-size: 0.9rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem; line-height: 1.3; }
+        .listing-price { font-size: 1.1rem; font-weight: 800; color: var(--orange); margin-bottom: 0.5rem; }
+        .listing-meta { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text-muted); }
         .verified-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            background: #e8f5e9;
-            color: #2e7d32;
-            font-size: 0.65rem;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 100px;
+            display: inline-flex; align-items: center; gap: 3px;
+            background: #e8f5e9; color: #2e7d32; font-size: 0.65rem;
+            font-weight: 600; padding: 2px 8px; border-radius: 100px;
         }
-        .verified-dot {
-            width: 6px;
-            height: 6px;
-            background: #2e7d32;
-            border-radius: 50%;
-        }
+        .verified-dot { width: 6px; height: 6px; background: #2e7d32; border-radius: 50%; }
 
         /* ---------- FEATURES ---------- */
-        .features {
-            background: var(--gray-50);
-            padding: 5rem 2rem;
-        }
+        .features { background: var(--gray-50); padding: clamp(3rem, 6vw, 5rem) 2rem; }
         .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 1.25rem;
-            max-width: 1000px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem; max-width: 1000px; margin: 0 auto;
         }
         .feature-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.8rem;
-            transition: all 0.2s;
+            background: white; border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.8rem;
+            /* CHANGE: GPU-accelerated */
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation; will-change: transform;
         }
-        .feature-card:hover {
-            border-color: var(--orange);
-            box-shadow: 0 8px 20px rgba(13,27,42,0.05);
-            transform: translateY(-2px);
-        }
+        .feature-card:active { transform: scale(0.98); }
+        .feature-card:hover { border-color: var(--orange); }
         .feature-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255,107,53,0.08);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            margin-bottom: 1.2rem;
+            width: 48px; height: 48px; background: rgba(255,107,53,0.08);
+            border-radius: var(--radius-sm); display: flex;
+            align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem;
         }
-        .feature-card h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 0.4rem;
-        }
-        .feature-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .feature-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
 
         /* ---------- HOW IT WORKS ---------- */
-        .how {
-            background: var(--navy);
-            padding: 5rem 2rem;
-            text-align: center;
-        }
-        .how h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 2.5rem;
-            letter-spacing: -0.5px;
-        }
-        .steps {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .how { background: var(--navy); padding: clamp(3rem, 6vw, 5rem) 2rem; text-align: center; }
+        .how h2 { font-size: 2rem; font-weight: 800; color: white; margin-bottom: 2.5rem; letter-spacing: -0.5px; }
+        .steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; max-width: 900px; margin: 0 auto; }
         .step {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: var(--radius);
-            padding: 2rem;
-            flex: 1 1 200px;
-            text-align: left;
-            transition: all 0.2s;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius); padding: 2rem; flex: 1 1 200px; text-align: left;
+            transition: background 0.2s; touch-action: manipulation;
         }
-        .step:hover {
-            background: rgba(255,255,255,0.08);
-        }
-        .step-num {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--orange);
-            opacity: 0.3;
-            line-height: 1;
-            margin-bottom: 1rem;
-        }
-        .step h3 {
-            color: white;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        .step p {
-            color: rgba(255,255,255,0.5);
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
+        .step:active { background: rgba(255,255,255,0.08); }
+        .step:hover { background: rgba(255,255,255,0.08); }
+        .step-num { font-size: 2.5rem; font-weight: 900; color: var(--orange); opacity: 0.3; line-height: 1; margin-bottom: 1rem; }
+        .step h3 { color: white; font-size: 1rem; margin-bottom: 0.5rem; }
+        .step p { color: rgba(255,255,255,0.5); font-size: 0.85rem; line-height: 1.6; }
 
         /* ---------- CTA ---------- */
-        .cta {
-            background: var(--orange);
-            padding: 4rem 2rem;
-            text-align: center;
-        }
-        .cta h2 {
-            font-size: 2rem;
-            font-weight: 900;
-            color: white;
-            margin-bottom: 0.8rem;
-        }
-        .cta p {
-            color: rgba(255,255,255,0.85);
-            font-size: 1rem;
-            margin-bottom: 2rem;
-        }
-        .btn-white {
-            background: white;
-            color: var(--orange);
-            padding: 0.9rem 2.2rem;
-            border-radius: 12px;
-            font-weight: 800;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.2s;
-        }
-        .btn-white:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
+        .cta { background: var(--orange); padding: clamp(3rem, 6vw, 4rem) 2rem; text-align: center; }
+        .cta h2 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 900; color: white; margin-bottom: 0.8rem; }
+        .cta p { color: rgba(255,255,255,0.85); font-size: 1rem; margin-bottom: 2rem; }
 
         /* ---------- FOOTER ---------- */
         footer {
-            background: var(--navy);
-            color: rgba(255,255,255,0.4);
+            background: var(--navy); color: rgba(255,255,255,0.4);
             text-align: center;
-            padding: 1.5rem;
-            font-size: 0.8rem;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            /* CHANGE: safe-area bottom padding for iPhone home indicator */
+            padding: 1rem 2rem calc(1rem + var(--safe-bottom));
+            font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05);
         }
-        footer span {
-            color: var(--orange);
-            font-weight: 600;
-        }
+        footer span { color: var(--orange); font-weight: 600; }
 
         @media (max-width: 600px) {
-            .navbar { padding: 1rem; }
+            .navbar { padding-left: 1rem; padding-right: 1rem; }
             .hero { padding: 4rem 1.5rem 3rem; }
             .hero h1 { font-size: 2rem; }
             .listing-grid { grid-template-columns: repeat(2, 1fr); }
@@ -486,7 +268,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <a href="/" class="logo">VEND<span>LY</span></a>
         <div class="nav-links">
@@ -496,7 +277,6 @@
         </div>
     </nav>
 
-    <!-- Hero -->
     <section class="hero">
         <div class="hero-badge">🎓 LASU's Student Marketplace</div>
         <h1>Buy & sell with<br><span>verified LASU students</span></h1>
@@ -508,7 +288,6 @@
         <div class="campus-tag">📍 Lagos State University · LASU</div>
     </section>
 
-    <!-- Trending Listings -->
     <section class="trending">
         <div class="section-header">
             <div class="section-tag">🔥 Hot on Campus</div>
@@ -516,54 +295,25 @@
             <p>Real items from verified students</p>
         </div>
         <div class="listing-grid">
-            <!-- Card 1 -->
             <a href="/listing/1" class="listing-card">
                 <div class="listing-img" style="background:#e8f0fe;">📱<span class="condition-badge">New</span></div>
-                <div class="listing-body">
-                    <div class="listing-title">Tecno Spark 10 Pro</div>
-                    <div class="listing-price">₦65,000</div>
-                    <div class="listing-meta">
-                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU
-                    </div>
-                </div>
+                <div class="listing-body"><div class="listing-title">Tecno Spark 10 Pro</div><div class="listing-price">₦65,000</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
             </a>
-            <!-- Card 2 -->
             <a href="/listing/2" class="listing-card">
                 <div class="listing-img" style="background:#fef2e7;">📚<span class="condition-badge used">Used</span></div>
-                <div class="listing-body">
-                    <div class="listing-title">MTH 101 Textbooks (set)</div>
-                    <div class="listing-price">₦3,500</div>
-                    <div class="listing-meta">
-                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU
-                    </div>
-                </div>
+                <div class="listing-body"><div class="listing-title">MTH 101 Textbooks (set)</div><div class="listing-price">₦3,500</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
             </a>
-            <!-- Card 3 -->
             <a href="/listing/3" class="listing-card">
                 <div class="listing-img" style="background:#f0f7f0;">👟<span class="condition-badge">New</span></div>
-                <div class="listing-body">
-                    <div class="listing-title">Air Force 1 (Size 42)</div>
-                    <div class="listing-price">₦28,000</div>
-                    <div class="listing-meta">
-                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU
-                    </div>
-                </div>
+                <div class="listing-body"><div class="listing-title">Air Force 1 (Size 42)</div><div class="listing-price">₦28,000</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
             </a>
-            <!-- Card 4 -->
             <a href="/listing/4" class="listing-card">
                 <div class="listing-img" style="background:#f7edf8;">💻<span class="condition-badge used">Used</span></div>
-                <div class="listing-body">
-                    <div class="listing-title">HP Laptop i5 8GB RAM</div>
-                    <div class="listing-price">₦120,000</div>
-                    <div class="listing-meta">
-                        <span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU
-                    </div>
-                </div>
+                <div class="listing-body"><div class="listing-title">HP Laptop i5 8GB RAM</div><div class="listing-price">₦120,000</div><div class="listing-meta"><span class="verified-pill"><span class="verified-dot"></span> Verified</span> · LASU</div></div>
             </a>
         </div>
     </section>
 
-    <!-- Features -->
     <section class="features">
         <div class="section-header">
             <div class="section-tag">Why Vendly</div>
@@ -571,71 +321,30 @@
             <p>No generic marketplace – just what you need on campus</p>
         </div>
         <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">💬</div>
-                <h3>Negotiate in real time</h3>
-                <p>Send offers, counter, accept or reject — all inside one chat. No more scattered WhatsApp messages.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">✅</div>
-                <h3>Verified students only</h3>
-                <p>Every user must verify with LASU email or student ID. Trade with people you can trust.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🏫</div>
-                <h3>LASU‑only filter</h3>
-                <p>See items from your campus first. No need to travel across Lagos — your seller is a short walk away.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⭐</div>
-                <h3>Seller ratings</h3>
-                <p>Rate every transaction. Good sellers build reputation; bad ones get exposed.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔖</div>
-                <h3>Save for later</h3>
-                <p>Bookmark that perfect find and come back when you're ready. No pressure.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🆓</div>
-                <h3>100% free to list</h3>
-                <p>Zero listing fees, zero commission. Every naira you earn stays yours.</p>
-            </div>
+            <div class="feature-card"><div class="feature-icon">💬</div><h3>Negotiate in real time</h3><p>Send offers, counter, accept or reject — all inside one chat. No more scattered WhatsApp messages.</p></div>
+            <div class="feature-card"><div class="feature-icon">✅</div><h3>Verified students only</h3><p>Every user must verify with LASU email or student ID. Trade with people you can trust.</p></div>
+            <div class="feature-card"><div class="feature-icon">🏫</div><h3>LASU‑only filter</h3><p>See items from your campus first. No need to travel across Lagos — your seller is a short walk away.</p></div>
+            <div class="feature-card"><div class="feature-icon">⭐</div><h3>Seller ratings</h3><p>Rate every transaction. Good sellers build reputation; bad ones get exposed.</p></div>
+            <div class="feature-card"><div class="feature-icon">🔖</div><h3>Save for later</h3><p>Bookmark that perfect find and come back when you're ready. No pressure.</p></div>
+            <div class="feature-card"><div class="feature-icon">🆓</div><h3>100% free to list</h3><p>Zero listing fees, zero commission. Every naira you earn stays yours.</p></div>
         </div>
     </section>
 
-    <!-- How It Works -->
     <section class="how">
         <h2>How it works</h2>
         <div class="steps">
-            <div class="step">
-                <div class="step-num">01</div>
-                <h3>Create your account</h3>
-                <p>Sign up with your LASU email or upload your student ID. Verification is fast.</p>
-            </div>
-            <div class="step">
-                <div class="step-num">02</div>
-                <h3>List or browse</h3>
-                <p>Upload your item in under a minute, or explore hundreds of campus deals.</p>
-            </div>
-            <div class="step">
-                <div class="step-num">03</div>
-                <h3>Negotiate & meet</h3>
-                <p>Chat, agree on a price, then meet at a safe spot on campus. Easy.</p>
-            </div>
+            <div class="step"><div class="step-num">01</div><h3>Create your account</h3><p>Sign up with your LASU email or upload your student ID. Verification is fast.</p></div>
+            <div class="step"><div class="step-num">02</div><h3>List or browse</h3><p>Upload your item in under a minute, or explore hundreds of campus deals.</p></div>
+            <div class="step"><div class="step-num">03</div><h3>Negotiate & meet</h3><p>Chat, agree on a price, then meet at a safe spot on campus. Easy.</p></div>
         </div>
     </section>
 
-    <!-- CTA -->
     <section class="cta">
         <h2>Your LASU marketplace is here</h2>
         <p>Join the smartest way to buy and sell on campus.</p>
         <a href="/register" class="btn-white">Get Started Free</a>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        Made with 🔥 for LASU students · <span>VENDLY</span> © 2026
-    </footer>
+    <footer>Made with 🔥 for LASU students · <span>VENDLY</span> © 2026</footer>
 </body>
 </html>
