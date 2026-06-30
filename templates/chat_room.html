@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CHANGE: Added viewport-fit=cover for iPhone notch/home indicator safe-area support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Chat — Vendly</title>
+    <!-- CHANGE: Added display=swap to prevent flash of invisible text while font loads -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,38 +15,68 @@
             --gray-50: #f8f9fb;
             --text-muted: #6b7b8d;
             --border: #e8ecf0;
-            --radius: 14px;
-            --radius-sm: 10px;
+            --radius: 16px;
+            --radius-sm: 12px;
+            /* CHANGE: safe-area insets for iPhone notch/home indicator */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* CHANGE: Global tap highlight removal and momentum scrolling */
+        html {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--gray-50);
             color: var(--navy);
             height: 100vh;
+            height: -webkit-fill-available; /* CHANGE: fix for iOS Safari address bar */
             display: flex;
             flex-direction: column;
+            overscroll-behavior-y: contain;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
         }
+
         .navbar {
             background: var(--navy);
-            padding: 0.8rem 1.5rem;
+            /* CHANGE: safe-area top padding so navbar clears iPhone notch */
+            padding: calc(0.8rem + var(--safe-top)) 1.5rem 0.8rem;
             display: flex;
             align-items: center;
             gap: 1rem;
             z-index: 100;
         }
-        .back-btn { color: white; text-decoration: none; font-size: 1.2rem; }
+        /* CHANGE: back button — minimum 44px tap target */
+        .back-btn {
+            color: white; text-decoration: none; font-size: 1.2rem;
+            min-width: 44px; min-height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            touch-action: manipulation;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+        .back-btn:active { transform: scale(0.9); opacity: 0.7; }
         .chat-header-info { flex: 1; }
         .chat-header-info .name { color: white; font-weight: 600; font-size: 0.9rem; }
         .chat-header-info .item { color: rgba(255,255,255,0.6); font-size: 0.75rem; }
+
+        /* CHANGE: messages container — momentum scroll on iOS */
         .messages-container {
             flex: 1;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
             padding: 1rem;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
+
         .message {
             max-width: 75%;
             padding: 0.7rem 1rem;
@@ -52,7 +84,11 @@
             font-size: 0.9rem;
             line-height: 1.4;
             word-wrap: break-word;
+            /* CHANGE: fade-in for new messages */
+            animation: fadeIn 0.2s ease;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
         .message-sent {
             align-self: flex-end;
             background: var(--navy);
@@ -66,6 +102,7 @@
             border-bottom-left-radius: 4px;
         }
         .message-time { font-size: 0.65rem; opacity: 0.6; margin-top: 4px; text-align: right; }
+
         .system-message {
             align-self: center;
             font-size: 0.75rem;
@@ -74,6 +111,8 @@
             padding: 0.4rem 1rem;
             border-radius: 20px;
         }
+
+        /* CHANGE: offer card — softer, with tap feedback */
         .offer-card {
             align-self: center;
             background: #fff8f0;
@@ -82,47 +121,52 @@
             padding: 1rem;
             width: 90%;
             max-width: 350px;
+            animation: fadeIn 0.25s ease;
         }
         .offer-card .offer-amount { font-size: 1.3rem; font-weight: 800; color: var(--orange); }
         .offer-card .offer-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .offer-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-        .btn-accept {
-            background: #22c55e; color: white; border: none;
+        /* CHANGE: offer buttons — 44px minimum, GPU-accelerated */
+        .btn-accept, .btn-reject, .btn-counter {
             padding: 0.5rem 1rem; border-radius: 20px;
             font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer;
+            min-height: 44px; touch-action: manipulation;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
         }
-        .btn-reject {
-            background: #ef4444; color: white; border: none;
-            padding: 0.5rem 1rem; border-radius: 20px;
-            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer;
-        }
-        .btn-counter {
-            background: white; color: var(--navy); border: 1px solid var(--border);
-            padding: 0.5rem 1rem; border-radius: 20px;
-            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer;
-        }
+        .btn-accept:active, .btn-reject:active, .btn-counter:active { transform: scale(0.94); opacity: 0.8; }
+        .btn-accept { background: #22c55e; color: white; border: none; }
+        .btn-reject { background: #ef4444; color: white; border: none; }
+        .btn-counter { background: white; color: var(--navy); border: 1px solid var(--border); }
         .offer-status { text-align: center; font-size: 0.8rem; font-weight: 600; margin-top: 0.5rem; }
         .offer-accepted { color: #22c55e; }
         .offer-rejected { color: #ef4444; }
+
+        /* CHANGE: chat input area — safe-area bottom padding */
         .chat-input-area {
-            display: flex; gap: 0.5rem; padding: 0.75rem 1rem;
+            display: flex; gap: 0.5rem;
+            padding: 0.75rem 1rem calc(0.75rem + var(--safe-bottom));
             background: white; border-top: 1px solid var(--border);
         }
         .chat-input-area input {
             flex: 1; padding: 0.7rem 1rem; border: 1px solid var(--border);
             border-radius: 24px; font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none;
+            min-height: 44px;
+            transition: border-color 0.2s;
         }
         .chat-input-area input:focus { border-color: var(--orange); }
-        .btn-send {
-            background: var(--orange); color: white; border: none;
+        /* CHANGE: send/offer buttons — 44px minimum */
+        .btn-send, .btn-offer {
             padding: 0.7rem 1.2rem; border-radius: 24px;
             font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+            min-height: 44px; touch-action: manipulation;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
         }
-        .btn-offer {
-            background: white; color: var(--orange); border: 1px solid var(--orange);
-            padding: 0.7rem 1rem; border-radius: 24px;
-            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer;
-        }
+        .btn-send:active, .btn-offer:active { transform: scale(0.94); opacity: 0.8; }
+        .btn-send { background: var(--orange); color: white; border: none; }
+        .btn-offer { background: white; color: var(--orange); border: 1px solid var(--orange); }
+
         .empty-chat { text-align: center; padding: 3rem; color: var(--text-muted); }
     </style>
 </head>
@@ -163,7 +207,6 @@
         async function init() {
             const token = getToken();
             try {
-                // Run both requests in parallel for speed
                 const [meRes, roomsRes] = await Promise.all([
                     fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } }),
                     fetch(`${API_BASE}/api/chat/rooms`, { headers: { 'Authorization': `Bearer ${token}` } })
@@ -300,7 +343,6 @@
                 });
                 if (res.ok) {
                     const msg = await res.json();
-                    // Instant display - add the message immediately
                     appendMessage(msg);
                     lastMessageId = Math.max(lastMessageId, msg.id);
                     scrollToBottom();
@@ -333,7 +375,6 @@
 
                 if (res.ok) {
                     const data = await res.json();
-                    // Instant display
                     appendMessage(data.message);
                     lastMessageId = Math.max(lastMessageId, data.message.id);
                     scrollToBottom();
@@ -360,11 +401,9 @@
 
                 const data = await res.json();
                 if (res.ok) {
-                    // Instant display
                     appendMessage(data.message);
                     lastMessageId = Math.max(lastMessageId, data.message.id);
                     scrollToBottom();
-                    // Remove action buttons
                     const actions = document.getElementById(`offer-actions-${offerId}`);
                     if (actions) actions.style.display = 'none';
                 } else {
